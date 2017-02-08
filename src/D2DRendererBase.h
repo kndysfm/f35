@@ -1,7 +1,6 @@
 #pragma once
 #include "F35Helper.h"
 
-#include <d2d1helper.h>
 #include <dwrite.h>
 
 namespace F35_NS
@@ -15,27 +14,6 @@ private:
 	Impl *pImpl;
 
 public:
-	/*! \fn D2DRendererBase::SafeRelease
-	 *  \brief D2Dリソースの安全な開放
-	 *  \param Interface * * ppInterfaceToRelease
-	 *  \return void
-	 */
-	template<class Interface>
-	static inline void SafeRelease(Interface **ppInterfaceToRelease)
-	{
-		if (*ppInterfaceToRelease != NULL)
-		{
-			(*ppInterfaceToRelease)->Release();
-			(*ppInterfaceToRelease) = NULL;
-		}
-	}
-
-	static D2D1_RECT_F MakeRectRatios(D2D1_RECT_F src_rect, 
-		FLOAT left, FLOAT top, FLOAT right, FLOAT bottom);
-
-	static D2D1_RECT_F MakeRectRatios(D2D1_RECT_F src_rect, D2D1_RECT_F ratio_rect);
-
-	static D2D1_POINT_2F MakePointRatio(D2D1_POINT_2F pt0, D2D1_POINT_2F pt1, FLOAT ratio);
 
 	/*! \fn D2DRendererBase::PaintRectangle
 	 *  \brief 直線で長方形を描いて中を塗りつぶす
@@ -81,7 +59,7 @@ public:
 	 *  \param DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign
 	 *  \return IDWriteTextFormat *
 	 */
-	IDWriteTextFormat *MakeTextFormat(LPCTSTR fontName, FLOAT fontSize, 
+	ResourceHolder<IDWriteTextFormat> MakeTextFormat(LPCTSTR fontName, FLOAT fontSize,
 		DWRITE_TEXT_ALIGNMENT textAlign = DWRITE_TEXT_ALIGNMENT_CENTER,
 		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
@@ -91,14 +69,14 @@ public:
 	 *  \param UINT32 dashesCount
 	 *  \return ID2D1StrokeStyle *
 	 */
-	ID2D1StrokeStyle *MakeStrokeStyle(  FLOAT dashes, UINT32 dashesCount );
+	ResourceHolder<ID2D1StrokeStyle> MakeStrokeStyle(  FLOAT dashes, UINT32 dashesCount );
 	
 	/*! \fn D2DRendererBase::MakeBrush
 	 *  \brief ブラシオブジェクトの生成
 	 *  \param D2D1::ColorF color
 	 *  \return ID2D1Brush *
 	 */
-	ID2D1SolidColorBrush *MakeBrush(const D2D1::ColorF &color);
+	ResourceHolder<ID2D1SolidColorBrush> MakeBrush(const D2D1::ColorF &color);
 
 	
 	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
@@ -106,7 +84,7 @@ public:
 	 *  \param void
 	 *  \return ID2D1PathGeometry *
 	 */
-	ID2D1PathGeometry *MakePathGeometry(void);
+	ResourceHolder<ID2D1PathGeometry> MakePathGeometry(void);
 
 	/*! \fn D2DRendererBase::GetCurrentCursorPosDpi
 	 *  \brief 現在のカーソル位置を取得

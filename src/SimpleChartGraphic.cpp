@@ -9,13 +9,13 @@ struct SimpleChartGraphic::Impl
 {
 	D2DRendererBase *renderer;
 
-	ID2D1SolidColorBrush *axis_line_brush;
-	ID2D1SolidColorBrush *major_grid_brush;
-	ID2D1SolidColorBrush *minor_grid_brush;
-	ID2D1SolidColorBrush *mess_brush;
-	IDWriteTextFormat *x_label_textf;
-	IDWriteTextFormat *y_label_textf;
-	IDWriteTextFormat *mess_textf;
+	ResourceHolder<ID2D1SolidColorBrush> axis_line_brush;
+	ResourceHolder<ID2D1SolidColorBrush> major_grid_brush;
+	ResourceHolder<ID2D1SolidColorBrush> minor_grid_brush;
+	ResourceHolder<ID2D1SolidColorBrush> mess_brush;
+	ResourceHolder<IDWriteTextFormat> x_label_textf;
+	ResourceHolder<IDWriteTextFormat> y_label_textf;
+	ResourceHolder<IDWriteTextFormat> mess_textf;
 
 	LPCTSTR mess;
 
@@ -34,11 +34,6 @@ struct SimpleChartGraphic::Impl
 
 	~Impl(void)
 	{
-		D2DRendererBase::SafeRelease(&axis_line_brush);
-		D2DRendererBase::SafeRelease(&major_grid_brush);
-		D2DRendererBase::SafeRelease(&minor_grid_brush);
-		D2DRendererBase::SafeRelease(&x_label_textf);
-		D2DRendererBase::SafeRelease(&y_label_textf);
 		renderer = NULL;
 	}
 };
@@ -85,11 +80,11 @@ BOOL F35_NS::SimpleChartGraphic::RenderGraphic(
 	target->Clear(GetBackgroundColor());
 
 	D2D1::ColorF color_fg = GetForegroundColor();
-	pImpl->axis_line_brush->SetColor(color_fg);
+	(&pImpl->axis_line_brush)->SetColor(color_fg);
 	color_fg.a = 0.75f;
-	pImpl->major_grid_brush->SetColor(color_fg);
+	(&pImpl->major_grid_brush)->SetColor(color_fg);
 	color_fg.a = 0.25f;
-	pImpl->minor_grid_brush->SetColor(color_fg);
+	(&pImpl->minor_grid_brush)->SetColor(color_fg);
 
 	rect.left += 30.0f;
 	rect.right -= 5.0f;
@@ -118,7 +113,7 @@ BOOL F35_NS::SimpleChartGraphic::RenderGraphic(
 
 	if (pImpl->mess != NULL)
 	{
-		pImpl->mess_brush->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
+		(&pImpl->mess_brush)->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
 		renderer->Print(pImpl->mess_textf, rect,  pImpl->mess_brush, pImpl->mess);
 	}
 

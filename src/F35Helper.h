@@ -1,5 +1,7 @@
 #pragma once
 
+#include <d2d1helper.h>
+
 #define F35_NS			fxxxv
 #define USING_F35_NS	using namespace F35_NS
 
@@ -50,7 +52,7 @@ namespace F35_NS
 		ResourceHolder(const ResourceHolder &) = delete;
 		ResourceHolder & operator= (const ResourceHolder &) = delete;
 
-		static void SafeRelease(Interface **ppInterfaceToRelease)
+		static void safeRelease(Interface **ppInterfaceToRelease)
 		{
 			if (*ppInterfaceToRelease != NULL)
 			{
@@ -60,18 +62,42 @@ namespace F35_NS
 		}
 
 	public:
-		ResourceHolder(Interface*p = NULL): pResource(p) { }
+		ResourceHolder() : pResource(NULL) { }
+		ResourceHolder(Interface*p): pResource(p) { }
 		ResourceHolder(ResourceHolder && rh) : ResourceHolder(rh.pResource) { }
 		ResourceHolder & operator= (ResourceHolder && rh)
 		{
-			SafeRelease(&this->pResource);
+			safeRelease(&this->pResource);
 			this->pResource = rh.pResource; // move value
 			rh.pResource = NULL;
+			return *this;
 		}
+
+		ResourceHolder & operator= (Interface*p)
+		{
+			safeRelease(&this->pResource);
+			this->pResource = p;
+			return *this;
+		}
+
+		operator bool() { return pResource != NULL; }
+
+		operator BOOL() { return pResource != NULL; }
+
+		Interface * operator& () const { return pResource; }
 
 		operator Interface *() { return pResource; }
 
-		virtual ~ResourceHolder() { SafeRelease(&pResource); }
+		operator const Interface *() const { return pResource; }
+
+		virtual ~ResourceHolder() { safeRelease(&pResource); }
 	};
+
+
+	static D2D1_RECT_F MakeRectRatios(D2D1_RECT_F src_rect, FLOAT left, FLOAT top, FLOAT right, FLOAT bottom);
+
+	static D2D1_RECT_F MakeRectRatios(D2D1_RECT_F src_rect, D2D1_RECT_F ratio_rect);
+
+	static D2D1_POINT_2F MakePointRatio(D2D1_POINT_2F pt0, D2D1_POINT_2F pt1, FLOAT ratio);
 
 }

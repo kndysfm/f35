@@ -7,9 +7,9 @@ USING_F35_NS;
 
 class D2DRendererBase::Impl
 {
-	ID2D1Factory* pD2dFactory;
-	ID2D1HwndRenderTarget* pRenderTarget;
-	IDWriteFactory* pDWriteFactory;
+	ResourceHolder<ID2D1Factory> pD2dFactory;
+	ResourceHolder<ID2D1HwndRenderTarget> pRenderTarget;
+	ResourceHolder<IDWriteFactory> pDWriteFactory;
 
 	HWND hWnd;
 	HWND hParent;
@@ -28,10 +28,6 @@ public:
 			hp = ::GetParent(hc);
 		}while (hp != NULL);
 		this->hParent = hc;
-
-		this->pD2dFactory = NULL;
-		this->pRenderTarget = NULL;
-		this->pDWriteFactory = NULL;
 	}
 
 	virtual ~Impl(void)
@@ -52,7 +48,7 @@ public:
 	void Print(IDWriteTextFormat *format, const D2D1_RECT_F &rect, BOOL clip,
 		ID2D1Brush *brush, LPCTSTR str)
 	{
-		pRenderTarget->DrawText(str, _tcslen(str), format, rect, brush, 
+		(&pRenderTarget)->DrawText(str, _tcslen(str), format, rect, brush,
 			clip? D2D1_DRAW_TEXT_OPTIONS_CLIP: D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
 	}
 
@@ -64,7 +60,7 @@ public:
 		DWRITE_PARAGRAPH_ALIGNMENT last_paragraph_align = format->GetParagraphAlignment();
 		format->SetTextAlignment(text_align);
 		format->SetParagraphAlignment(paragraph_align);
-		pRenderTarget->DrawText(str, _tcslen(str), format, rect, brush,
+		(&pRenderTarget)->DrawText(str, _tcslen(str), format, rect, brush,
 			clip? D2D1_DRAW_TEXT_OPTIONS_CLIP: D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
 		format->SetTextAlignment(last_text_align);
 		format->SetParagraphAlignment(last_paragraph_align);
@@ -76,7 +72,7 @@ public:
 		if (pDWriteFactory)
 		{
 			IDWriteTextFormat *pFormat = NULL;
-			HRESULT hr = pDWriteFactory->CreateTextFormat(
+			HRESULT hr = (&pDWriteFactory)->CreateTextFormat(
 				fontName,
 				NULL,
 				DWRITE_FONT_WEIGHT_NORMAL,
@@ -94,7 +90,6 @@ public:
 			}
 			else
 			{
-				SafeRelease(&pFormat);
 			}
 		}
 		return NULL;
@@ -102,7 +97,7 @@ public:
 
 	D2D1_SIZE_F GetSize(void) const
 	{
-		return pRenderTarget->GetSize();
+		return (&pRenderTarget)->GetSize();
 	}
 
 	ID2D1SolidColorBrush * GetSolidBrush( const D2D1::ColorF & color )
@@ -110,14 +105,13 @@ public:
 		if (pRenderTarget)
 		{
 			ID2D1SolidColorBrush *pBrush = NULL;
-			HRESULT hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);
+			HRESULT hr = (&pRenderTarget)->CreateSolidColorBrush(color, &pBrush);
 			if (SUCCEEDED(hr))
 			{
 				return pBrush;
 			}
 			else
 			{
-				SafeRelease(&pBrush);
 			}
 		}
 		return NULL;
@@ -129,14 +123,13 @@ public:
 		{
 			ID2D1StrokeStyle *pStyle;
 			D2D1_STROKE_STYLE_PROPERTIES props = D2D1::StrokeStyleProperties();
-			HRESULT hr = pD2dFactory->CreateStrokeStyle(props, &dashes, dashesCount, &pStyle);
+			HRESULT hr = (&pD2dFactory)->CreateStrokeStyle(props, &dashes, dashesCount, &pStyle);
 			if (SUCCEEDED(hr))
 			{
 				return pStyle;
 			}
 			else
 			{
-				SafeRelease(&pStyle);
 			}
 		}
 		return NULL;
@@ -147,14 +140,13 @@ public:
 		if (pD2dFactory)
 		{
 			ID2D1PathGeometry *pPath;
-			HRESULT hr = pD2dFactory->CreatePathGeometry(&pPath);
+			HRESULT hr = (&pD2dFactory)->CreatePathGeometry(&pPath);
 			if (SUCCEEDED(hr))
 			{
 				return pPath;
 			}
 			else
 			{
-				SafeRelease(&pPath);
 			}
 		}
 		return NULL;
@@ -166,27 +158,33 @@ public:
 
 		if (!pD2dFactory)
 		{
-			hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &pD2dFactory);
+			ID2D1Factory *pFactory;
+			hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &pFactory);
+			pD2dFactory = pFactory;
 		}
 		if (!pRenderTarget && SUCCEEDED(hr) && pD2dFactory)
 		{
 			RECT rc;
 			GetClientRect(this->hWnd, &rc);
 			D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
-			hr = pD2dFactory->CreateHwndRenderTarget(
+			ID2D1HwndRenderTarget *pRT;
+			hr = (&pD2dFactory)->CreateHwndRenderTarget(
 				D2D1::RenderTargetProperties(),
 				D2D1::HwndRenderTargetProperties(this->hWnd, size),
-				&pRenderTarget
+				&pRT
 				);
+			pRenderTarget = pRT;
 		}
 		if (!pDWriteFactory && SUCCEEDED(hr) && pD2dFactory)
 		{
+			IDWriteFactory *pFactory;
 			// Create a DirectWrite factory.
 			hr = DWriteCreateFactory(
 				DWRITE_FACTORY_TYPE_SHARED,
 				__uuidof(pDWriteFactory),
-				reinterpret_cast<IUnknown **>(&pDWriteFactory)
+				reinterpret_cast<IUnknown **>(&pFactory)
 				);
+			pDWriteFactory = pFactory;
 		}
 
 		return hr;
@@ -222,7 +220,7 @@ public:
 		if (pRenderTarget && ::GetCursorPos(&pt) && ::ScreenToClient(hWnd, &pt))
 		{
 			FLOAT dpiX, dpiY;
-			pRenderTarget->GetDpi(&dpiX, &dpiY);
+			(&pRenderTarget)->GetDpi(&dpiX, &dpiY);
 			currPos.x = (FLOAT)pt.x*96.0f/dpiX;
 			currPos.y = (FLOAT)pt.y*96.0f/dpiY;
 		}
@@ -233,8 +231,8 @@ public:
 	{
 		if (!pRenderTarget) return S_FALSE;
 
-		pRenderTarget->BeginDraw();
-		pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		(&pRenderTarget)->BeginDraw();
+		(&pRenderTarget)->SetTransform(D2D1::Matrix3x2F::Identity());
 
 		return S_OK;
 	}
@@ -243,7 +241,7 @@ public:
 	{
 		if (SUCCEEDED(hr))
 		{
-			if (pRenderTarget) hr = pRenderTarget->EndDraw();
+			if (pRenderTarget) hr = (&pRenderTarget)->EndDraw();
 		}
 		if (hr == D2DERR_RECREATE_TARGET)
 		{
@@ -260,9 +258,6 @@ public:
 
 	void Destroy(void)
 	{
-		SafeRelease(&pD2dFactory);
-		SafeRelease(&pRenderTarget);
-		SafeRelease(&pDWriteFactory);
 	}
 };
 
@@ -370,12 +365,13 @@ void D2DRendererBase::Print( IDWriteTextFormat *format, const D2D1_RECT_F &rect,
 
 	va_end(arg_ptr);
 }
-IDWriteTextFormat * D2DRendererBase::MakeTextFormat( LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/ )
+
+ResourceHolder<IDWriteTextFormat> D2DRendererBase::MakeTextFormat( LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/ )
 {
 	return pImpl->GetTextFormat(fontName, fontSize, textAlign, paragraphAlign);
 }
 
-ID2D1SolidColorBrush * D2DRendererBase::MakeBrush( const D2D1::ColorF & color )
+ResourceHolder<ID2D1SolidColorBrush> D2DRendererBase::MakeBrush( const D2D1::ColorF & color )
 {
 	return pImpl->GetSolidBrush(color);
 }
@@ -389,33 +385,6 @@ void D2DRendererBase::PaintRectangle( const D2D1_RECT_F &rect, ID2D1Brush *fill_
 {
 	pImpl->GetTarget()->FillRectangle(rect, fill_brush);
 	pImpl->GetTarget()->DrawRectangle(rect, line_brush, line_width);
-}
-
-D2D1_RECT_F D2DRendererBase::MakeRectRatios( D2D1_RECT_F src_rect, FLOAT left, FLOAT top, FLOAT right, FLOAT bottom )
-{
-	D2D1_RECT_F new_rect;
-
-	new_rect.left = left * src_rect.right + (1.0f - left) * src_rect.left;
-	new_rect.top = top * src_rect.bottom + (1.0f - top) * src_rect.top;
-	new_rect.right = right * src_rect.right + (1.0f - right) * src_rect.left;
-	new_rect.bottom = bottom * src_rect.bottom + (1.0f - bottom) * src_rect.top;
-
-	return new_rect;
-}
-
-D2D1_RECT_F D2DRendererBase::MakeRectRatios( D2D1_RECT_F src_rect, D2D1_RECT_F ratio_rect )
-{
-	return MakeRectRatios(src_rect, ratio_rect.left, ratio_rect.top, ratio_rect.right, ratio_rect.bottom);
-}
-
-D2D1_POINT_2F D2DRendererBase::MakePointRatio( D2D1_POINT_2F pt0, D2D1_POINT_2F pt1, FLOAT ratio )
-{
-	D2D1_POINT_2F new_pt;
-
-	new_pt.x = ratio * pt1.x, + (1.0f - ratio) * pt0.x;
-	new_pt.y = ratio * pt1.y, + (1.0f - ratio) * pt0.y;
-
-	return new_pt;
 }
 
 void D2DRendererBase::Invalidate( void )
@@ -438,12 +407,12 @@ D2D1_RECT_F F35_NS::D2DRendererBase::GetRectangle( void ) const
 	return rect;
 }
 
-ID2D1StrokeStyle * F35_NS::D2DRendererBase::MakeStrokeStyle( FLOAT dashes, UINT32 dashesCount )
+ResourceHolder<ID2D1StrokeStyle> F35_NS::D2DRendererBase::MakeStrokeStyle( FLOAT dashes, UINT32 dashesCount )
 {
 	return pImpl->GetStrokeStyle(dashes, dashesCount);
 }
 
-ID2D1PathGeometry * F35_NS::D2DRendererBase::MakePathGeometry( void )
+ResourceHolder<ID2D1PathGeometry> F35_NS::D2DRendererBase::MakePathGeometry( void )
 {
 	return pImpl->GetPathGeometry();
 }

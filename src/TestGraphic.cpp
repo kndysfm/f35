@@ -5,8 +5,8 @@ USING_F35_NS;
 
 struct TestGraphic::Impl
 {
-	IDWriteTextFormat *textf;
-	ID2D1Brush *brush;
+	ResourceHolder<IDWriteTextFormat> textf;
+	ResourceHolder<ID2D1SolidColorBrush> brush;
 
 	Impl(void): textf(NULL), brush(NULL)
 	{
@@ -15,8 +15,6 @@ struct TestGraphic::Impl
 
 	~Impl(void)
 	{
-		D2DRendererBase::SafeRelease(&textf);
-		D2DRendererBase::SafeRelease(&brush);
 	}
 };
 
@@ -60,7 +58,5 @@ void F35_NS::TestGraphic::UpdateGraphic( D2DRendererBase * renderer )
 
 void F35_NS::TestGraphic::DestroyGraphic( D2DRendererBase * renderer )
 {
-	D2DRendererBase::SafeRelease(&pImpl->textf);
-	D2DRendererBase::SafeRelease(&pImpl->brush);
 	GraphicsBase::DestroyGraphic(renderer);
 }

@@ -80,9 +80,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="ChartDataSeriesBase.h" />
     <ClInclude Include="ChartGraphicBase.h" />
     <ClInclude Include="ChartLegendBase.h" />
@@ -107,6 +104,7 @@
     <ClCompile Include="ChartGraphicBase.cpp" />
     <ClCompile Include="ChartLegendBase.cpp" />
     <ClCompile Include="D2DRendererBase.cpp" />
+    <ClCompile Include="F35Helper.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GraphicsBase.cpp" />
     <ClCompile Include="GraphicsContainer.cpp" />

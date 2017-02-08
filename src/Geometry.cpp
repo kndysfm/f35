@@ -5,8 +5,8 @@ USING_F35_NS;
 
 struct Geometry::Impl
 {
-	ID2D1SolidColorBrush * line_brush;
-	ID2D1SolidColorBrush * fill_brush;
+	ResourceHolder< ID2D1SolidColorBrush> line_brush;
+	ResourceHolder< ID2D1SolidColorBrush> fill_brush;
 
 	FLOAT line_width;
 
@@ -25,8 +25,6 @@ struct Geometry::Impl
 
 	~Impl(void)
 	{
-		D2DRendererBase::SafeRelease(&line_brush);
-		D2DRendererBase::SafeRelease(&fill_brush);
 	}
 };
 
@@ -64,37 +62,33 @@ ID2D1StrokeStyle * F35_NS::Geometry::GetLineStyle( void )
 void F35_NS::Geometry::SetLineColor( const D2D1::ColorF & c )
 {
 	pImpl->line_color = c;
-	if (pImpl->line_brush) pImpl->line_brush->SetColor(c);
+	if (pImpl->line_brush) (&pImpl->line_brush)->SetColor(c);
 }
 
 D2D1_COLOR_F F35_NS::Geometry::GetLineColor( void )
 {
-	return pImpl->line_brush->GetColor();
+	return (&pImpl->line_brush)->GetColor();
 }
 
 void F35_NS::Geometry::SetFillColor( const D2D1::ColorF & c )
 {
 	pImpl->fill_color = c;
-	if (pImpl->fill_brush) pImpl->fill_brush->SetColor(c);
+	if (pImpl->fill_brush) (&pImpl->fill_brush)->SetColor(c);
 }
 
 D2D1_COLOR_F F35_NS::Geometry::GetFillColor( void )
 {
-	return pImpl->fill_brush->GetColor();
+	return (&pImpl->fill_brush)->GetColor();
 }
 
 void F35_NS::Geometry::InitGraphic( D2DRendererBase * renderer )
 {
-	D2DRendererBase::SafeRelease(&pImpl->line_brush);
-	D2DRendererBase::SafeRelease(&pImpl->fill_brush);
 	pImpl->line_brush = renderer->MakeBrush(pImpl->line_color);
 	pImpl->fill_brush = renderer->MakeBrush(pImpl->fill_color);
 }
 
 void F35_NS::Geometry::DestroyGraphic( D2DRendererBase * renderer )
 {
-	D2DRendererBase::SafeRelease(&pImpl->line_brush);
-	D2DRendererBase::SafeRelease(&pImpl->fill_brush);
 }
 
 ID2D1Brush * F35_NS::Geometry::GetLineBrush( void )

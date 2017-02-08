@@ -6,8 +6,8 @@ USING_F35_NS;
 
 struct SimpleLineChartLegend::Impl
 {
-	ID2D1Brush *line_brush;
-	IDWriteTextFormat *textf;
+	ResourceHolder<ID2D1SolidColorBrush> line_brush;
+	ResourceHolder<IDWriteTextFormat> textf;
 	BOOL marker;
 	
 	static D2D1_POINT_2F convert_point(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio)
@@ -23,10 +23,6 @@ struct SimpleLineChartLegend::Impl
 	Impl(): line_brush(NULL), marker(FALSE), textf(NULL) { }
 	~Impl()
 	{
-		if (line_brush)
-			D2DRendererBase::SafeRelease(&line_brush);
-		if (textf)
-			D2DRendererBase::SafeRelease(&textf);
 	}
 };
 
@@ -49,18 +45,14 @@ void F35_NS::SimpleLineChartLegend::ShowMarker( BOOL show )
 
 void F35_NS::SimpleLineChartLegend::BeginDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
 {
-	if (pImpl->line_brush)
-		D2DRendererBase::SafeRelease(&(pImpl->line_brush));
 	pImpl->line_brush = renderer->MakeBrush(GetLineColor());
 
-	if (pImpl->textf)
-		D2DRendererBase::SafeRelease(&pImpl->textf);
 	pImpl->textf = renderer->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }
 
 void F35_NS::SimpleLineChartLegend::Draw( D2DRendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
 {
-	if (!pImpl || pImpl->line_brush == NULL) return;
+	if (!pImpl || !pImpl->line_brush) return;
 
 	D2D1_POINT_2F pt1 = Impl::convert_point(chart_rect, point);
 	if (point_previous)
@@ -102,8 +94,4 @@ void F35_NS::SimpleLineChartLegend::Print( D2DRendererBase *renderer, ID2D1Rende
 
 void F35_NS::SimpleLineChartLegend::EndDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
 {
-	if (pImpl->line_brush)
-		D2DRendererBase::SafeRelease(&(pImpl->line_brush));
-	if (pImpl->textf)
-		D2DRendererBase::SafeRelease(&pImpl->textf);
 }
