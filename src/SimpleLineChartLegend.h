@@ -1,7 +1,6 @@
 #pragma once
-#include "F35Lib.h"
+#include "F35Helper.h"
 #include "chartlegendbase.h"
-#include "ChartRendererBase.h"
 
 namespace F35_NS {
 

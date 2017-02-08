@@ -1,6 +1,6 @@
 #pragma once
 
-#define F35_NS		fxxxv
+#define F35_NS			fxxxv
 #define USING_F35_NS	using namespace F35_NS
 
 namespace F35_NS
@@ -41,4 +41,37 @@ namespace F35_NS
 		void Unlock(void) {::LeaveCriticalSection(&cs);}
 		BOOL TryLock(void) { return ::TryEnterCriticalSection(&cs); }
 	};
+
+	template<class Interface>
+	class ResourceHolder
+	{
+	private:
+		Interface *pResource;
+		ResourceHolder(const ResourceHolder &) = delete;
+		ResourceHolder & operator= (const ResourceHolder &) = delete;
+
+		static void SafeRelease(Interface **ppInterfaceToRelease)
+		{
+			if (*ppInterfaceToRelease != NULL)
+			{
+				(*ppInterfaceToRelease)->Release();
+				(*ppInterfaceToRelease) = NULL;
+			}
+		}
+
+	public:
+		ResourceHolder(Interface*p = NULL): pResource(p) { }
+		ResourceHolder(ResourceHolder && rh) : ResourceHolder(rh.pResource) { }
+		ResourceHolder & operator= (ResourceHolder && rh)
+		{
+			SafeRelease(&this->pResource);
+			this->pResource = rh.pResource; // move value
+			rh.pResource = NULL;
+		}
+
+		operator Interface *() { return pResource; }
+
+		virtual ~ResourceHolder() { SafeRelease(&pResource); }
+	};
+
 }

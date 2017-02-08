@@ -75,9 +75,6 @@
     <ClInclude Include="SimpleLineChartLegend.h">
       <Filter>ヘッダー ファイル\graphics\chart\legend</Filter>
     </ClInclude>
-    <ClInclude Include="F35Lib.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsContainer.h">
       <Filter>ヘッダー ファイル\graphics</Filter>
     </ClInclude>
@@ -98,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="GraphicsRenderer.h">
       <Filter>ヘッダー ファイル\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="F35Helper.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

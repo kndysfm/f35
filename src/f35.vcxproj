@@ -87,7 +87,7 @@
     <ClInclude Include="ChartGraphicBase.h" />
     <ClInclude Include="ChartLegendBase.h" />
     <ClInclude Include="D2DRendererBase.h" />
-    <ClInclude Include="F35Lib.h" />
+    <ClInclude Include="F35Helper.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GraphicsBase.h" />
     <ClInclude Include="GraphicsContainer.h" />
