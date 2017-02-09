@@ -81,7 +81,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ChartDataSeriesBase.h" />
-    <ClInclude Include="ChartGraphicBase.h" />
+    <ClInclude Include="ChartGraphicsBase.h" />
     <ClInclude Include="ChartLegendBase.h" />
     <ClInclude Include="D2DRendererBase.h" />
     <ClInclude Include="F35Helper.h" />
@@ -94,14 +94,14 @@
     <ClInclude Include="SampleChartDataSeries.h" />
     <ClInclude Include="Simple4DChartLegend.h" />
     <ClInclude Include="SimpleBarChartLegend.h" />
-    <ClInclude Include="SimpleChartGraphic.h" />
+    <ClInclude Include="SimpleChartGraphics.h" />
     <ClInclude Include="SimpleLineChartLegend.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestGraphic.h" />
+    <ClInclude Include="TestGraphics.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChartGraphicBase.cpp" />
+    <ClCompile Include="ChartGraphicsBase.cpp" />
     <ClCompile Include="ChartLegendBase.cpp" />
     <ClCompile Include="D2DRendererBase.cpp" />
     <ClCompile Include="F35Helper.cpp" />
@@ -114,13 +114,13 @@
     <ClCompile Include="SampleChartDataSeries.cpp" />
     <ClCompile Include="Simple4DChartLegend.cpp" />
     <ClCompile Include="SimpleBarChartLegend.cpp" />
-    <ClCompile Include="SimpleChartGraphic.cpp" />
+    <ClCompile Include="SimpleChartGraphics.cpp" />
     <ClCompile Include="SimpleLineChartLegend.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TestGraphic.cpp" />
+    <ClCompile Include="TestGraphics.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

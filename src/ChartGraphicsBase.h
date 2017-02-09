@@ -8,15 +8,15 @@ namespace F35_NS
 {
 
 
-class ChartGraphicBase :
+class ChartGraphicsBase :
 	public GraphicsBase
 {
 	struct Impl;
 	Impl * pImpl;
 
 public:
-	ChartGraphicBase(void);
-	virtual ~ChartGraphicBase(void);
+	ChartGraphicsBase(void);
+	virtual ~ChartGraphicsBase(void);
 
 	BOOL AddDataSeries(LPCTSTR name, ChartDataSeriesBase const *series, ChartLegendBase const *legend);
 

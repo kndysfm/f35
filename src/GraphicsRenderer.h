@@ -4,34 +4,34 @@
 
 namespace F35_NS
 {
-	
-	class GraphicsRenderer : 
-		public D2DRendererBase, 
+
+	class GraphicsRenderer :
+		public D2DRendererBase,
 		public IGraphicsContainer
-{
-private:
-	struct Impl;
-	Impl *pImpl;
+	{
+	private:
+		struct Impl;
+		Impl *pImpl;
 
-public:
-	GraphicsRenderer(HWND hwnd);
-	virtual ~GraphicsRenderer(void);
+	public:
+		GraphicsRenderer(HWND hwnd);
+		virtual ~GraphicsRenderer(void);
 
-	virtual BOOL AddGraphic( GraphicsBase *graphic, LONG insert_index = LONG_MAX );
+		virtual BOOL AddGraphics(GraphicsBase *graphics, LONG insert_index = LONG_MAX);
 
-	virtual LONG GetIndexOfGraphic( GraphicsBase *graphic );
+		virtual LONG GetIndexOfGraphics(GraphicsBase *graphics);
 
-	virtual BOOL RemoveGraphic( GraphicsBase *graphic );
+		virtual BOOL RemoveGraphics(GraphicsBase *graphics);
 
-protected:
+	protected:
 
-	virtual HRESULT InternalInit( ID2D1RenderTarget *target );
+		virtual HRESULT InternalInit(ID2D1RenderTarget *target);
 
-	virtual void InternalUpdate( void );
+		virtual void InternalUpdate(void);
 
-	virtual HRESULT InternalRender( ID2D1RenderTarget *target );
+		virtual HRESULT InternalRender(ID2D1RenderTarget *target);
 
-	virtual void InternalDestroy( void );
+		virtual void InternalDestroy(void);
 
 	};
 

@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "TestGraphic.h"
+#include "TestGraphics.h"
 
 USING_F35_NS;
 
-struct TestGraphic::Impl
+struct TestGraphics::Impl
 {
 	ResourceHolder<IDWriteTextFormat> textf;
 	ResourceHolder<ID2D1SolidColorBrush> brush;
@@ -18,18 +18,18 @@ struct TestGraphic::Impl
 	}
 };
 
-TestGraphic::TestGraphic(void):
+TestGraphics::TestGraphics(void):
 	pImpl(new Impl)
 {
 }
 
 
-TestGraphic::~TestGraphic(void)
+TestGraphics::~TestGraphics(void)
 {
 	delete pImpl;
 }
 
-BOOL F35_NS::TestGraphic::RenderGraphic( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs )
+BOOL F35_NS::TestGraphics::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs )
 {
 	D2D1_POINT_2F pos = GetPosition();
 	D2D1_RECT_F rect;
@@ -43,20 +43,20 @@ BOOL F35_NS::TestGraphic::RenderGraphic( D2DRendererBase * renderer, ID2D1Render
 	return TRUE;
 }
 
-void F35_NS::TestGraphic::InitGraphic( D2DRendererBase * renderer )
+void F35_NS::TestGraphics::InitGraphics( D2DRendererBase * renderer )
 {
-	GraphicsBase::InitGraphic(renderer);
+	GraphicsBase::InternalInit(renderer);
 	pImpl->textf = renderer->MakeTextFormat(_T("MS UI Gothic"), 12.0f);
 	pImpl->brush = renderer->MakeBrush(D2D1::ColorF(D2D1::ColorF::White, 0.3F));
 }
 
-void F35_NS::TestGraphic::UpdateGraphic( D2DRendererBase * renderer )
+void F35_NS::TestGraphics::UpdateGraphics( D2DRendererBase * renderer )
 {
-	GraphicsBase::UpdateGraphic(renderer);
+	GraphicsBase::InternalUpdate(renderer);
 
 }
 
-void F35_NS::TestGraphic::DestroyGraphic( D2DRendererBase * renderer )
+void F35_NS::TestGraphics::DestroyGraphics( D2DRendererBase * renderer )
 {
-	GraphicsBase::DestroyGraphic(renderer);
+	GraphicsBase::InternalDestroy(renderer);
 }

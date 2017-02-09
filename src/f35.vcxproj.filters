@@ -75,16 +75,7 @@
     <ClInclude Include="GraphicsContainer.h">
       <Filter>ヘッダー ファイル\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="ChartGraphicBase.h">
-      <Filter>ヘッダー ファイル\graphics\chart</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleChartGraphic.h">
-      <Filter>ヘッダー ファイル\graphics\chart</Filter>
-    </ClInclude>
     <ClInclude Include="Geometry.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="TestGraphic.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsBase.h">
@@ -94,6 +85,15 @@
       <Filter>ヘッダー ファイル\graphics</Filter>
     </ClInclude>
     <ClInclude Include="F35Helper.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleChartGraphics.h">
+      <Filter>ヘッダー ファイル\graphics\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="ChartGraphicsBase.h">
+      <Filter>ヘッダー ファイル\graphics\chart</Filter>
+    </ClInclude>
+    <ClInclude Include="TestGraphics.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,23 +131,23 @@
     <ClCompile Include="Geometry.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="TestGraphic.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsBase.cpp">
       <Filter>ソース ファイル\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="ChartGraphicBase.cpp">
-      <Filter>ソース ファイル\graphics\chart</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleChartGraphic.cpp">
-      <Filter>ソース ファイル\graphics\chart</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsRenderer.cpp">
       <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
     <ClCompile Include="F35Helper.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="TestGraphics.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ChartGraphicsBase.cpp">
+      <Filter>ソース ファイル\graphics\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleChartGraphics.cpp">
+      <Filter>ソース ファイル\graphics\chart</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

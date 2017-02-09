@@ -29,9 +29,9 @@ namespace F35_NS
 
 		D2D1_COLOR_F GetFillColor(void);
 
-		virtual void InitGraphic( D2DRendererBase * renderer );
+		virtual void InitGraphics( D2DRendererBase * renderer );
 
-		virtual void DestroyGraphic( D2DRendererBase * renderer );
+		virtual void DestroyGraphics( D2DRendererBase * renderer );
 
 	protected:
 

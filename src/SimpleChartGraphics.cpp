@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "SimpleChartGraphic.h"
+#include "SimpleChartGraphics.h"
 
 
 USING_F35_NS;
 
 
-struct SimpleChartGraphic::Impl
+struct SimpleChartGraphics::Impl
 {
 	D2DRendererBase *renderer;
 
@@ -38,13 +38,13 @@ struct SimpleChartGraphic::Impl
 	}
 };
 
-SimpleChartGraphic::SimpleChartGraphic(void):
+SimpleChartGraphics::SimpleChartGraphics(void):
 	pImpl(NULL)
 {
 }
 
 
-SimpleChartGraphic::~SimpleChartGraphic(void)
+SimpleChartGraphics::~SimpleChartGraphics(void)
 {
 	if (pImpl)
 	{
@@ -53,7 +53,7 @@ SimpleChartGraphic::~SimpleChartGraphic(void)
 	}
 }
 
-void F35_NS::SimpleChartGraphic::InitGraphic( D2DRendererBase * renderer)
+void F35_NS::SimpleChartGraphics::InternalInit( D2DRendererBase * renderer)
 {
 	if (!pImpl)
 	{
@@ -61,12 +61,12 @@ void F35_NS::SimpleChartGraphic::InitGraphic( D2DRendererBase * renderer)
 	}
 }
 
-void F35_NS::SimpleChartGraphic::UpdateGraphic( D2DRendererBase * )
+void F35_NS::SimpleChartGraphics::InternalUpdate( D2DRendererBase * )
 {
 	// do nothing	
 }
 
-BOOL F35_NS::SimpleChartGraphic::RenderGraphic( 
+BOOL F35_NS::SimpleChartGraphics::InternalRender( 
 	D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs  )
 {
 	if (!pImpl) return FALSE;
@@ -120,7 +120,7 @@ BOOL F35_NS::SimpleChartGraphic::RenderGraphic(
 	return TRUE;
 }
 
-void F35_NS::SimpleChartGraphic::DestroyGraphic( D2DRendererBase * )
+void F35_NS::SimpleChartGraphics::InternalDestroy( D2DRendererBase * )
 {
 	if (!pImpl) return;
 
@@ -128,7 +128,7 @@ void F35_NS::SimpleChartGraphic::DestroyGraphic( D2DRendererBase * )
 	pImpl = NULL;
 }
 
-void F35_NS::SimpleChartGraphic::ShowMessage( LPCTSTR mess )
+void F35_NS::SimpleChartGraphics::ShowMessage( LPCTSTR mess )
 {
 	if (!pImpl) return;
 

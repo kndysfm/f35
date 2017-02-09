@@ -5,7 +5,7 @@
 #include "test_f35.h"
 
 #include <GraphicsRenderer.h>
-#include <TestGraphic.h>
+#include <TestGraphics.h>
 
 #define MAX_LOADSTRING 100
 
@@ -21,7 +21,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 fxxxv::GraphicsRenderer *pRenderer = NULL;
-fxxxv::TestGraphic graph;
+fxxxv::TestGraphics graph;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -134,7 +134,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		pRenderer = new fxxxv::GraphicsRenderer(hWnd);
 		pRenderer->Init();
-		pRenderer->AddGraphic(&graph);
+		pRenderer->AddGraphics(&graph);
 		break;
     case WM_COMMAND:
         {

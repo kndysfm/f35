@@ -40,13 +40,23 @@ public:
 
 	virtual void DettachRenderer(void);
 
-	virtual void InitGraphic( D2DRendererBase * renderer ) { }
+	void Init(D2DRendererBase * renderer);
 
-	virtual void UpdateGraphic( D2DRendererBase * renderer) { };
+	void Update(D2DRendererBase * renderer);
 
-	virtual BOOL RenderGraphic(D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs) = 0;
+	BOOL Render(D2DRendererBase * renderer, ID2D1RenderTarget * target);
 
-	virtual void DestroyGraphic( D2DRendererBase * renderer ) { }
+	void Destroy(D2DRendererBase * renderer);
+
+protected:
+
+	virtual void InternalInit( D2DRendererBase * renderer ) { }
+
+	virtual void InternalUpdate( D2DRendererBase * renderer) { };
+
+	virtual BOOL InternalRender(D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs) = 0;
+
+	virtual void InternalDestroy( D2DRendererBase * renderer ) { }
 
 };
 

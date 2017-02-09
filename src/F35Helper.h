@@ -7,13 +7,9 @@
 
 namespace F35_NS
 {
-	struct ChartDataPoint
+	struct ChartDataPoint: D2D_VECTOR_4F
 	{
-		FLOAT x, y, z, w;
-		struct
-		{
-			FLOAT x, y, z, w;
-		} raw;
+		D2D_VECTOR_4F raw;
 	};
 
 	class NonCopyable

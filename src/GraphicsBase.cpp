@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GraphicsBase.h"
-
+#include "GraphicsContainer.h"
 
 USING_F35_NS;
 
@@ -51,6 +51,7 @@ BOOL F35_NS::GraphicsBase::AddContainer( GraphicsContainer *parent )
 {
 	if (pImpl->container != NULL) return FALSE;
 	pImpl->container = parent;
+	return TRUE;
 }
 
 void F35_NS::GraphicsBase::RemoveContainer( GraphicsContainer *parent )
@@ -69,14 +70,14 @@ BOOL F35_NS::GraphicsBase::AttachRenderer( D2DRendererBase * renderer )
 
 	pImpl->renderer = renderer;
 	if (renderer != NULL)
-		this->InitGraphic(renderer);
+		this->InternalInit(renderer);
 	return TRUE;
 }
 
 void F35_NS::GraphicsBase::DettachRenderer( void )
 {
 	if (pImpl->renderer != NULL)
-		this->DestroyGraphic(pImpl->renderer);
+		this->InternalDestroy(pImpl->renderer);
 	pImpl->renderer = NULL;
 }
 
@@ -100,4 +101,31 @@ D2DRendererBase * F35_NS::GraphicsBase::GetRenderer( void ) const
 	return pImpl->renderer;
 }
 
+
+void F35_NS::GraphicsBase::Init(D2DRendererBase * renderer)
+{
+	InternalInit(renderer);
+}
+
+void F35_NS::GraphicsBase::Update(D2DRendererBase * renderer)
+{
+	InternalUpdate(renderer);
+}
+
+BOOL F35_NS::GraphicsBase::Render(D2DRendererBase * renderer, ID2D1RenderTarget * target)
+{
+	D2D1_POINT_2F pos = pImpl->position;
+	if (pImpl->container)
+	{
+		D2D1_POINT_2F pos_0 = pImpl->container->GetPosition();
+		pos.x += pos_0.x;
+		pos.y += pos_0.y;
+	}
+	return InternalRender(renderer, target, pos);
+}
+
+void F35_NS::GraphicsBase::Destroy(D2DRendererBase * renderer)
+{
+	InternalDestroy(renderer);
+}
 

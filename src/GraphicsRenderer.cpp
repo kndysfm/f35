@@ -25,12 +25,12 @@ GraphicsRenderer::~GraphicsRenderer(void)
 
 void F35_NS::GraphicsRenderer::InternalUpdate( void )
 {
-	pImpl->UpdateGraphic(this);
+	pImpl->Update(this);
 }
 
 HRESULT F35_NS::GraphicsRenderer::InternalRender( ID2D1RenderTarget *target )
 {
-	pImpl->RenderGraphic(this, target, D2D1::Point2F());
+	pImpl->Render(this, target);
 	return S_OK;
 }
 
@@ -45,18 +45,18 @@ void F35_NS::GraphicsRenderer::InternalDestroy( void )
 	pImpl->DettachRenderer();
 }
 
-BOOL F35_NS::GraphicsRenderer::AddGraphic( GraphicsBase *graphic, LONG insert_index /*= LONG_MAX */ )
+BOOL F35_NS::GraphicsRenderer::AddGraphics( GraphicsBase *graphics, LONG insert_index /*= LONG_MAX */ )
 {
-	return pImpl->AddGraphic(graphic, insert_index);
+	return pImpl->AddGraphics(graphics, insert_index);
 }
 
-LONG F35_NS::GraphicsRenderer::GetIndexOfGraphic( GraphicsBase *graphic )
+LONG F35_NS::GraphicsRenderer::GetIndexOfGraphics( GraphicsBase *graphics )
 {
-	return pImpl->GetIndexOfGraphic(graphic);
+	return pImpl->GetIndexOfGraphics(graphics);
 }
 
-BOOL F35_NS::GraphicsRenderer::RemoveGraphic( GraphicsBase *graphic )
+BOOL F35_NS::GraphicsRenderer::RemoveGraphics( GraphicsBase *graphics )
 {
-	return pImpl->RemoveGraphic(graphic);
+	return pImpl->RemoveGraphics(graphics);
 }
 

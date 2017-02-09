@@ -21,10 +21,10 @@ GraphicsContainer::~GraphicsContainer(void)
 	delete pImpl;
 }
 
-BOOL F35_NS::GraphicsContainer::AddGraphic( GraphicsBase *graphic, LONG insert_index /*= LONG_MAX */ )
+BOOL F35_NS::GraphicsContainer::AddGraphics( GraphicsBase *graphics, LONG insert_index /*= LONG_MAX */ )
 {
 	GraphicsContainer *self = this;
-	GraphicsBase * child = graphic;
+	GraphicsBase * child = graphics;
 	LONG idx = insert_index;
 
 	if (idx >= pImpl->graphics.size())
@@ -59,7 +59,7 @@ BOOL F35_NS::GraphicsContainer::AddGraphic( GraphicsBase *graphic, LONG insert_i
 	return TRUE;
 }
 
-LONG F35_NS::GraphicsContainer::GetIndexOfGraphic(GraphicsBase *g )
+LONG F35_NS::GraphicsContainer::GetIndexOfGraphics(GraphicsBase *g )
 {
 	LONG idx = 0;
 	for (; idx < pImpl->graphics.size(); idx++)
@@ -70,7 +70,7 @@ LONG F35_NS::GraphicsContainer::GetIndexOfGraphic(GraphicsBase *g )
 	return LONG_MIN;
 }
 
-BOOL F35_NS::GraphicsContainer::RemoveGraphic( GraphicsBase *g )
+BOOL F35_NS::GraphicsContainer::RemoveGraphics( GraphicsBase *g )
 {
 	GraphicsContainer* self = this;
 
@@ -87,34 +87,34 @@ BOOL F35_NS::GraphicsContainer::RemoveGraphic( GraphicsBase *g )
 	return FALSE;
 }
 
-void F35_NS::GraphicsContainer::UpdateGraphic( D2DRendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalUpdate( D2DRendererBase * renderer )
 {
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->UpdateGraphic(renderer);
+		(*itr)->Update(renderer);
 	}
 }
 
-void F35_NS::GraphicsContainer::InitGraphic( D2DRendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalInit( D2DRendererBase * renderer )
 {
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->InitGraphic(renderer);
+		(*itr)->Init(renderer);
 	}
 }
 
-void F35_NS::GraphicsContainer::DestroyGraphic( D2DRendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalDestroy( D2DRendererBase * renderer )
 {
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->DestroyGraphic(renderer);
+		(*itr)->Destroy(renderer);
 	}
 }
 
-BOOL F35_NS::GraphicsContainer::RenderGraphic( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs )
+BOOL F35_NS::GraphicsContainer::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs )
 {
 	BOOL ret = FALSE;
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
@@ -124,7 +124,7 @@ BOOL F35_NS::GraphicsContainer::RenderGraphic( D2DRendererBase * renderer, ID2D1
 		D2D1_POINT_2F pos = (*itr)->GetPosition();
 		pt.x += pos.x;
 		pt.y += pos.y;
-		ret = (*itr)->RenderGraphic(renderer, target, pt) || ret;
+		ret = (*itr)->Render(renderer, target) || ret;
 	}
 	return ret;
 }

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ChartGraphicBase.h"
+#include "ChartGraphicsBase.h"
 
 #include <string>
 #include <unordered_map>
@@ -16,7 +16,7 @@ struct ChartAxisUnit
 	FLOAT major, minor;
 };
 
-struct ChartGraphicBase::Impl
+struct ChartGraphicsBase::Impl
 {
 	typedef std::basic_string<_TCHAR> Tstring;
 	typedef std::unordered_map<Tstring, ChartDataSeriesBase const *> ChartDataSeriesMap;
@@ -25,7 +25,7 @@ struct ChartGraphicBase::Impl
 	ChartDataSeriesMap data_series_map;
 	ChartLegendMap legend_map;
 
-	ChartGraphicBase *parent;
+	ChartGraphicsBase *parent;
 
 	ChartAxisRange axis_x, axis_y, axis_z, axis_w;
 	ChartAxisUnit unit_x, unit_y, unit_z, unit_w;
@@ -40,7 +40,7 @@ struct ChartGraphicBase::Impl
 
 	ChartDataPoint pt_origin;
 
-	Impl(ChartGraphicBase *p): 
+	Impl(ChartGraphicsBase *p): 
 		parent(p), 
 		number_format(_T("%.1f")),
 		color_bg(D2D1::ColorF(D2D1::ColorF::White, 1.0f)),
@@ -350,13 +350,13 @@ struct ChartGraphicBase::Impl
 };
 
 
-ChartGraphicBase::ChartGraphicBase(void):
+ChartGraphicsBase::ChartGraphicsBase(void):
 	pImpl(new Impl(this))
 {
 }
 
 
-ChartGraphicBase::~ChartGraphicBase(void)
+ChartGraphicsBase::~ChartGraphicsBase(void)
 {
 	if (pImpl)
 	{
@@ -365,7 +365,7 @@ ChartGraphicBase::~ChartGraphicBase(void)
 	}
 }
 
-BOOL F35_NS::ChartGraphicBase::AddDataSeries( LPCTSTR name, ChartDataSeriesBase const *series, ChartLegendBase const *legend )
+BOOL F35_NS::ChartGraphicsBase::AddDataSeries( LPCTSTR name, ChartDataSeriesBase const *series, ChartLegendBase const *legend )
 {
 	if (pImpl)
 		return pImpl->add_data_series(name, series, legend);
@@ -373,7 +373,7 @@ BOOL F35_NS::ChartGraphicBase::AddDataSeries( LPCTSTR name, ChartDataSeriesBase 
 		return FALSE;
 }
 
-ChartDataSeriesBase const * F35_NS::ChartGraphicBase::GetDataSeries( LPCTSTR name ) const
+ChartDataSeriesBase const * F35_NS::ChartGraphicsBase::GetDataSeries( LPCTSTR name ) const
 {
 	if (pImpl && pImpl->data_series_map.count(name) > 0)
 		return pImpl->data_series_map[name];
@@ -381,7 +381,7 @@ ChartDataSeriesBase const * F35_NS::ChartGraphicBase::GetDataSeries( LPCTSTR nam
 		return NULL;
 }
 
-ChartLegendBase const * F35_NS::ChartGraphicBase::GetLegend( LPCTSTR name ) const
+ChartLegendBase const * F35_NS::ChartGraphicsBase::GetLegend( LPCTSTR name ) const
 {
 	if (pImpl && pImpl->legend_map.count(name) > 0)
 		return pImpl->legend_map[name];
@@ -390,7 +390,7 @@ ChartLegendBase const * F35_NS::ChartGraphicBase::GetLegend( LPCTSTR name ) cons
 
 }
 
-BOOL F35_NS::ChartGraphicBase::RemoveDataSeries( LPCTSTR name )
+BOOL F35_NS::ChartGraphicsBase::RemoveDataSeries( LPCTSTR name )
 {
 	if (pImpl)
 		return pImpl->remove_data_series(name);
@@ -398,7 +398,7 @@ BOOL F35_NS::ChartGraphicBase::RemoveDataSeries( LPCTSTR name )
 		return FALSE;
 }
 
-void F35_NS::ChartGraphicBase::ClearAllDataSeries( void )
+void F35_NS::ChartGraphicsBase::ClearAllDataSeries( void )
 {
 	if (pImpl)
 	{
@@ -407,7 +407,7 @@ void F35_NS::ChartGraphicBase::ClearAllDataSeries( void )
 	}
 }
 
-void F35_NS::ChartGraphicBase::SetChartAxisX (FLOAT min, FLOAT max)
+void F35_NS::ChartGraphicsBase::SetChartAxisX (FLOAT min, FLOAT max)
 {
 	if (pImpl && min < max)
 	{
@@ -416,7 +416,7 @@ void F35_NS::ChartGraphicBase::SetChartAxisX (FLOAT min, FLOAT max)
 		pImpl->axis_x.range = max - min;
 	}
 }
-void F35_NS::ChartGraphicBase::SetChartAxisY (FLOAT min, FLOAT max)
+void F35_NS::ChartGraphicsBase::SetChartAxisY (FLOAT min, FLOAT max)
 {
 	if (pImpl && min < max)
 	{
@@ -425,7 +425,7 @@ void F35_NS::ChartGraphicBase::SetChartAxisY (FLOAT min, FLOAT max)
 		pImpl->axis_y.range = max - min;
 	}
 }
-void F35_NS::ChartGraphicBase::SetChartAxisZ (FLOAT min, FLOAT max)
+void F35_NS::ChartGraphicsBase::SetChartAxisZ (FLOAT min, FLOAT max)
 {
 	if (pImpl && min < max)
 	{
@@ -434,7 +434,7 @@ void F35_NS::ChartGraphicBase::SetChartAxisZ (FLOAT min, FLOAT max)
 		pImpl->axis_z.range = max - min;
 	}
 }
-void F35_NS::ChartGraphicBase::SetChartAxisW (FLOAT min, FLOAT max)
+void F35_NS::ChartGraphicsBase::SetChartAxisW (FLOAT min, FLOAT max)
 {
 	if (pImpl && min < max)
 	{
@@ -444,7 +444,7 @@ void F35_NS::ChartGraphicBase::SetChartAxisW (FLOAT min, FLOAT max)
 	}
 }
 
-void F35_NS::ChartGraphicBase::GetChartAxisX (FLOAT *min, FLOAT *max) const
+void F35_NS::ChartGraphicsBase::GetChartAxisX (FLOAT *min, FLOAT *max) const
 {
 	if (pImpl)
 	{
@@ -452,7 +452,7 @@ void F35_NS::ChartGraphicBase::GetChartAxisX (FLOAT *min, FLOAT *max) const
 		*max = pImpl->axis_x.max;
 	}
 }
-void F35_NS::ChartGraphicBase::GetChartAxisY (FLOAT *min, FLOAT *max) const
+void F35_NS::ChartGraphicsBase::GetChartAxisY (FLOAT *min, FLOAT *max) const
 {
 	if (pImpl)
 	{
@@ -460,7 +460,7 @@ void F35_NS::ChartGraphicBase::GetChartAxisY (FLOAT *min, FLOAT *max) const
 		*max = pImpl->axis_y.max;
 	}
 }
-void F35_NS::ChartGraphicBase::GetChartAxisZ (FLOAT *min, FLOAT *max) const
+void F35_NS::ChartGraphicsBase::GetChartAxisZ (FLOAT *min, FLOAT *max) const
 {
 	if (pImpl)
 	{
@@ -468,7 +468,7 @@ void F35_NS::ChartGraphicBase::GetChartAxisZ (FLOAT *min, FLOAT *max) const
 		*max = pImpl->axis_z.max;
 	}
 }
-void F35_NS::ChartGraphicBase::GetChartAxisW (FLOAT *min, FLOAT *max) const
+void F35_NS::ChartGraphicsBase::GetChartAxisW (FLOAT *min, FLOAT *max) const
 {
 	if (pImpl)
 	{
@@ -477,7 +477,7 @@ void F35_NS::ChartGraphicBase::GetChartAxisW (FLOAT *min, FLOAT *max) const
 	}
 }
 
-void F35_NS::ChartGraphicBase::SetChartUnitX (FLOAT major, FLOAT minor)
+void F35_NS::ChartGraphicsBase::SetChartUnitX (FLOAT major, FLOAT minor)
 {
 	if (pImpl && major >= minor)
 	{
@@ -485,7 +485,7 @@ void F35_NS::ChartGraphicBase::SetChartUnitX (FLOAT major, FLOAT minor)
 		pImpl->unit_x.minor = minor;
 	}
 }
-void F35_NS::ChartGraphicBase::SetChartUnitY (FLOAT major, FLOAT minor)
+void F35_NS::ChartGraphicsBase::SetChartUnitY (FLOAT major, FLOAT minor)
 {
 	if (pImpl && major >= minor)
 	{
@@ -493,7 +493,7 @@ void F35_NS::ChartGraphicBase::SetChartUnitY (FLOAT major, FLOAT minor)
 		pImpl->unit_y.minor = minor;
 	}
 }
-void F35_NS::ChartGraphicBase::SetChartUnitZ (FLOAT major, FLOAT minor)
+void F35_NS::ChartGraphicsBase::SetChartUnitZ (FLOAT major, FLOAT minor)
 {
 	if (pImpl && major >= minor)
 	{
@@ -501,7 +501,7 @@ void F35_NS::ChartGraphicBase::SetChartUnitZ (FLOAT major, FLOAT minor)
 		pImpl->unit_z.minor = minor;
 	}
 }
-void F35_NS::ChartGraphicBase::SetChartUnitW (FLOAT major, FLOAT minor)
+void F35_NS::ChartGraphicsBase::SetChartUnitW (FLOAT major, FLOAT minor)
 {
 	if (pImpl && major >= minor)
 	{
@@ -510,7 +510,7 @@ void F35_NS::ChartGraphicBase::SetChartUnitW (FLOAT major, FLOAT minor)
 	}
 }
 
-void F35_NS::ChartGraphicBase::GetChartUnitX (FLOAT *major, FLOAT *minor) const
+void F35_NS::ChartGraphicsBase::GetChartUnitX (FLOAT *major, FLOAT *minor) const
 {
 	if (pImpl)
 	{
@@ -518,7 +518,7 @@ void F35_NS::ChartGraphicBase::GetChartUnitX (FLOAT *major, FLOAT *minor) const
 		*minor = pImpl->unit_w.minor;
 	}
 }
-void F35_NS::ChartGraphicBase::GetChartUnitY (FLOAT *major, FLOAT *minor) const
+void F35_NS::ChartGraphicsBase::GetChartUnitY (FLOAT *major, FLOAT *minor) const
 {
 	if (pImpl)
 	{
@@ -526,7 +526,7 @@ void F35_NS::ChartGraphicBase::GetChartUnitY (FLOAT *major, FLOAT *minor) const
 		*minor = pImpl->unit_y.minor;
 	}
 }
-void F35_NS::ChartGraphicBase::GetChartUnitZ (FLOAT *major, FLOAT *minor) const
+void F35_NS::ChartGraphicsBase::GetChartUnitZ (FLOAT *major, FLOAT *minor) const
 {
 	if (pImpl)
 	{
@@ -534,7 +534,7 @@ void F35_NS::ChartGraphicBase::GetChartUnitZ (FLOAT *major, FLOAT *minor) const
 		*minor = pImpl->unit_z.minor;
 	}
 }
-void F35_NS::ChartGraphicBase::GetChartUnitW (FLOAT *major, FLOAT *minor) const
+void F35_NS::ChartGraphicsBase::GetChartUnitW (FLOAT *major, FLOAT *minor) const
 {
 	if (pImpl)
 	{
@@ -543,7 +543,7 @@ void F35_NS::ChartGraphicBase::GetChartUnitW (FLOAT *major, FLOAT *minor) const
 	}
 }
 
-HRESULT F35_NS::ChartGraphicBase::PlotChartData( 
+HRESULT F35_NS::ChartGraphicsBase::PlotChartData( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect )
 {
 	if (! pImpl) return S_FALSE;
@@ -551,7 +551,7 @@ HRESULT F35_NS::ChartGraphicBase::PlotChartData(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::PlotLegends( 
+HRESULT F35_NS::ChartGraphicsBase::PlotLegends( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect )
 {
 	if (! pImpl) return S_FALSE;
@@ -559,7 +559,7 @@ HRESULT F35_NS::ChartGraphicBase::PlotLegends(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawHorizontalLine( 
+HRESULT F35_NS::ChartGraphicsBase::DrawHorizontalLine( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, FLOAT y_value, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
@@ -568,7 +568,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawHorizontalLine(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLinesY( 
+HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLinesY( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
@@ -577,7 +577,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLinesY(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawMinorGridLinesY( 
+HRESULT F35_NS::ChartGraphicsBase::DrawMinorGridLinesY( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
@@ -586,7 +586,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawMinorGridLinesY(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLabelY( 
+HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLabelY( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, 
 	FLOAT label_margin, FLOAT label_width, 
@@ -597,7 +597,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLabelY(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawVerticalLine( 
+HRESULT F35_NS::ChartGraphicsBase::DrawVerticalLine( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, FLOAT x_value, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL*/ )
 {
@@ -606,7 +606,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawVerticalLine(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLinesX( 
+HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLinesX( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
@@ -615,7 +615,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLinesX(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawMinorGridLinesX( 
+HRESULT F35_NS::ChartGraphicsBase::DrawMinorGridLinesX( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
@@ -624,7 +624,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawMinorGridLinesX(
 	return S_OK;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLabelX( 
+HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLabelX( 
 	D2DRendererBase *renderer, ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect,
 	FLOAT label_margin, FLOAT label_height, 
@@ -635,77 +635,77 @@ HRESULT F35_NS::ChartGraphicBase::DrawMajorGridLabelX(
 	return S_OK;
 }
 
-void F35_NS::ChartGraphicBase::SetChartNumberStringFormat( LPCTSTR fmt )
+void F35_NS::ChartGraphicsBase::SetChartNumberStringFormat( LPCTSTR fmt )
 {
 	if (pImpl) pImpl->number_format = fmt;
 }
 
-LPCTSTR F35_NS::ChartGraphicBase::GetChartNumberStringFormat( void ) const
+LPCTSTR F35_NS::ChartGraphicsBase::GetChartNumberStringFormat( void ) const
 {
 	return pImpl? pImpl->number_format.c_str(): (LPCTSTR) 0;
 }
 
-void F35_NS::ChartGraphicBase::SetForegroundColor( const D2D1::ColorF & color )
+void F35_NS::ChartGraphicsBase::SetForegroundColor( const D2D1::ColorF & color )
 {
 	if (pImpl) pImpl->color_fg = color;
 }
 
-void F35_NS::ChartGraphicBase::SetBackgroundColor( const D2D1::ColorF & color )
+void F35_NS::ChartGraphicsBase::SetBackgroundColor( const D2D1::ColorF & color )
 {
 	if (pImpl) pImpl->color_bg = color;
 }
 
-D2D1::ColorF F35_NS::ChartGraphicBase::GetForegroundColor( void ) const
+D2D1::ColorF F35_NS::ChartGraphicsBase::GetForegroundColor( void ) const
 {
 	return 	pImpl? pImpl->color_fg : D2D1::ColorF(0);
 }
 
-D2D1::ColorF F35_NS::ChartGraphicBase::GetBackgroundColor( void ) const
+D2D1::ColorF F35_NS::ChartGraphicsBase::GetBackgroundColor( void ) const
 {
 	return 	pImpl? pImpl->color_bg : D2D1::ColorF(0) ;
 }
 
-void F35_NS::ChartGraphicBase::InvertAxisX( BOOL enable )
+void F35_NS::ChartGraphicsBase::InvertAxisX( BOOL enable )
 {
 	if (pImpl) pImpl->inv_x = enable;
 }
 
-void F35_NS::ChartGraphicBase::InvertAxisY( BOOL enable )
+void F35_NS::ChartGraphicsBase::InvertAxisY( BOOL enable )
 {
 	if (pImpl) pImpl->inv_y = enable;
 }
 
-void F35_NS::ChartGraphicBase::InvertAxisZ( BOOL enable )
+void F35_NS::ChartGraphicsBase::InvertAxisZ( BOOL enable )
 {
 	if (pImpl) pImpl->inv_z = enable;
 }
 
-void F35_NS::ChartGraphicBase::InvertAxisW( BOOL enable )
+void F35_NS::ChartGraphicsBase::InvertAxisW( BOOL enable )
 {
 	if (pImpl) pImpl->inv_w = enable;
 }
 
-void F35_NS::ChartGraphicBase::SetAxisPositionX( FLOAT y_val )
+void F35_NS::ChartGraphicsBase::SetAxisPositionX( FLOAT y_val )
 {
 	if (pImpl) pImpl->axis_pos_x = (y_val - pImpl->axis_y.min) / pImpl->axis_y.range ;
 }
 
-FLOAT F35_NS::ChartGraphicBase::GetAxisPositionX( void )
+FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionX( void )
 {
 	return pImpl->axis_pos_x * pImpl->axis_y.range + pImpl->axis_y.min;
 }
 
-void F35_NS::ChartGraphicBase::SetAxisPositionY( FLOAT x_val )
+void F35_NS::ChartGraphicsBase::SetAxisPositionY( FLOAT x_val )
 {
 	if (pImpl) pImpl->axis_pos_y = (x_val - pImpl->axis_x.min) / pImpl->axis_x.range ;
 }
 
-FLOAT F35_NS::ChartGraphicBase::GetAxisPositionY( void )
+FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionY( void )
 {
 	return pImpl->axis_pos_y * pImpl->axis_x.range + pImpl->axis_x.min;
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawAxisLineY( D2DRendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
+HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineY( D2DRendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (pImpl == NULL) return S_FALSE;
 
@@ -713,7 +713,7 @@ HRESULT F35_NS::ChartGraphicBase::DrawAxisLineY( D2DRendererBase *renderer, ID2D
 	return DrawVerticalLine(renderer, target, chart_rect, pos_x, brush, line_width, style);
 }
 
-HRESULT F35_NS::ChartGraphicBase::DrawAxisLineX( D2DRendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
+HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineX( D2DRendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (pImpl == NULL) return S_FALSE;
 
@@ -721,32 +721,32 @@ HRESULT F35_NS::ChartGraphicBase::DrawAxisLineX( D2DRendererBase *renderer, ID2D
 	return DrawHorizontalLine(renderer, target, chart_rect, pos_y, brush, line_width, style);
 }
 
-BOOL F35_NS::ChartGraphicBase::IsInvertedAxisX( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisX( void )
 {
 	return pImpl->inv_x;
 }
 
-BOOL F35_NS::ChartGraphicBase::IsInvertedAxisY( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisY( void )
 {
 	return pImpl->inv_y;
 }
 
-BOOL F35_NS::ChartGraphicBase::IsInvertedAxisZ( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisZ( void )
 {
 	return pImpl->inv_z;
 }
 
-BOOL F35_NS::ChartGraphicBase::IsInvertedAxisW( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisW( void )
 {
 	return pImpl->inv_w;
 }
 
-void F35_NS::ChartGraphicBase::SetChartOrigin( ChartDataPoint pt )
+void F35_NS::ChartGraphicsBase::SetChartOrigin( ChartDataPoint pt )
 {
 	pImpl->pt_origin = pt;
 }
 
-F35_NS::ChartDataPoint F35_NS::ChartGraphicBase::GetChartOrigin( void )
+F35_NS::ChartDataPoint F35_NS::ChartGraphicsBase::GetChartOrigin( void )
 {
 	return pImpl->pt_origin;
 }
