@@ -29,7 +29,7 @@ TestGraphics::~TestGraphics(void)
 	delete pImpl;
 }
 
-BOOL F35_NS::TestGraphics::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target )
+BOOL F35_NS::TestGraphics::InternalRender( RendererBase * renderer, ID2D1RenderTarget * target )
 {
 	if (pImpl->textf && pImpl->brush)
 	{
@@ -41,20 +41,20 @@ BOOL F35_NS::TestGraphics::InternalRender( D2DRendererBase * renderer, ID2D1Rend
 	return TRUE;
 }
 
-void F35_NS::TestGraphics::InternalInit( D2DRendererBase * renderer )
+void F35_NS::TestGraphics::InternalInit( RendererBase * renderer )
 {
 	GraphicsBase::InternalInit(renderer);
 	pImpl->textf = renderer->MakeTextFormat(_T("MS UI Gothic"), 12.0f);
 	pImpl->brush = renderer->MakeBrush(D2D1::ColorF(D2D1::ColorF::White, 0.3F));
 }
 
-void F35_NS::TestGraphics::InternalUpdate( D2DRendererBase * renderer )
+void F35_NS::TestGraphics::InternalUpdate( RendererBase * renderer )
 {
 	GraphicsBase::InternalUpdate(renderer);
 
 }
 
-void F35_NS::TestGraphics::InternalDestroy( D2DRendererBase * renderer )
+void F35_NS::TestGraphics::InternalDestroy( RendererBase * renderer )
 {
 	GraphicsBase::InternalDestroy(renderer);
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "F35Helper.h"
 
-#include "D2DRendererBase.h"
+#include "RendererBase.h"
 
 namespace F35_NS
 {
@@ -34,33 +34,33 @@ public:
 
 	GraphicsContainer *GetParent (void) const;
 
-	D2DRendererBase *GetRenderer (void) const;
+	RendererBase *GetRenderer (void) const;
 
 	BOOL AddContainer(GraphicsContainer *parent);
 
 	void RemoveContainer(GraphicsContainer *parent);
 
-	virtual BOOL AttachRenderer(D2DRendererBase * renderer);
+	virtual BOOL AttachRenderer(RendererBase * renderer);
 
 	virtual void DettachRenderer(void);
 
-	void Init(D2DRendererBase * renderer);
+	void Init(RendererBase * renderer);
 
-	void Update(D2DRendererBase * renderer);
+	void Update(RendererBase * renderer);
 
-	BOOL Render(D2DRendererBase * renderer, ID2D1RenderTarget * target);
+	BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target);
 
-	void Destroy(D2DRendererBase * renderer);
+	void Destroy(RendererBase * renderer);
 
 protected:
 
-	virtual void InternalInit( D2DRendererBase * renderer ) { }
+	virtual void InternalInit( RendererBase * renderer ) { }
 
-	virtual void InternalUpdate( D2DRendererBase * renderer) { };
+	virtual void InternalUpdate( RendererBase * renderer) { };
 
-	virtual BOOL InternalRender(D2DRendererBase * renderer, ID2D1RenderTarget * target) = 0;
+	virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target) = 0;
 
-	virtual void InternalDestroy( D2DRendererBase * renderer ) { }
+	virtual void InternalDestroy( RendererBase * renderer ) { }
 
 };
 

@@ -29,19 +29,19 @@ namespace F35_NS
 
 		virtual BOOL RemoveGraphics(GraphicsBase *graphics);
 
-		virtual BOOL AttachRenderer(D2DRendererBase * renderer);
+		virtual BOOL AttachRenderer(RendererBase * renderer);
 
 		virtual void DettachRenderer(void);
 
 	protected:
 
-		virtual void InternalInit(D2DRendererBase * renderer);
+		virtual void InternalInit(RendererBase * renderer);
 
-		virtual void InternalUpdate(D2DRendererBase * renderer);
+		virtual void InternalUpdate(RendererBase * renderer);
 
-		virtual BOOL InternalRender(D2DRendererBase * renderer, ID2D1RenderTarget * target);
+		virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target);
 
-		virtual void InternalDestroy(D2DRendererBase * renderer);
+		virtual void InternalDestroy(RendererBase * renderer);
 
 	};
 

@@ -43,14 +43,14 @@ void F35_NS::SimpleLineChartLegend::ShowMarker( BOOL show )
 	if (pImpl) pImpl->marker = show;
 }
 
-void F35_NS::SimpleLineChartLegend::BeginDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::SimpleLineChartLegend::BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
 {
 	pImpl->line_brush = renderer->MakeBrush(GetLineColor());
 
 	pImpl->textf = renderer->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }
 
-void F35_NS::SimpleLineChartLegend::Draw( D2DRendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
+void F35_NS::SimpleLineChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->line_brush) return;
 
@@ -71,7 +71,7 @@ void F35_NS::SimpleLineChartLegend::Draw( D2DRendererBase *renderer, ID2D1Render
 }
 
 
-void F35_NS::SimpleLineChartLegend::Print( D2DRendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, LPCTSTR str_fmt, ... ) const
+void F35_NS::SimpleLineChartLegend::Print( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, LPCTSTR str_fmt, ... ) const
 {
 	va_list arg_ptr;
 	va_start(arg_ptr, str_fmt);
@@ -92,6 +92,6 @@ void F35_NS::SimpleLineChartLegend::Print( D2DRendererBase *renderer, ID2D1Rende
 }
 
 
-void F35_NS::SimpleLineChartLegend::EndDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::SimpleLineChartLegend::EndDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
 {
 }

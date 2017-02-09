@@ -81,13 +81,13 @@ D2D1_COLOR_F F35_NS::GeometryBase::GetFillColor( void )
 	return (&pImpl->fill_brush)->GetColor();
 }
 
-void F35_NS::GeometryBase::InternalInit( D2DRendererBase * renderer )
+void F35_NS::GeometryBase::InternalInit( RendererBase * renderer )
 {
 	pImpl->line_brush = renderer->MakeBrush(pImpl->line_color);
 	pImpl->fill_brush = renderer->MakeBrush(pImpl->fill_color);
 }
 
-void F35_NS::GeometryBase::InternalDestroy( D2DRendererBase * renderer )
+void F35_NS::GeometryBase::InternalDestroy( RendererBase * renderer )
 {
 }
 

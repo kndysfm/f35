@@ -7,7 +7,7 @@ USING_F35_NS;
 
 struct SimpleChartGraphics::Impl
 {
-	D2DRendererBase *renderer;
+	RendererBase *renderer;
 
 	H::R<ID2D1SolidColorBrush> axis_line_brush;
 	H::R<ID2D1SolidColorBrush> major_grid_brush;
@@ -19,7 +19,7 @@ struct SimpleChartGraphics::Impl
 
 	LPCTSTR mess;
 
-	Impl(D2DRendererBase *r): 
+	Impl(RendererBase *r): 
 		renderer(r), 
 		axis_line_brush( r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
 		major_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.75f))),
@@ -53,7 +53,7 @@ SimpleChartGraphics::~SimpleChartGraphics(void)
 	}
 }
 
-void F35_NS::SimpleChartGraphics::InternalInit( D2DRendererBase * renderer)
+void F35_NS::SimpleChartGraphics::InternalInit( RendererBase * renderer)
 {
 	if (!pImpl)
 	{
@@ -61,12 +61,12 @@ void F35_NS::SimpleChartGraphics::InternalInit( D2DRendererBase * renderer)
 	}
 }
 
-void F35_NS::SimpleChartGraphics::InternalUpdate( D2DRendererBase * )
+void F35_NS::SimpleChartGraphics::InternalUpdate( RendererBase * )
 {
 	// do nothing	
 }
 
-BOOL F35_NS::SimpleChartGraphics::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target )
+BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1RenderTarget * target )
 {
 	if (!pImpl) return FALSE;
 
@@ -116,7 +116,7 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( D2DRendererBase * renderer, ID
 	return TRUE;
 }
 
-void F35_NS::SimpleChartGraphics::InternalDestroy( D2DRendererBase * )
+void F35_NS::SimpleChartGraphics::InternalDestroy( RendererBase * )
 {
 	if (!pImpl) return;
 

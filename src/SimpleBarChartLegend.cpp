@@ -38,12 +38,12 @@ SimpleBarChartLegend::~SimpleBarChartLegend(void)
 	pImpl = NULL;
 }
 
-void F35_NS::SimpleBarChartLegend::BeginDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::SimpleBarChartLegend::BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
 {
 	pImpl->brush = renderer->MakeBrush(GetFillColor());
 }
 
-void F35_NS::SimpleBarChartLegend::Draw( D2DRendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
+void F35_NS::SimpleBarChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->brush) return;
 
@@ -51,6 +51,6 @@ void F35_NS::SimpleBarChartLegend::Draw( D2DRendererBase *renderer, ID2D1RenderT
 	target->FillRectangle(bar, pImpl->brush);
 }
 
-void F35_NS::SimpleBarChartLegend::EndDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::SimpleBarChartLegend::EndDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
 {
 }

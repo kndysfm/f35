@@ -46,12 +46,12 @@ Simple4DChartLegend::~Simple4DChartLegend(void)
 	pImpl = NULL;
 }
 
-void F35_NS::Simple4DChartLegend::BeginDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::Simple4DChartLegend::BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
 {
 	pImpl->line_brush = renderer->MakeBrush(GetLineColor());
 }
 
-void F35_NS::Simple4DChartLegend::Draw( D2DRendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
+void F35_NS::Simple4DChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->line_brush) return;
 
@@ -60,6 +60,6 @@ void F35_NS::Simple4DChartLegend::Draw( D2DRendererBase *renderer, ID2D1RenderTa
 	target->DrawLine(pt0, pt1, pImpl->line_brush);
 }
 
-void F35_NS::Simple4DChartLegend::EndDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::Simple4DChartLegend::EndDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
 {
 }

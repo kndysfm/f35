@@ -10,7 +10,7 @@ struct GraphicsBase::Impl
 	D2D1_SIZE_F scale;
 	FLOAT rotation;
 	GraphicsContainer * container;
-	D2DRendererBase * renderer;
+	RendererBase * renderer;
 		
 	Impl (void) : 
 		container(NULL),
@@ -66,7 +66,7 @@ GraphicsContainer * F35_NS::GraphicsBase::GetParent( void ) const
 	return pImpl->container;
 }
 
-BOOL F35_NS::GraphicsBase::AttachRenderer( D2DRendererBase * renderer )
+BOOL F35_NS::GraphicsBase::AttachRenderer( RendererBase * renderer )
 {
 	if (pImpl->renderer != NULL) return FALSE;
 
@@ -113,23 +113,23 @@ void F35_NS::GraphicsBase::SetRotation(FLOAT degrees)
 	pImpl->rotation = degrees;
 }
 
-D2DRendererBase * F35_NS::GraphicsBase::GetRenderer( void ) const
+RendererBase * F35_NS::GraphicsBase::GetRenderer( void ) const
 {
 	return pImpl->renderer;
 }
 
 
-void F35_NS::GraphicsBase::Init(D2DRendererBase * renderer)
+void F35_NS::GraphicsBase::Init(RendererBase * renderer)
 {
 	InternalInit(renderer);
 }
 
-void F35_NS::GraphicsBase::Update(D2DRendererBase * renderer)
+void F35_NS::GraphicsBase::Update(RendererBase * renderer)
 {
 	InternalUpdate(renderer);
 }
 
-BOOL F35_NS::GraphicsBase::Render(D2DRendererBase * renderer, ID2D1RenderTarget * target)
+BOOL F35_NS::GraphicsBase::Render(RendererBase * renderer, ID2D1RenderTarget * target)
 {
 	D2D1::Matrix3x2F mat_last;
 	target->GetTransform(&mat_last);
@@ -146,7 +146,7 @@ BOOL F35_NS::GraphicsBase::Render(D2DRendererBase * renderer, ID2D1RenderTarget 
 	return ret;
 }
 
-void F35_NS::GraphicsBase::Destroy(D2DRendererBase * renderer)
+void F35_NS::GraphicsBase::Destroy(RendererBase * renderer)
 {
 	InternalDestroy(renderer);
 }

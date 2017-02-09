@@ -85,50 +85,50 @@ public:
 
 protected:
 
-	HRESULT PlotChartData( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT PlotChartData( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect );
 
-	HRESULT PlotLegends( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT PlotLegends( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *rect );
 
-	HRESULT DrawHorizontalLine( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawHorizontalLine( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect, FLOAT y_value,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 
-	HRESULT DrawMajorGridLinesY( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawMajorGridLinesY( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 
-	HRESULT DrawMinorGridLinesY( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawMinorGridLinesY( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 
-	HRESULT DrawMajorGridLabelY( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawMajorGridLabelY( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect, FLOAT label_margin, FLOAT label_width,
 		IDWriteTextFormat *text_format, ID2D1Brush *brush, LPCTSTR format = _T("%.0f") );
 
-	HRESULT DrawAxisLineY( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawAxisLineY( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect, 
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 
-	HRESULT DrawVerticalLine( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawVerticalLine( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect, FLOAT x_value,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL);
 
-	HRESULT DrawMajorGridLinesX( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawMajorGridLinesX( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 
-	HRESULT DrawMinorGridLinesX( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawMinorGridLinesX( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 
-	HRESULT DrawMajorGridLabelX( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawMajorGridLabelX( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect,
 		FLOAT label_margin, FLOAT label_height,
 		IDWriteTextFormat *text_format, ID2D1Brush *brush, LPCTSTR format = _T("%.0f")  );
 
-	HRESULT DrawAxisLineX( D2DRendererBase *renderer, ID2D1RenderTarget *target, 
+	HRESULT DrawAxisLineX( RendererBase *renderer, ID2D1RenderTarget *target, 
 		D2D1_RECT_F const *chart_rect, 
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL );
 

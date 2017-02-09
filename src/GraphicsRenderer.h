@@ -1,12 +1,12 @@
 #pragma once
-#include "d2drendererbase.h"
+#include "rendererbase.h"
 #include "GraphicsContainer.h"
 
 namespace F35_NS
 {
 
 	class GraphicsRenderer :
-		public D2DRendererBase,
+		public RendererBase,
 		public IGraphicsContainer
 	{
 	private:

@@ -51,9 +51,6 @@
     <ClInclude Include="targetver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="D2DRendererBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="ChartDataSeriesBase.h">
       <Filter>ヘッダー ファイル\graphics\chart\data</Filter>
     </ClInclude>
@@ -102,12 +99,12 @@
     <ClInclude Include="GeometryBase.h">
       <Filter>ヘッダー ファイル\graphics\geometry</Filter>
     </ClInclude>
+    <ClInclude Include="RendererBase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="D2DRendererBase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ChartLegendBase.cpp">
@@ -154,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="GeometryBase.cpp">
       <Filter>ソース ファイル\graphics\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererBase.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

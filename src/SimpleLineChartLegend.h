@@ -16,17 +16,17 @@ public:
 
 	void ShowMarker(BOOL show);
 
-	virtual void BeginDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const;
+	virtual void BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const;
 
-	virtual void Draw( D2DRendererBase *renderer, ID2D1RenderTarget * target, 
+	virtual void Draw( RendererBase *renderer, ID2D1RenderTarget * target, 
 		D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, 
 		ChartDataPoint const *point_previous = NULL, ChartDataPoint const *point_next = NULL ) const;
 
-	virtual void Print(D2DRendererBase *renderer, ID2D1RenderTarget * target, 
+	virtual void Print(RendererBase *renderer, ID2D1RenderTarget * target, 
 		D2D1_RECT_F const *chart_rect, ChartDataPoint const *point,
 		LPCTSTR str_fmt, ...) const;
 
-	virtual void EndDraw( D2DRendererBase *renderer, ID2D1RenderTarget * target ) const;
+	virtual void EndDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const;
 
 };
 

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "D2DRendererBase.h"
+#include "RendererBase.h"
 #include <stdarg.h>
 
 USING_F35_NS;
 
-class D2DRendererBase::Impl
+class RendererBase::Impl
 {
 	H::R<ID2D1Factory> pD2dFactory;
 	H::R<ID2D1HwndRenderTarget> pRenderTarget;
@@ -13,11 +13,14 @@ class D2DRendererBase::Impl
 
 	HWND hWnd;
 	HWND hParent;
-	D2DRendererBase *self;
+	RendererBase *self;
 	D2D1_POINT_2F currPos;
 
+	BOOL enable_auto_erase;
+	D2D1_COLOR_F color_to_erase;
+
 public:
-	Impl(D2DRendererBase *renderer, HWND hwnd)
+	Impl(RendererBase *renderer, HWND hwnd)
 	{
 		this->self = renderer;
 		this->hWnd = hwnd;
@@ -212,6 +215,7 @@ public:
 
 		(&pRenderTarget)->BeginDraw();
 		(&pRenderTarget)->SetTransform(D2D1::Matrix3x2F::Identity());
+		if (enable_auto_erase) (&pRenderTarget)->Clear(color_to_erase);
 
 		return S_OK;
 	}
@@ -238,21 +242,24 @@ public:
 	void Destroy(void)
 	{
 	}
+
+	void EnableAutoErase(D2D1_COLOR_F c) { enable_auto_erase = TRUE;  color_to_erase = c; }
+	void DisableAutoErase() { enable_auto_erase = FALSE; }
 };
 
-D2DRendererBase::D2DRendererBase(HWND hwnd):
+RendererBase::RendererBase(HWND hwnd):
 	pImpl(new Impl(this, hwnd))
 {
 }
 
 
-D2DRendererBase::~D2DRendererBase(void)
+RendererBase::~RendererBase(void)
 {
 	Destroy();
 	delete pImpl;
 }
 
-HRESULT D2DRendererBase::Init( void )
+HRESULT RendererBase::Init( void )
 {
 	HRESULT hr;
 	Lock();
@@ -268,7 +275,7 @@ HRESULT D2DRendererBase::Init( void )
 	return hr;
 }
 
-void D2DRendererBase::Update( void )
+void RendererBase::Update( void )
 {
 	if (!TryLock()) return;
 
@@ -280,7 +287,7 @@ void D2DRendererBase::Update( void )
 	Unlock();
 }
 
-HRESULT D2DRendererBase::Render( void )
+HRESULT RendererBase::Render( void )
 {
 	if (!TryLock()) return S_FALSE;
 
@@ -290,7 +297,10 @@ HRESULT D2DRendererBase::Render( void )
 	if (SUCCEEDED(hr))
 	{
 		ID2D1RenderTarget* target = pImpl->GetTarget();
-		if (target) hr = InternalRender(target);
+		if (target)
+		{
+			hr = InternalRender(target);
+		}
 	}
 	// Prepare to Render
 	hr = pImpl->EndRender(hr);
@@ -299,7 +309,7 @@ HRESULT D2DRendererBase::Render( void )
 	return hr;
 }
 
-void D2DRendererBase::Destroy( void )
+void RendererBase::Destroy( void )
 {
 	Lock();
 	// Destroy Extended class
@@ -310,32 +320,32 @@ void D2DRendererBase::Destroy( void )
 	Unlock();
 }
 
-H::R<IDWriteTextFormat> D2DRendererBase::MakeTextFormat( LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/ )
+H::R<IDWriteTextFormat> RendererBase::MakeTextFormat( LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/ )
 {
 	return pImpl->GetTextFormat(fontName, fontSize, textAlign, paragraphAlign);
 }
 
-H::R<ID2D1SolidColorBrush> D2DRendererBase::MakeBrush( const D2D1::ColorF & color )
+H::R<ID2D1SolidColorBrush> RendererBase::MakeBrush( const D2D1::ColorF & color )
 {
 	return pImpl->GetSolidBrush(color);
 }
 
-D2D1_POINT_2F D2DRendererBase::GetCurrentCursorPosDpi( void )
+D2D1_POINT_2F RendererBase::GetCurrentCursorPosDpi( void )
 {
 	return pImpl->GetCurrPosDpi();
 }
 
-void D2DRendererBase::Invalidate( void )
+void RendererBase::Invalidate( void )
 {
 	pImpl->Invalidate();
 }
 
-D2D1_SIZE_F F35_NS::D2DRendererBase::GetSize( void ) const
+D2D1_SIZE_F F35_NS::RendererBase::GetSize( void ) const
 {
 	return pImpl->GetSize();
 }
 
-D2D1_RECT_F F35_NS::D2DRendererBase::GetRectangle( void ) const
+D2D1_RECT_F F35_NS::RendererBase::GetRectangle( void ) const
 {
 	D2D1_RECT_F rect;
 	D2D1_SIZE_F size = pImpl->GetSize();
@@ -345,12 +355,22 @@ D2D1_RECT_F F35_NS::D2DRendererBase::GetRectangle( void ) const
 	return rect;
 }
 
-H::R<ID2D1StrokeStyle> F35_NS::D2DRendererBase::MakeStrokeStyle( FLOAT dashes, UINT32 dashesCount )
+H::R<ID2D1StrokeStyle> F35_NS::RendererBase::MakeStrokeStyle( FLOAT dashes, UINT32 dashesCount )
 {
 	return pImpl->GetStrokeStyle(dashes, dashesCount);
 }
 
-H::R<ID2D1PathGeometry> F35_NS::D2DRendererBase::MakePathGeometry( void )
+H::R<ID2D1PathGeometry> F35_NS::RendererBase::MakePathGeometry( void )
 {
 	return pImpl->GetPathGeometry();
+}
+
+void F35_NS::RendererBase::EnableAutoErase(D2D1_COLOR_F color_to_erase)
+{
+	pImpl->EnableAutoErase(color_to_erase);
+}
+
+void F35_NS::RendererBase::DisableAutoErase(void)
+{
+	pImpl->DisableAutoErase();
 }

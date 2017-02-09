@@ -12,7 +12,7 @@ struct GraphicsRenderer::Impl: public GraphicsContainer
 };
 
 GraphicsRenderer::GraphicsRenderer(HWND hwnd):
-	D2DRendererBase(hwnd),
+	RendererBase(hwnd),
 	pImpl(new Impl)
 {
 }

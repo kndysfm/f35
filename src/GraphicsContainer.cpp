@@ -87,7 +87,7 @@ BOOL F35_NS::GraphicsContainer::RemoveGraphics( GraphicsBase *g )
 	return FALSE;
 }
 
-void F35_NS::GraphicsContainer::InternalUpdate( D2DRendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalUpdate( RendererBase * renderer )
 {
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
@@ -96,7 +96,7 @@ void F35_NS::GraphicsContainer::InternalUpdate( D2DRendererBase * renderer )
 	}
 }
 
-void F35_NS::GraphicsContainer::InternalInit( D2DRendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalInit( RendererBase * renderer )
 {
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
@@ -105,7 +105,7 @@ void F35_NS::GraphicsContainer::InternalInit( D2DRendererBase * renderer )
 	}
 }
 
-void F35_NS::GraphicsContainer::InternalDestroy( D2DRendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalDestroy( RendererBase * renderer )
 {
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
@@ -114,7 +114,7 @@ void F35_NS::GraphicsContainer::InternalDestroy( D2DRendererBase * renderer )
 	}
 }
 
-BOOL F35_NS::GraphicsContainer::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target)
+BOOL F35_NS::GraphicsContainer::InternalRender( RendererBase * renderer, ID2D1RenderTarget * target)
 {
 	BOOL ret = FALSE;
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
@@ -125,7 +125,7 @@ BOOL F35_NS::GraphicsContainer::InternalRender( D2DRendererBase * renderer, ID2D
 	return ret;
 }
 
-BOOL F35_NS::GraphicsContainer::AttachRenderer( D2DRendererBase * renderer )
+BOOL F35_NS::GraphicsContainer::AttachRenderer( RendererBase * renderer )
 {
 	BOOL ret = FALSE;
 	GraphicsBase::AttachRenderer(renderer);

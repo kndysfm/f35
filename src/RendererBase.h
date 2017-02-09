@@ -4,7 +4,7 @@
 namespace F35_NS
 {
 
-class D2DRendererBase: H::Lockable, H::NonCopyable
+class RendererBase: H::Lockable, H::NonCopyable
 {
 
 private:
@@ -121,14 +121,14 @@ public:
 	 *  \param HWND hwnd
 	 *  \return 
 	 */
-	D2DRendererBase(HWND hwnd);
+	RendererBase(HWND hwnd);
 
 	/*! \fn D2DRendererBase::~D2DRendererBase
 	 *  \brief デストラクタ
 	 *  \param void
 	 *  \return 
 	 */
-	virtual ~D2DRendererBase(void);
+	virtual ~RendererBase(void);
 
 	/*! \fn D2DRendererBase::Init
 	 *  \brief 初期化処理
@@ -159,6 +159,10 @@ public:
 	 *  \return void
 	 */
 	void Destroy(void);
+
+	void EnableAutoErase(D2D1_COLOR_F color_to_erase = D2D1::ColorF(0));
+
+	void DisableAutoErase(void);
 };
 
 }
