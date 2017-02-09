@@ -66,16 +66,12 @@ void F35_NS::SimpleChartGraphics::InternalUpdate( D2DRendererBase * )
 	// do nothing	
 }
 
-BOOL F35_NS::SimpleChartGraphics::InternalRender( 
-	D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs  )
+BOOL F35_NS::SimpleChartGraphics::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target )
 {
 	if (!pImpl) return FALSE;
 
-	D2D1_RECT_F rect;
-	D2D1_SIZE_F size = GetSize();
-	rect.top = pt_abs.x; rect.left = pt_abs.y;
-	rect.right = pt_abs.x + size.width;
-	rect.bottom = pt_abs.y + size.height;
+	D2D1_SIZE_F size = GetChartAreaSize();
+	D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width, size.height);
 
 	target->Clear(GetBackgroundColor());
 

@@ -7,7 +7,8 @@ USING_F35_NS;
 struct GraphicsBase::Impl
 {
 	D2D1_POINT_2F position;
-	D2D1_SIZE_F size;
+	D2D1_SIZE_F scale;
+	FLOAT rotation;
 	GraphicsContainer * container;
 	D2DRendererBase * renderer;
 		
@@ -15,8 +16,9 @@ struct GraphicsBase::Impl
 		container(NULL),
 		renderer(NULL)
 	{
-		position.x = position.y = 0.0f;
-		size.width = size.height = 100.0f;
+		position = D2D1::Point2F();
+		scale = D2D1::SizeF(1.0f, 1.0f);
+		rotation = 0.0f;
 	}
 
 	virtual ~Impl() { }
@@ -81,19 +83,34 @@ void F35_NS::GraphicsBase::DettachRenderer( void )
 	pImpl->renderer = NULL;
 }
 
-D2D1_SIZE_F F35_NS::GraphicsBase::GetSize( void )
+D2D1_SIZE_F F35_NS::GraphicsBase::GetScale( void )
 {
-	return pImpl->size;
+	return pImpl->scale;
 }
 
-void F35_NS::GraphicsBase::SetSize( D2D1_SIZE_F sz )
+void F35_NS::GraphicsBase::SetScale(FLOAT scale)
 {
-	pImpl->size = sz;
+	pImpl->scale = D2D1::SizeF(scale, scale);
 }
 
-void F35_NS::GraphicsBase::SetSize( FLOAT width, FLOAT height )
+void F35_NS::GraphicsBase::SetScale( D2D1_SIZE_F sz )
 {
-	pImpl->size = D2D1::SizeF(width, height);
+	pImpl->scale = sz;
+}
+
+void F35_NS::GraphicsBase::SetScale( FLOAT width, FLOAT height )
+{
+	pImpl->scale = D2D1::SizeF(width, height);
+}
+
+FLOAT F35_NS::GraphicsBase::GetRotation(void)
+{
+	return pImpl->rotation;
+}
+
+void F35_NS::GraphicsBase::SetRotation(FLOAT degrees)
+{
+	pImpl->rotation = degrees;
 }
 
 D2DRendererBase * F35_NS::GraphicsBase::GetRenderer( void ) const
@@ -114,14 +131,17 @@ void F35_NS::GraphicsBase::Update(D2DRendererBase * renderer)
 
 BOOL F35_NS::GraphicsBase::Render(D2DRendererBase * renderer, ID2D1RenderTarget * target)
 {
-	D2D1_POINT_2F pos = pImpl->position;
-	if (pImpl->container)
-	{
-		D2D1_POINT_2F pos_0 = pImpl->container->GetPosition();
-		pos.x += pos_0.x;
-		pos.y += pos_0.y;
-	}
-	return InternalRender(renderer, target, pos);
+	D2D1::Matrix3x2F mat_last;
+	target->GetTransform(&mat_last);
+	D2D1::Matrix3x2F mat = mat_last;
+	mat = mat * D2D1::Matrix3x2F::Scale(pImpl->scale);
+	mat = mat * D2D1::Matrix3x2F::Rotation(pImpl->rotation);
+	mat = mat * D2D1::Matrix3x2F::Translation(D2D1::SizeF(pImpl->position.x, pImpl->position.y));
+	target->SetTransform(mat);
+	BOOL ret = InternalRender(renderer, target);
+	target->SetTransform(mat_last);
+
+	return ret;
 }
 
 void F35_NS::GraphicsBase::Destroy(D2DRendererBase * renderer)

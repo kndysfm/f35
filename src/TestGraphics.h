@@ -13,7 +13,7 @@ namespace F35_NS
 		TestGraphics(void);
 		virtual ~TestGraphics(void);
 
-		virtual BOOL InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs );
+		virtual BOOL InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target);
 
 		virtual void InternalInit( D2DRendererBase * renderer );
 

@@ -7,6 +7,9 @@
 #include <GraphicsRenderer.h>
 #include <TestGraphics.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #define MAX_LOADSTRING 100
 
 // グローバル変数:
@@ -21,7 +24,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 fxxxv::GraphicsRenderer *pRenderer = NULL;
-fxxxv::TestGraphics graph;
+fxxxv::TestGraphics graphs[100];
+fxxxv::GraphicsContainer container;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -134,7 +138,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		pRenderer = new fxxxv::GraphicsRenderer(hWnd);
 		pRenderer->Init();
-		pRenderer->AddGraphics(&graph);
+		for(auto &g: graphs) container.AddGraphics(&g);
+		pRenderer->AddGraphics(&container);
 		break;
     case WM_COMMAND:
         {
@@ -155,13 +160,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         if (pRenderer) {
-			auto size = pRenderer->GetSize();
-			FLOAT x = size.width * ::rand() / RAND_MAX;
-			FLOAT y = size.height * ::rand() / RAND_MAX;
-			graph.SetPosition(x, y);
-			pRenderer->Update();
-			pRenderer->Render();
-			pRenderer->Invalidate();
+			static SYSTEMTIME t_last;
+			SYSTEMTIME t; ::GetSystemTime(&t);
+			if (t.wSecond != t_last.wSecond)
+			{
+				container.SetRotation(360.0f * ::rand() / RAND_MAX);
+				for (auto &g : graphs)
+				{
+					auto size = pRenderer->GetSize();
+					FLOAT x = size.width * ::rand() / RAND_MAX;
+					FLOAT y = size.height * ::rand() / RAND_MAX;
+					g.SetPosition(x, y);
+					FLOAT angle = (::rand() > RAND_MAX / 2) ? 0 : 90;
+					g.SetRotation(angle);
+					FLOAT scale = 1.0f + 3.0f * ::rand() / RAND_MAX;
+					g.SetScale(scale);
+				}
+				pRenderer->Update();
+				pRenderer->Render();
+			}
+			t_last = t;
 			//PAINTSTRUCT ps;
             //HDC hdc = BeginPaint(hWnd, &ps);
             //// TODO: HDC を使用する描画コードをここに追加してください...

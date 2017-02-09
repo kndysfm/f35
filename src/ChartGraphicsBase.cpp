@@ -38,7 +38,9 @@ struct ChartGraphicsBase::Impl
 
 	FLOAT axis_pos_x, axis_pos_y;
 
-	ChartDataPoint pt_origin;
+	D2D_VECTOR_4F pt_origin;
+
+	D2D1_SIZE_F area_size;
 
 	Impl(ChartGraphicsBase *p): 
 		parent(p), 
@@ -60,6 +62,8 @@ struct ChartGraphicsBase::Impl
 		axis_pos_y = 0.0f;
 
 		pt_origin.x = pt_origin.y = pt_origin.z = pt_origin.w = 0.0f;
+
+		area_size = D2D1::SizeF();
 	}
 
 	~Impl(void)
@@ -741,12 +745,27 @@ BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisW( void )
 	return pImpl->inv_w;
 }
 
-void F35_NS::ChartGraphicsBase::SetChartOrigin( ChartDataPoint pt )
+void F35_NS::ChartGraphicsBase::SetChartOrigin(D2D_VECTOR_4F pt )
 {
 	pImpl->pt_origin = pt;
 }
 
-F35_NS::ChartDataPoint F35_NS::ChartGraphicsBase::GetChartOrigin( void )
+D2D_VECTOR_4F F35_NS::ChartGraphicsBase::GetChartOrigin( void )
 {
 	return pImpl->pt_origin;
+}
+
+D2D1_SIZE_F F35_NS::ChartGraphicsBase::GetChartAreaSize(void)
+{
+	return pImpl->area_size;
+}
+
+void F35_NS::ChartGraphicsBase::SetChartAreaSize(D2D1_SIZE_F sz)
+{
+	pImpl->area_size = sz;
+}
+
+void F35_NS::ChartGraphicsBase::SetChartAreaSize(FLOAT x, FLOAT y)
+{
+	pImpl->area_size = D2D1::SizeF(x, y);
 }

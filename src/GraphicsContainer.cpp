@@ -114,16 +114,12 @@ void F35_NS::GraphicsContainer::InternalDestroy( D2DRendererBase * renderer )
 	}
 }
 
-BOOL F35_NS::GraphicsContainer::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs )
+BOOL F35_NS::GraphicsContainer::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target)
 {
 	BOOL ret = FALSE;
 	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		D2D1_POINT_2F pt = pt_abs;
-		D2D1_POINT_2F pos = (*itr)->GetPosition();
-		pt.x += pos.x;
-		pt.y += pos.y;
 		ret = (*itr)->Render(renderer, target) || ret;
 	}
 	return ret;

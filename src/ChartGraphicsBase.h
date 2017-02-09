@@ -48,8 +48,8 @@ public:
 	void GetChartUnitZ (FLOAT *major, FLOAT *minor) const;
 	void GetChartUnitW (FLOAT *major, FLOAT *minor) const;
 
-	void SetChartOrigin(ChartDataPoint pt);
-	ChartDataPoint GetChartOrigin(void );
+	void SetChartOrigin(D2D_VECTOR_4F pt);
+	D2D_VECTOR_4F GetChartOrigin(void );
 
 	void SetChartNumberStringFormat(LPCTSTR fmt);
 
@@ -78,6 +78,10 @@ public:
 	void SetAxisPositionY (FLOAT x_val);
 	FLOAT GetAxisPositionY (void);
 
+	D2D1_SIZE_F GetChartAreaSize(void);
+
+	void SetChartAreaSize(D2D1_SIZE_F sz);
+	void SetChartAreaSize(FLOAT x, FLOAT y);
 
 protected:
 

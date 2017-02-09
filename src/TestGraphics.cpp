@@ -29,14 +29,12 @@ TestGraphics::~TestGraphics(void)
 	delete pImpl;
 }
 
-BOOL F35_NS::TestGraphics::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs )
+BOOL F35_NS::TestGraphics::InternalRender( D2DRendererBase * renderer, ID2D1RenderTarget * target )
 {
-	D2D1_POINT_2F pos = GetPosition();
-	D2D1_RECT_F rect;
-	rect.left = pt_abs.x; rect.right = rect.left + 100.0f;
-	rect.top = pt_abs.y; rect.bottom = rect.top + 20.0f;
 	if (pImpl->textf && pImpl->brush)
 	{
+		D2D1_POINT_2F pos = GetPosition();
+		D2D1_RECT_F rect = D2D1::RectF(0,0,80,20);
 		H::WriteText(target, pImpl->textf, rect, pImpl->brush, _T("(%.0f,%.0f)"), pos.x, pos.y);
 	}
 

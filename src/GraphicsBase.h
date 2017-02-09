@@ -23,11 +23,15 @@ public:
 	void SetPosition (D2D1_POINT_2F pt);
 	void SetPosition (FLOAT x, FLOAT y);
 
-	D2D1_SIZE_F GetSize (void);
+	D2D1_SIZE_F GetScale (void);
 
-	void SetSize (D2D1_SIZE_F sz);
-	void SetSize (FLOAT width, FLOAT height);
-	
+	void SetScale(FLOAT scale);
+	void SetScale (D2D1_SIZE_F sz);
+	void SetScale (FLOAT x, FLOAT y);
+
+	FLOAT GetRotation(void);
+	void SetRotation(FLOAT degrees);
+
 	GraphicsContainer *GetParent (void) const;
 
 	D2DRendererBase *GetRenderer (void) const;
@@ -54,7 +58,7 @@ protected:
 
 	virtual void InternalUpdate( D2DRendererBase * renderer) { };
 
-	virtual BOOL InternalRender(D2DRendererBase * renderer, ID2D1RenderTarget * target, const D2D1_POINT_2F &pt_abs) = 0;
+	virtual BOOL InternalRender(D2DRendererBase * renderer, ID2D1RenderTarget * target) = 0;
 
 	virtual void InternalDestroy( D2DRendererBase * renderer ) { }
 
