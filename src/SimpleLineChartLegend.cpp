@@ -10,7 +10,7 @@ struct SimpleLineChartLegend::Impl
 	H::R<IDWriteTextFormat> textf;
 	BOOL marker;
 	
-	static D2D1_POINT_2F convert_point(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio)
+	static D2D1_POINT_2F convert_point(D2D1_RECT_F const *rect, D2D_VECTOR_4F const *pt_ratio)
 	{
 		D2D1_POINT_2F pt;
 
@@ -50,7 +50,7 @@ void F35_NS::SimpleLineChartLegend::BeginDraw( RendererBase *renderer, ID2D1Rend
 	pImpl->textf = renderer->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }
 
-void F35_NS::SimpleLineChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
+void F35_NS::SimpleLineChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->line_brush) return;
 
@@ -71,7 +71,7 @@ void F35_NS::SimpleLineChartLegend::Draw( RendererBase *renderer, ID2D1RenderTar
 }
 
 
-void F35_NS::SimpleLineChartLegend::Print( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, LPCTSTR str_fmt, ... ) const
+void F35_NS::SimpleLineChartLegend::Print( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *point, LPCTSTR str_fmt, ... ) const
 {
 	va_list arg_ptr;
 	va_start(arg_ptr, str_fmt);

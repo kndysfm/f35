@@ -18,9 +18,9 @@ struct Sample2DChartDataSeries::Impl
 		return min + (max - min) * rand() / RAND_MAX;
 	}
 
-	static ChartDataPoint rand_pt (FLOAT min, FLOAT max)
+	static D2D_VECTOR_4F rand_pt (FLOAT min, FLOAT max)
 	{
-		ChartDataPoint pt;
+		D2D_VECTOR_4F pt;
 		pt.x = rand_f(min, max);
 		pt.y = rand_f(min, max);
 		pt.z = rand_f(min, max);
@@ -28,8 +28,8 @@ struct Sample2DChartDataSeries::Impl
 		return pt;
 	}
 
-	ChartDataPoint rad_freq;
-	ChartDataPoint phase;
+	D2D_VECTOR_4F rad_freq;
+	D2D_VECTOR_4F phase;
 };
 
 Sample2DChartDataSeries::Sample2DChartDataSeries(void):
@@ -51,9 +51,9 @@ UINT F35_NS::Sample2DChartDataSeries::GetCount( void ) const
 	return Impl::WIDTH*Impl::HEIGHT;
 }
 
-F35_NS::ChartDataPoint F35_NS::Sample2DChartDataSeries::GetDataPoint( UINT index ) const
+D2D_VECTOR_4F F35_NS::Sample2DChartDataSeries::GetDataPoint( UINT index ) const
 {
-	ChartDataPoint pt;
+	D2D_VECTOR_4F pt;
 	pt.x = (index % Impl::WIDTH) + sinf(pIml->phase.x);
 	pt.y = (index / Impl::WIDTH) + sinf(pIml->phase.y);
 	FLOAT rad = 2.0f * M_PI * pt.x * pt.y / (FLOAT) (Impl::WIDTH*Impl::HEIGHT);
@@ -71,9 +71,9 @@ void F35_NS::Sample2DChartDataSeries::Update( void )
 
 }
 
-F35_NS::ChartDataPoint F35_NS::Sample2DChartDataSeries::GetMinDataValues( void ) const
+D2D_VECTOR_4F F35_NS::Sample2DChartDataSeries::GetMinDataValues( void ) const
 {
-	ChartDataPoint pt;
+	D2D_VECTOR_4F pt;
 	pt.x = 0;
 	pt.y = 0;
 	pt.z = -1.0f;
@@ -81,9 +81,9 @@ F35_NS::ChartDataPoint F35_NS::Sample2DChartDataSeries::GetMinDataValues( void )
 	return pt;
 }
 
-F35_NS::ChartDataPoint F35_NS::Sample2DChartDataSeries::GetMaxDataValues( void ) const
+D2D_VECTOR_4F F35_NS::Sample2DChartDataSeries::GetMaxDataValues( void ) const
 {
-	ChartDataPoint pt;
+	D2D_VECTOR_4F pt;
 	pt.x = Impl::WIDTH-1;
 	pt.y = Impl::HEIGHT-1;
 	pt.z = +1.0f;

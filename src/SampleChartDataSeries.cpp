@@ -12,23 +12,23 @@ USING_F35_NS;
 
 struct SampleChartDataSeries::Impl
 {
-	typedef std::vector<ChartDataPoint> ChartDataPointVector;
+	typedef std::vector<D2D_VECTOR_4F> D2D_VECTOR_4FVector;
 
-	ChartDataPointVector data_points;
+	D2D_VECTOR_4FVector data_points;
 
-	ChartDataPoint frequencies;
-	ChartDataPoint phases;
+	D2D_VECTOR_4F frequencies;
+	D2D_VECTOR_4F phases;
 
-	ChartDataPoint pt_min, pt_max;
+	D2D_VECTOR_4F pt_min, pt_max;
 
 	FLOAT rand_f(FLOAT min, FLOAT max)
 	{
 		return min + (max - min) * rand() / RAND_MAX;
 	}
 
-	ChartDataPoint rand_pt (FLOAT min, FLOAT max)
+	D2D_VECTOR_4F rand_pt (FLOAT min, FLOAT max)
 	{
-		ChartDataPoint pt;
+		D2D_VECTOR_4F pt;
 		pt.x = rand_f(min, max);
 		pt.y = rand_f(min, max);
 		pt.z = rand_f(min, max);
@@ -56,7 +56,7 @@ struct SampleChartDataSeries::Impl
 		for (UINT idx = 0; idx < len; idx++)
 		{
 			FLOAT rad = 2.0f * M_PI * idx / len;
-			ChartDataPoint &pt = data_points[idx];
+			D2D_VECTOR_4F &pt = data_points[idx];
 
 			pt.x = 35.0f * (sinf(rad + phases.x) + 1.0f);
 			pt.y = 20.0f * (sinf(rad + phases.y) + 1.0f);
@@ -96,7 +96,7 @@ UINT F35_NS::SampleChartDataSeries::GetCount( void ) const
 	return pImpl->data_points.size();
 }
 
-F35_NS::ChartDataPoint F35_NS::SampleChartDataSeries::GetDataPoint( UINT index ) const
+D2D_VECTOR_4F F35_NS::SampleChartDataSeries::GetDataPoint( UINT index ) const
 {
 	return pImpl->data_points[index];
 }
@@ -111,12 +111,12 @@ void F35_NS::SampleChartDataSeries::Update( void )
 	pImpl->Update();
 }
 
-F35_NS::ChartDataPoint F35_NS::SampleChartDataSeries::GetMinDataValues( void ) const
+D2D_VECTOR_4F F35_NS::SampleChartDataSeries::GetMinDataValues( void ) const
 {
-	throw std::exception("The method or operation is not implemented.");
+	return pImpl->pt_min;
 }
 
-F35_NS::ChartDataPoint F35_NS::SampleChartDataSeries::GetMaxDataValues( void ) const
+D2D_VECTOR_4F F35_NS::SampleChartDataSeries::GetMaxDataValues( void ) const
 {
-	throw std::exception("The method or operation is not implemented.");
+	return pImpl->pt_max;
 }

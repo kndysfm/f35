@@ -19,11 +19,11 @@ public:
 
 	virtual UINT GetCount( void ) const;
 
-	virtual ChartDataPoint GetDataPoint( UINT index ) const;
+	virtual D2D_VECTOR_4F GetDataPoint( UINT index ) const;
 
-	virtual ChartDataPoint GetMinDataValues( void ) const;
+	virtual D2D_VECTOR_4F GetMinDataValues( void ) const;
 
-	virtual ChartDataPoint GetMaxDataValues( void ) const;
+	virtual D2D_VECTOR_4F GetMaxDataValues( void ) const;
 
 };
 

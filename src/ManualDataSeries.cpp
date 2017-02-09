@@ -7,9 +7,9 @@ USING_F35_NS;
 
 struct ManualDataSeries::Impl
 {
-	std::vector<ChartDataPoint> points;
+	std::vector<D2D_VECTOR_4F> points;
 
-	ChartDataPoint pt_min, pt_max;
+	D2D_VECTOR_4F pt_min, pt_max;
 
 	bool needs_update;
 
@@ -24,7 +24,7 @@ struct ManualDataSeries::Impl
 				pt_min = pt_max = points[0];
 				for (UINT idx = 1; idx < len; idx++)
 				{
-					ChartDataPoint pt = points[idx];
+					D2D_VECTOR_4F pt = points[idx];
 
 					if (pt_min.x > pt.x) pt_min.x = pt.x;
 					if (pt_min.y > pt.y) pt_min.y = pt.y;
@@ -61,7 +61,7 @@ UINT F35_NS::ManualDataSeries::GetCount( void ) const
 	return pImpl->points.size();
 }
 
-F35_NS::ChartDataPoint F35_NS::ManualDataSeries::GetDataPoint( UINT index ) const
+D2D_VECTOR_4F F35_NS::ManualDataSeries::GetDataPoint( UINT index ) const
 {
 	return pImpl->points[index];
 }
@@ -72,7 +72,7 @@ void F35_NS::ManualDataSeries::SetCount( UINT count )
 	pImpl->needs_update = true;
 }
 
-void F35_NS::ManualDataSeries::SetDataPoint( UINT index, ChartDataPoint point )
+void F35_NS::ManualDataSeries::SetDataPoint( UINT index, D2D_VECTOR_4F point )
 {
 	pImpl->points[index] = point;
 	pImpl->needs_update = true;
@@ -80,19 +80,19 @@ void F35_NS::ManualDataSeries::SetDataPoint( UINT index, ChartDataPoint point )
 
 void F35_NS::ManualDataSeries::SetDataPoint( UINT index, FLOAT x, FLOAT y, FLOAT z /*= 0.0f*/, FLOAT w /*= 0.0f*/ )
 {
-	ChartDataPoint pt;
+	D2D_VECTOR_4F pt;
 	pt.x = x, pt.y = y, pt.z = z, pt.w = w;
 	pImpl->points[index] = pt;
 	pImpl->needs_update = true;
 }
 
-F35_NS::ChartDataPoint F35_NS::ManualDataSeries::GetMinDataValues( void ) const
+D2D_VECTOR_4F F35_NS::ManualDataSeries::GetMinDataValues( void ) const
 {
 	pImpl->update();
 	return pImpl->pt_min;
 }
 
-F35_NS::ChartDataPoint F35_NS::ManualDataSeries::GetMaxDataValues( void ) const
+D2D_VECTOR_4F F35_NS::ManualDataSeries::GetMaxDataValues( void ) const
 {
 	pImpl->update();
 	return pImpl->pt_max;

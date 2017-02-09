@@ -18,18 +18,18 @@ public:
 	GraphicsBase(void);
 	virtual ~GraphicsBase(void);
 
-	D2D1_POINT_2F GetPosition (void);
+	D2D1_POINT_2F GetPosition (void) const;
 
 	void SetPosition (D2D1_POINT_2F pt);
 	void SetPosition (FLOAT x, FLOAT y);
 
-	D2D1_SIZE_F GetScale (void);
+	D2D1_SIZE_F GetScale (void) const;
 
 	void SetScale(FLOAT scale);
 	void SetScale (D2D1_SIZE_F sz);
 	void SetScale (FLOAT x, FLOAT y);
 
-	FLOAT GetRotation(void);
+	FLOAT GetRotation(void) const;
 	void SetRotation(FLOAT degrees);
 
 	GraphicsContainer *GetParent (void) const;

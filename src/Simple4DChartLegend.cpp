@@ -7,7 +7,7 @@ struct Simple4DChartLegend::Impl
 {
 	H::R<ID2D1SolidColorBrush> line_brush;
 
-	static D2D1_POINT_2F convert_point_xy(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio)
+	static D2D1_POINT_2F convert_point_xy(D2D1_RECT_F const *rect, D2D_VECTOR_4F const *pt_ratio)
 	{
 		D2D1_POINT_2F pt;
 
@@ -17,7 +17,7 @@ struct Simple4DChartLegend::Impl
 		return pt;
 	}
 
-	static D2D1_POINT_2F convert_point_zw(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio)
+	static D2D1_POINT_2F convert_point_zw(D2D1_RECT_F const *rect, D2D_VECTOR_4F const *pt_ratio)
 	{
 		D2D1_POINT_2F pt;
 
@@ -51,7 +51,7 @@ void F35_NS::Simple4DChartLegend::BeginDraw( RendererBase *renderer, ID2D1Render
 	pImpl->line_brush = renderer->MakeBrush(GetLineColor());
 }
 
-void F35_NS::Simple4DChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
+void F35_NS::Simple4DChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->line_brush) return;
 

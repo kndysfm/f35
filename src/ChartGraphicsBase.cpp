@@ -114,19 +114,21 @@ struct ChartGraphicsBase::Impl
 		return pt_ret;
 	}
 
-	ChartDataPoint convert_data_point(ChartDataPoint pt)
+	struct data_point_2vec
 	{
-		ChartDataPoint pt_ret;
+		D2D_VECTOR_4F plot, value;
+	};
 
-		pt_ret.x = val_to_ratio_in_range(pt.x, axis_x, inv_x);
-		pt_ret.y = val_to_ratio_in_range(pt.y, axis_y, inv_y);
-		pt_ret.z = val_to_ratio_in_range(pt.z, axis_z, inv_z);
-		pt_ret.w = val_to_ratio_in_range(pt.w, axis_w, inv_w);
+	data_point_2vec convert_data_point(D2D_VECTOR_4F pt)
+	{
+		data_point_2vec pt_ret;
+
+		pt_ret.plot.x = val_to_ratio_in_range(pt.x, axis_x, inv_x);
+		pt_ret.plot.y = val_to_ratio_in_range(pt.y, axis_y, inv_y);
+		pt_ret.plot.z = val_to_ratio_in_range(pt.z, axis_z, inv_z);
+		pt_ret.plot.w = val_to_ratio_in_range(pt.w, axis_w, inv_w);
 		
-		pt_ret.raw.x = pt.x;
-		pt_ret.raw.y = pt.y;
-		pt_ret.raw.z = pt.z;
-		pt_ret.raw.w = pt.w;
+		pt_ret.value = pt;
 
 		return pt_ret;
 	}
@@ -145,27 +147,27 @@ struct ChartGraphicsBase::Impl
 				//UINT cnt = ds->GetCount();
 				if (ds->GetCount() > 0)
 				{
-					ChartDataPoint pt_prev, pt_curr, pt_next;
+					data_point_2vec pt_prev, pt_curr, pt_next;
 					l->BeginDraw(renderer, target);
 					pt_curr = convert_data_point(ds->GetDataPoint(0));
 					if (ds->GetCount() == 1)
 					{
-						l->Draw(renderer, target, rect, &pt_curr, NULL, NULL);
+						l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, NULL, NULL);
 					}
 					else
 					{
 						pt_next = convert_data_point(ds->GetDataPoint(1));
-						l->Draw(renderer, target, rect, &pt_curr, NULL, &pt_next);
+						l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, NULL, &pt_next.plot);
 						for (UINT idx = 2; idx < ds->GetCount(); idx++)
 						{
 							pt_prev = pt_curr;
 							pt_curr = pt_next;
 							pt_next = convert_data_point(ds->GetDataPoint(idx));
-							l->Draw(renderer, target, rect, &pt_curr, &pt_prev, &pt_next);
+							l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, &pt_prev.plot, &pt_next.plot);
 						}
 						pt_prev = pt_curr;
 						pt_curr = pt_next;
-						l->Draw(renderer, target, rect, &pt_curr, &pt_prev, NULL);
+						l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, &pt_prev.plot, NULL);
 					}
 					l->EndDraw(renderer, target);
 				}
@@ -192,17 +194,17 @@ struct ChartGraphicsBase::Impl
 				ChartLegendBase const * l = itr->second;
 				ChartDataSeriesBase const * ds = data_series_map[name];
 
-				ChartDataPoint cdp_max = ds->GetMaxDataValues();
+				D2D_VECTOR_4F cdp_max = ds->GetMaxDataValues();
 
 				UINT cnt = ds->GetCount();
 				if (cnt > 0)
 				{
-					ChartDataPoint pt_prev, pt_curr, pt_next;
+					D2D_VECTOR_4F pt_curr, pt_next;
 					l->BeginDraw(renderer, target);
 					pt_curr.x = 0.06f; pt_next.x = 0.14f;
 					pt_curr.y = pt_next.y = y_pos;
-					l->Draw(renderer, target, rect, &pt_curr, NULL, &pt_next);
-					l->Draw(renderer, target, rect, &pt_curr, &pt_next, NULL);
+					l->Draw(renderer, target, rect, NULL, &pt_curr, NULL, &pt_next);
+					l->Draw(renderer, target, rect, NULL, &pt_next, &pt_curr, NULL);
 
 					pt_curr.x = 0.15f;
 					l->Print(renderer, target, rect, &pt_curr, name.c_str());
@@ -351,6 +353,53 @@ struct ChartGraphicsBase::Impl
 			draw_line_v(renderer, target, rect, val0 + val, brush, line_width, style);
 		}
 	}
+
+	static FLOAT range_to_unit(FLOAT r)
+	{
+		FLOAT l = floorf(log10f(r));
+		FLOAT u = roundf(powf(10.0f, l));
+		while (r < 4.0f * u) u *= 0.5f;
+
+		return u;
+	}
+
+	void adjust_chart_axes_auto()
+	{
+		FLOAT x_min, y_min, z_min, w_min;
+		FLOAT x_max, y_max, z_max, w_max;
+
+		x_min = y_min = z_min = w_min = LONG_MAX;
+		x_max = y_max = z_max = w_max = LONG_MIN;
+		for (ChartDataSeriesMap::iterator itr = data_series_map.begin();
+			itr != data_series_map.end(); itr++)
+		{
+			D2D_VECTOR_4F min = itr->second->GetMinDataValues();
+			if (x_min > min.x) x_min = min.x;
+			if (y_min > min.y) y_min = min.y;
+			if (z_min > min.z) z_min = min.z;
+			if (w_min > min.w) w_min = min.w;
+
+			D2D_VECTOR_4F max = itr->second->GetMaxDataValues();
+			if (x_max < max.x) x_max = max.x;
+			if (y_max < max.y) y_max = max.y;
+			if (z_max < max.z) z_max = max.z;
+			if (w_max < max.w) w_max = max.w;
+		}
+		parent->SetChartAxisX(x_min, x_max);
+		parent->SetChartAxisY(y_min, y_max);
+		parent->SetChartAxisZ(z_min, z_max);
+		parent->SetChartAxisW(w_min, w_max);
+
+		FLOAT ux = range_to_unit(axis_x.range);
+		FLOAT uy = range_to_unit(axis_y.range);
+		FLOAT uz = range_to_unit(axis_z.range);
+		FLOAT uw = range_to_unit(axis_w.range);
+		parent->SetChartUnitX(ux, ux*0.2f);
+		parent->SetChartUnitY(uy, uy*0.2f);
+		parent->SetChartUnitZ(uz, uz*0.2f);
+		parent->SetChartUnitW(uw, uw*0.2f);
+	}
+
 };
 
 
@@ -694,7 +743,7 @@ void F35_NS::ChartGraphicsBase::SetAxisPositionX( FLOAT y_val )
 	if (pImpl) pImpl->axis_pos_x = (y_val - pImpl->axis_y.min) / pImpl->axis_y.range ;
 }
 
-FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionX( void )
+FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionX( void ) const
 {
 	return pImpl->axis_pos_x * pImpl->axis_y.range + pImpl->axis_y.min;
 }
@@ -704,7 +753,7 @@ void F35_NS::ChartGraphicsBase::SetAxisPositionY( FLOAT x_val )
 	if (pImpl) pImpl->axis_pos_y = (x_val - pImpl->axis_x.min) / pImpl->axis_x.range ;
 }
 
-FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionY( void )
+FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionY( void ) const
 {
 	return pImpl->axis_pos_y * pImpl->axis_x.range + pImpl->axis_x.min;
 }
@@ -725,22 +774,22 @@ HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineX( RendererBase *renderer, ID2D1R
 	return DrawHorizontalLine(renderer, target, chart_rect, pos_y, brush, line_width, style);
 }
 
-BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisX( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisX( void ) const
 {
 	return pImpl->inv_x;
 }
 
-BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisY( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisY( void ) const
 {
 	return pImpl->inv_y;
 }
 
-BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisZ( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisZ( void ) const
 {
 	return pImpl->inv_z;
 }
 
-BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisW( void )
+BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisW( void ) const
 {
 	return pImpl->inv_w;
 }
@@ -750,12 +799,12 @@ void F35_NS::ChartGraphicsBase::SetChartOrigin(D2D_VECTOR_4F pt )
 	pImpl->pt_origin = pt;
 }
 
-D2D_VECTOR_4F F35_NS::ChartGraphicsBase::GetChartOrigin( void )
+D2D_VECTOR_4F F35_NS::ChartGraphicsBase::GetChartOrigin( void ) const
 {
 	return pImpl->pt_origin;
 }
 
-D2D1_SIZE_F F35_NS::ChartGraphicsBase::GetChartAreaSize(void)
+D2D1_SIZE_F F35_NS::ChartGraphicsBase::GetChartAreaSize(void) const
 {
 	return pImpl->area_size;
 }
@@ -768,4 +817,9 @@ void F35_NS::ChartGraphicsBase::SetChartAreaSize(D2D1_SIZE_F sz)
 void F35_NS::ChartGraphicsBase::SetChartAreaSize(FLOAT x, FLOAT y)
 {
 	pImpl->area_size = D2D1::SizeF(x, y);
+}
+
+void F35_NS::ChartGraphicsBase::AdjustChartAxesAuto(void)
+{
+	pImpl->adjust_chart_axes_auto();
 }

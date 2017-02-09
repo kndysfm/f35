@@ -73,8 +73,6 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1
 	D2D1_SIZE_F size = GetChartAreaSize();
 	D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width, size.height);
 
-	target->Clear(GetBackgroundColor());
-
 	D2D1::ColorF color_fg = GetForegroundColor();
 	(&pImpl->axis_line_brush)->SetColor(color_fg);
 	color_fg.a = 0.75f;

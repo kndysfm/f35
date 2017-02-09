@@ -7,7 +7,7 @@ struct SimpleBarChartLegend::Impl
 {
 	H::R< ID2D1SolidColorBrush > brush;
 
-	static D2D1_RECT_F convert_point(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio, FLOAT bar_width)
+	static D2D1_RECT_F convert_point(D2D1_RECT_F const *rect, D2D_VECTOR_4F const *pt_ratio, FLOAT bar_width)
 	{
 		D2D1_RECT_F bar;
 
@@ -43,7 +43,7 @@ void F35_NS::SimpleBarChartLegend::BeginDraw( RendererBase *renderer, ID2D1Rende
 	pImpl->brush = renderer->MakeBrush(GetFillColor());
 }
 
-void F35_NS::SimpleBarChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, ChartDataPoint const *point, ChartDataPoint const *point_previous /*= NULL*/, ChartDataPoint const *point_next /*= NULL */ ) const
+void F35_NS::SimpleBarChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->brush) return;
 

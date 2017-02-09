@@ -16,13 +16,13 @@ public:
 
 	void SetCount( UINT count );
 
-	void SetDataPoint(UINT index, ChartDataPoint point);
+	void SetDataPoint(UINT index, D2D_VECTOR_4F point);
 
 	void SetDataPoint(UINT index, FLOAT x, FLOAT y, FLOAT z = 0.0f, FLOAT w = 0.0f);
 
 	virtual UINT GetCount( void ) const;
 
-	virtual ChartDataPoint GetDataPoint( UINT index ) const;
+	virtual D2D_VECTOR_4F GetDataPoint( UINT index ) const;
 
 	template<typename S, typename T, typename U, typename V>
 	void ApplyArray( UINT count, const S *x_array, const T *y_array,
@@ -67,9 +67,9 @@ public:
 		}
 	}
 
-	virtual ChartDataPoint GetMinDataValues( void ) const;
+	virtual D2D_VECTOR_4F GetMinDataValues( void ) const;
 
-	virtual ChartDataPoint GetMaxDataValues( void ) const;
+	virtual D2D_VECTOR_4F GetMaxDataValues( void ) const;
 
 };
 

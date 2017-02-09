@@ -49,7 +49,7 @@ public:
 	void GetChartUnitW (FLOAT *major, FLOAT *minor) const;
 
 	void SetChartOrigin(D2D_VECTOR_4F pt);
-	D2D_VECTOR_4F GetChartOrigin(void );
+	D2D_VECTOR_4F GetChartOrigin(void ) const;
 
 	void SetChartNumberStringFormat(LPCTSTR fmt);
 
@@ -67,21 +67,23 @@ public:
 	void InvertAxisY (BOOL enable);
 	void InvertAxisZ (BOOL enable);
 	void InvertAxisW (BOOL enable);
-	BOOL IsInvertedAxisX (void);
-	BOOL IsInvertedAxisY (void);
-	BOOL IsInvertedAxisZ (void);
-	BOOL IsInvertedAxisW (void);
+	BOOL IsInvertedAxisX (void) const;
+	BOOL IsInvertedAxisY (void) const;
+	BOOL IsInvertedAxisZ (void) const;
+	BOOL IsInvertedAxisW (void) const;
 
 	void SetAxisPositionX (FLOAT y_val);
-	FLOAT GetAxisPositionX (void);
+	FLOAT GetAxisPositionX (void) const;
 
 	void SetAxisPositionY (FLOAT x_val);
-	FLOAT GetAxisPositionY (void);
+	FLOAT GetAxisPositionY (void) const;
 
-	D2D1_SIZE_F GetChartAreaSize(void);
+	D2D1_SIZE_F GetChartAreaSize(void) const;
 
 	void SetChartAreaSize(D2D1_SIZE_F sz);
 	void SetChartAreaSize(FLOAT x, FLOAT y);
+
+	void AdjustChartAxesAuto(void);
 
 protected:
 

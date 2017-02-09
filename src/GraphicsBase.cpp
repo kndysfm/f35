@@ -34,7 +34,7 @@ GraphicsBase::~GraphicsBase(void)
 	delete pImpl;
 }
 
-D2D1_POINT_2F F35_NS::GraphicsBase::GetPosition( void )
+D2D1_POINT_2F F35_NS::GraphicsBase::GetPosition( void ) const
 {
 	return pImpl->position;
 }
@@ -83,7 +83,7 @@ void F35_NS::GraphicsBase::DettachRenderer( void )
 	pImpl->renderer = NULL;
 }
 
-D2D1_SIZE_F F35_NS::GraphicsBase::GetScale( void )
+D2D1_SIZE_F F35_NS::GraphicsBase::GetScale( void ) const
 {
 	return pImpl->scale;
 }
@@ -103,7 +103,7 @@ void F35_NS::GraphicsBase::SetScale( FLOAT width, FLOAT height )
 	pImpl->scale = D2D1::SizeF(width, height);
 }
 
-FLOAT F35_NS::GraphicsBase::GetRotation(void)
+FLOAT F35_NS::GraphicsBase::GetRotation(void) const
 {
 	return pImpl->rotation;
 }
