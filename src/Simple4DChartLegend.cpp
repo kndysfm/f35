@@ -5,7 +5,7 @@ USING_F35_NS;
 
 struct Simple4DChartLegend::Impl
 {
-	ResourceHolder<ID2D1SolidColorBrush> line_brush;
+	H::R<ID2D1SolidColorBrush> line_brush;
 
 	static D2D1_POINT_2F convert_point_xy(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio)
 	{

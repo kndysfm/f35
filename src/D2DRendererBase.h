@@ -1,12 +1,10 @@
 #pragma once
 #include "F35Helper.h"
 
-#include <dwrite.h>
-
 namespace F35_NS
 {
 
-class D2DRendererBase: Lockable, NonCopyable
+class D2DRendererBase: H::Lockable, H::NonCopyable
 {
 
 private:
@@ -14,42 +12,6 @@ private:
 	Impl *pImpl;
 
 public:
-
-	/*! \fn D2DRendererBase::PaintRectangle
-	 *  \brief 直線で長方形を描いて中を塗りつぶす
-	 *  \param const D2D1_RECT_F & rect
-	 *  \param ID2D1Brush * fill_brush
-	 *  \param ID2D1Brush * line_brush
-	 *  \param FLOAT line_width
-	 *  \return void
-	 */
-	void PaintRectangle(const D2D1_RECT_F &rect, ID2D1Brush *fill_brush, ID2D1Brush *line_brush, FLOAT line_width = 1.0f);
-
-	/*! \fn D2DRendererBase::Print
-	 *  \brief 文字列描画の簡素化
-	 *  \param IDWriteTextFormat * format
-	 *  \param const D2D1_RECT_F & rect
-	 *  \param ID2D1Brush * brush
-	 *  \param LPCTSTR str_fmt
-	 *  \param ...
-	 *  \return void
-	 */
-	void Print(IDWriteTextFormat *format, const D2D1_RECT_F &rect, ID2D1Brush *brush, LPCTSTR str_fmt, ...);
-
-	/*! \fn D2DRendererBase::Print
-	 *  \brief 
-	 *  \param IDWriteTextFormat * format
-	 *  \param const D2D1_RECT_F & rect
-	 *  \param DWRITE_TEXT_ALIGNMENT text_align
-	 *  \param DWRITE_PARAGRAPH_ALIGNMENT paragraph_align
-	 *  \param ID2D1Brush * brush
-	 *  \param LPCTSTR str_fmt
-	 *  \param ...
-	 *  \return void
-	 */
-	void Print(IDWriteTextFormat *format, const D2D1_RECT_F &rect, 
-		DWRITE_TEXT_ALIGNMENT text_align, DWRITE_PARAGRAPH_ALIGNMENT paragraph_align,
-		ID2D1Brush *brush, LPCTSTR str_fmt, ...);
 
 	/*! \fn D2DRendererBase::MakeTextFormat
 	 *  \brief TextFormatオブジェクトの生成
@@ -59,7 +21,7 @@ public:
 	 *  \param DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign
 	 *  \return IDWriteTextFormat *
 	 */
-	ResourceHolder<IDWriteTextFormat> MakeTextFormat(LPCTSTR fontName, FLOAT fontSize,
+	H::R<IDWriteTextFormat> MakeTextFormat(LPCTSTR fontName, FLOAT fontSize,
 		DWRITE_TEXT_ALIGNMENT textAlign = DWRITE_TEXT_ALIGNMENT_CENTER,
 		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
@@ -69,14 +31,14 @@ public:
 	 *  \param UINT32 dashesCount
 	 *  \return ID2D1StrokeStyle *
 	 */
-	ResourceHolder<ID2D1StrokeStyle> MakeStrokeStyle(  FLOAT dashes, UINT32 dashesCount );
+	H::R<ID2D1StrokeStyle> MakeStrokeStyle(  FLOAT dashes, UINT32 dashesCount );
 	
 	/*! \fn D2DRendererBase::MakeBrush
 	 *  \brief ブラシオブジェクトの生成
 	 *  \param D2D1::ColorF color
 	 *  \return ID2D1Brush *
 	 */
-	ResourceHolder<ID2D1SolidColorBrush> MakeBrush(const D2D1::ColorF &color);
+	H::R<ID2D1SolidColorBrush> MakeBrush(const D2D1::ColorF &color);
 
 	
 	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
@@ -84,7 +46,7 @@ public:
 	 *  \param void
 	 *  \return ID2D1PathGeometry *
 	 */
-	ResourceHolder<ID2D1PathGeometry> MakePathGeometry(void);
+	H::R<ID2D1PathGeometry> MakePathGeometry(void);
 
 	/*! \fn D2DRendererBase::GetCurrentCursorPosDpi
 	 *  \brief 現在のカーソル位置を取得

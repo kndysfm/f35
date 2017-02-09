@@ -6,8 +6,8 @@ USING_F35_NS;
 
 struct SimpleLineChartLegend::Impl
 {
-	ResourceHolder<ID2D1SolidColorBrush> line_brush;
-	ResourceHolder<IDWriteTextFormat> textf;
+	H::R<ID2D1SolidColorBrush> line_brush;
+	H::R<IDWriteTextFormat> textf;
 	BOOL marker;
 	
 	static D2D1_POINT_2F convert_point(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio)
@@ -84,7 +84,7 @@ void F35_NS::SimpleLineChartLegend::Print( D2DRendererBase *renderer, ID2D1Rende
 	rect.left += point->x * (chart_rect->right - chart_rect->left);
 	rect.top += point->y * (chart_rect->bottom - chart_rect->top);
 
-	renderer->Print(pImpl->textf, rect, pImpl->line_brush, str);
+	H::WriteText(target, pImpl->textf, rect, pImpl->line_brush, str);
 
 	delete[] str;
 

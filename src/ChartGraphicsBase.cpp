@@ -261,7 +261,7 @@ struct ChartGraphicsBase::Impl
 		{
 			rect_label.top = rect->top + h * val_to_ratio_in_range(y_val, axis_y, inv_y);
 			rect_label.bottom = rect_label.top + dy;
-			renderer->Print(text_format, rect_label, brush, format, y_val);
+			H::WriteText(target, text_format, rect_label, brush, format, y_val);
 		}
 
 	}
@@ -331,7 +331,7 @@ struct ChartGraphicsBase::Impl
 		{
 			rect_label.left = rect->left + w * val_to_ratio_in_range(x_val, axis_x, inv_x);
 			rect_label.right = rect_label.left + dx;
-			renderer->Print(text_format, rect_label, brush, format, x_val);
+			H::WriteText(target, text_format, rect_label, brush, format, x_val);
 		}
 	}
 

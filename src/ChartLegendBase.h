@@ -2,10 +2,11 @@
 #include "F35Helper.h"
 
 #include "D2DRendererBase.h"
+#include "ChartDataSeriesBase.h"
 
 namespace F35_NS
 {
-class ChartLegendBase: NonCopyable
+class ChartLegendBase: H::NonCopyable
 {
 	struct Impl;
 	Impl *pImpl;

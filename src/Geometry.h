@@ -29,11 +29,11 @@ namespace F35_NS
 
 		D2D1_COLOR_F GetFillColor(void);
 
-		virtual void InitGraphics( D2DRendererBase * renderer );
-
-		virtual void DestroyGraphics( D2DRendererBase * renderer );
-
 	protected:
+
+		virtual void InternalInit( D2DRendererBase * renderer );
+
+		virtual void InternalDestroy( D2DRendererBase * renderer );
 
 		ID2D1Brush *GetLineBrush(void);
 

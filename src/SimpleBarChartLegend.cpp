@@ -5,7 +5,7 @@ USING_F35_NS;
 
 struct SimpleBarChartLegend::Impl
 {
-	ResourceHolder< ID2D1SolidColorBrush > brush;
+	H::R< ID2D1SolidColorBrush > brush;
 
 	static D2D1_RECT_F convert_point(D2D1_RECT_F const *rect, ChartDataPoint const *pt_ratio, FLOAT bar_width)
 	{

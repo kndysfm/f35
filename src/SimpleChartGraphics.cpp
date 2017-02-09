@@ -9,13 +9,13 @@ struct SimpleChartGraphics::Impl
 {
 	D2DRendererBase *renderer;
 
-	ResourceHolder<ID2D1SolidColorBrush> axis_line_brush;
-	ResourceHolder<ID2D1SolidColorBrush> major_grid_brush;
-	ResourceHolder<ID2D1SolidColorBrush> minor_grid_brush;
-	ResourceHolder<ID2D1SolidColorBrush> mess_brush;
-	ResourceHolder<IDWriteTextFormat> x_label_textf;
-	ResourceHolder<IDWriteTextFormat> y_label_textf;
-	ResourceHolder<IDWriteTextFormat> mess_textf;
+	H::R<ID2D1SolidColorBrush> axis_line_brush;
+	H::R<ID2D1SolidColorBrush> major_grid_brush;
+	H::R<ID2D1SolidColorBrush> minor_grid_brush;
+	H::R<ID2D1SolidColorBrush> mess_brush;
+	H::R<IDWriteTextFormat> x_label_textf;
+	H::R<IDWriteTextFormat> y_label_textf;
+	H::R<IDWriteTextFormat> mess_textf;
 
 	LPCTSTR mess;
 
@@ -114,7 +114,7 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender(
 	if (pImpl->mess != NULL)
 	{
 		(&pImpl->mess_brush)->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
-		renderer->Print(pImpl->mess_textf, rect,  pImpl->mess_brush, pImpl->mess);
+		H::WriteText(target, pImpl->mess_textf, rect,  pImpl->mess_brush, pImpl->mess);
 	}
 
 	return TRUE;

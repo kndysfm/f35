@@ -7,9 +7,9 @@ USING_F35_NS;
 
 class D2DRendererBase::Impl
 {
-	ResourceHolder<ID2D1Factory> pD2dFactory;
-	ResourceHolder<ID2D1HwndRenderTarget> pRenderTarget;
-	ResourceHolder<IDWriteFactory> pDWriteFactory;
+	H::R<ID2D1Factory> pD2dFactory;
+	H::R<ID2D1HwndRenderTarget> pRenderTarget;
+	H::R<IDWriteFactory> pDWriteFactory;
 
 	HWND hWnd;
 	HWND hParent;
@@ -43,27 +43,6 @@ public:
 	D2D1_POINT_2F GetCurrPosDpi(void)
 	{
 		return currPos;
-	}
-
-	void Print(IDWriteTextFormat *format, const D2D1_RECT_F &rect, BOOL clip,
-		ID2D1Brush *brush, LPCTSTR str)
-	{
-		(&pRenderTarget)->DrawText(str, _tcslen(str), format, rect, brush,
-			clip? D2D1_DRAW_TEXT_OPTIONS_CLIP: D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
-	}
-
-	void Print(IDWriteTextFormat *format, const D2D1_RECT_F &rect,
-		DWRITE_TEXT_ALIGNMENT text_align, DWRITE_PARAGRAPH_ALIGNMENT paragraph_align, BOOL clip,
-		ID2D1Brush *brush, LPCTSTR str)
-	{
-		DWRITE_TEXT_ALIGNMENT last_text_align = format->GetTextAlignment();
-		DWRITE_PARAGRAPH_ALIGNMENT last_paragraph_align = format->GetParagraphAlignment();
-		format->SetTextAlignment(text_align);
-		format->SetParagraphAlignment(paragraph_align);
-		(&pRenderTarget)->DrawText(str, _tcslen(str), format, rect, brush,
-			clip? D2D1_DRAW_TEXT_OPTIONS_CLIP: D2D1_DRAW_TEXT_OPTIONS_NO_SNAP);
-		format->SetTextAlignment(last_text_align);
-		format->SetParagraphAlignment(last_paragraph_align);
 	}
 
 	IDWriteTextFormat * GetTextFormat( LPCTSTR fontName, FLOAT fontSize, 
@@ -331,47 +310,12 @@ void D2DRendererBase::Destroy( void )
 	Unlock();
 }
 
-void D2DRendererBase::Print( IDWriteTextFormat *format, const D2D1_RECT_F &rect, 
-						 ID2D1Brush *brush, LPCTSTR str_fmt, ... )
-{
-	va_list arg_ptr;
-	va_start(arg_ptr, str_fmt);
-
-	size_t len = _tcslen(str_fmt) * 8;
-	_TCHAR *str = new _TCHAR[len];
-	_vstprintf_s(str, len, str_fmt, arg_ptr);
-
-	pImpl->Print(format, rect, TRUE, brush, str);
-
-	delete[] str;
-
-	va_end(arg_ptr);
-}
-
-void D2DRendererBase::Print( IDWriteTextFormat *format, const D2D1_RECT_F &rect, 
-						 DWRITE_TEXT_ALIGNMENT text_align, DWRITE_PARAGRAPH_ALIGNMENT paragraph_align,
-						 ID2D1Brush *brush, LPCTSTR str_fmt, ... )
-{
-	va_list arg_ptr;
-	va_start(arg_ptr, str_fmt);
-
-	size_t len = _tcslen(str_fmt) * 8;
-	_TCHAR *str = new _TCHAR[len];
-	_vstprintf_s(str, len, str_fmt, arg_ptr);
-
-	pImpl->Print(format, rect, text_align, paragraph_align, TRUE, brush, str);
-
-	delete[] str;
-
-	va_end(arg_ptr);
-}
-
-ResourceHolder<IDWriteTextFormat> D2DRendererBase::MakeTextFormat( LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/ )
+H::R<IDWriteTextFormat> D2DRendererBase::MakeTextFormat( LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/ )
 {
 	return pImpl->GetTextFormat(fontName, fontSize, textAlign, paragraphAlign);
 }
 
-ResourceHolder<ID2D1SolidColorBrush> D2DRendererBase::MakeBrush( const D2D1::ColorF & color )
+H::R<ID2D1SolidColorBrush> D2DRendererBase::MakeBrush( const D2D1::ColorF & color )
 {
 	return pImpl->GetSolidBrush(color);
 }
@@ -379,12 +323,6 @@ ResourceHolder<ID2D1SolidColorBrush> D2DRendererBase::MakeBrush( const D2D1::Col
 D2D1_POINT_2F D2DRendererBase::GetCurrentCursorPosDpi( void )
 {
 	return pImpl->GetCurrPosDpi();
-}
-
-void D2DRendererBase::PaintRectangle( const D2D1_RECT_F &rect, ID2D1Brush *fill_brush, ID2D1Brush *line_brush , FLOAT line_width)
-{
-	pImpl->GetTarget()->FillRectangle(rect, fill_brush);
-	pImpl->GetTarget()->DrawRectangle(rect, line_brush, line_width);
 }
 
 void D2DRendererBase::Invalidate( void )
@@ -407,12 +345,12 @@ D2D1_RECT_F F35_NS::D2DRendererBase::GetRectangle( void ) const
 	return rect;
 }
 
-ResourceHolder<ID2D1StrokeStyle> F35_NS::D2DRendererBase::MakeStrokeStyle( FLOAT dashes, UINT32 dashesCount )
+H::R<ID2D1StrokeStyle> F35_NS::D2DRendererBase::MakeStrokeStyle( FLOAT dashes, UINT32 dashesCount )
 {
 	return pImpl->GetStrokeStyle(dashes, dashesCount);
 }
 
-ResourceHolder<ID2D1PathGeometry> F35_NS::D2DRendererBase::MakePathGeometry( void )
+H::R<ID2D1PathGeometry> F35_NS::D2DRendererBase::MakePathGeometry( void )
 {
 	return pImpl->GetPathGeometry();
 }

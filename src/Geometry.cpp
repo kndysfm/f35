@@ -5,8 +5,8 @@ USING_F35_NS;
 
 struct Geometry::Impl
 {
-	ResourceHolder< ID2D1SolidColorBrush> line_brush;
-	ResourceHolder< ID2D1SolidColorBrush> fill_brush;
+	H::R< ID2D1SolidColorBrush> line_brush;
+	H::R< ID2D1SolidColorBrush> fill_brush;
 
 	FLOAT line_width;
 
@@ -81,13 +81,13 @@ D2D1_COLOR_F F35_NS::Geometry::GetFillColor( void )
 	return (&pImpl->fill_brush)->GetColor();
 }
 
-void F35_NS::Geometry::InitGraphics( D2DRendererBase * renderer )
+void F35_NS::Geometry::InternalInit( D2DRendererBase * renderer )
 {
 	pImpl->line_brush = renderer->MakeBrush(pImpl->line_color);
 	pImpl->fill_brush = renderer->MakeBrush(pImpl->fill_color);
 }
 
-void F35_NS::Geometry::DestroyGraphics( D2DRendererBase * renderer )
+void F35_NS::Geometry::InternalDestroy( D2DRendererBase * renderer )
 {
 }
 

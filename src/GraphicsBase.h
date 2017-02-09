@@ -8,7 +8,7 @@ namespace F35_NS
 
 class GraphicsContainer;
 
-class GraphicsBase : NonCopyable
+class GraphicsBase : H::NonCopyable
 {
 private:
 	struct Impl;
