@@ -134,12 +134,14 @@ BOOL F35_NS::GraphicsBase::Render(D2DRendererBase * renderer, ID2D1RenderTarget 
 	D2D1::Matrix3x2F mat_last;
 	target->GetTransform(&mat_last);
 	D2D1::Matrix3x2F mat = mat_last;
+	D2D1_POINT_2F pos = pImpl->position * mat; // convert coordinate : container --> target
+	mat._31 = mat._32 = 0.0f; // translation = (0,0)
 	mat = mat * D2D1::Matrix3x2F::Scale(pImpl->scale);
 	mat = mat * D2D1::Matrix3x2F::Rotation(pImpl->rotation);
-	mat = mat * D2D1::Matrix3x2F::Translation(D2D1::SizeF(pImpl->position.x, pImpl->position.y));
+	mat = mat * D2D1::Matrix3x2F::Translation(D2D1::SizeF(pos.x, pos.y));
 	target->SetTransform(mat);
 	BOOL ret = InternalRender(renderer, target);
-	target->SetTransform(mat_last);
+	target->SetTransform(mat_last); 
 
 	return ret;
 }
