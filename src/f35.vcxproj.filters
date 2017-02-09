@@ -37,6 +37,12 @@
     <Filter Include="ヘッダー ファイル\graphics\chart\legend">
       <UniqueIdentifier>{95f19ce1-b0a5-4a7d-86a1-f4aaf86ea30b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\graphics\geometry">
+      <UniqueIdentifier>{231d7be8-0bdd-4a4d-aed0-5a0326e131f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\graphics\geometry">
+      <UniqueIdentifier>{86078ce2-c562-4e8d-8a5f-ee9bb6d642fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -75,9 +81,6 @@
     <ClInclude Include="GraphicsContainer.h">
       <Filter>ヘッダー ファイル\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsBase.h">
       <Filter>ヘッダー ファイル\graphics</Filter>
     </ClInclude>
@@ -95,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="TestGraphics.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryBase.h">
+      <Filter>ヘッダー ファイル\graphics\geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +134,6 @@
     <ClCompile Include="GraphicsContainer.cpp">
       <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsBase.cpp">
       <Filter>ソース ファイル\graphics</Filter>
     </ClCompile>
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="SimpleChartGraphics.cpp">
       <Filter>ソース ファイル\graphics\chart</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryBase.cpp">
+      <Filter>ソース ファイル\graphics\geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

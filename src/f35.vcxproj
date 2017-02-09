@@ -85,7 +85,7 @@
     <ClInclude Include="ChartLegendBase.h" />
     <ClInclude Include="D2DRendererBase.h" />
     <ClInclude Include="F35Helper.h" />
-    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="GeometryBase.h" />
     <ClInclude Include="GraphicsBase.h" />
     <ClInclude Include="GraphicsContainer.h" />
     <ClInclude Include="GraphicsRenderer.h" />
@@ -105,7 +105,7 @@
     <ClCompile Include="ChartLegendBase.cpp" />
     <ClCompile Include="D2DRendererBase.cpp" />
     <ClCompile Include="F35Helper.cpp" />
-    <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="GeometryBase.cpp" />
     <ClCompile Include="GraphicsBase.cpp" />
     <ClCompile Include="GraphicsContainer.cpp" />
     <ClCompile Include="GraphicsRenderer.cpp" />

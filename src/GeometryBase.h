@@ -3,15 +3,15 @@
 
 namespace F35_NS
 {
-	class Geometry :
+	class GeometryBase :
 		public GraphicsBase
 	{
 	private:
 		struct Impl;
 		Impl *pImpl;
 	public:
-		Geometry(void);
-		virtual ~Geometry(void);
+		GeometryBase(void);
+		virtual ~GeometryBase(void);
 
 		void SetLineWidth(FLOAT w);
 
