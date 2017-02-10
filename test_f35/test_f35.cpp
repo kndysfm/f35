@@ -4,8 +4,12 @@
 #include "stdafx.h"
 #include "test_f35.h"
 
-#include <GraphicsRenderer.h>
-#include <TestGraphics.h>
+#include <f35/GraphicsRenderer.h>
+#include <f35/TestGraphics.h>
+#include <f35/SimpleChartGraphics.h>
+#include <f35/SampleChartDataSeries.h>
+#include <f35/SimpleLineChartLegend.h>
+
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -26,6 +30,9 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 fxxxv::GraphicsRenderer *pRenderer = NULL;
 fxxxv::TestGraphics graphs[100];
 fxxxv::GraphicsContainer container;
+fxxxv::SimpleChartGraphics chart_graph;
+fxxxv::SampleChartDataSeries chart_data;
+fxxxv::SimpleLineChartLegend chart_legend;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -121,6 +128,66 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+static void init_graphics(HWND hWnd)
+{
+	pRenderer = new fxxxv::GraphicsRenderer(hWnd);
+	pRenderer->Init();
+	pRenderer->EnableAutoErase(D2D1::ColorF(0, 0.1f));
+	for (auto &g : graphs) container.AddGraphics(&g);
+	pRenderer->AddGraphics(&container);
+
+	auto size = pRenderer->GetSize();
+	for (auto &g : graphs)
+	{
+		FLOAT x = size.width * ::rand() / RAND_MAX;
+		FLOAT y = size.height * ::rand() / RAND_MAX;
+		g.SetPosition(x, y);
+		FLOAT angle = (::rand() > RAND_MAX / 2) ? 0 : 90;
+		g.SetRotation(angle);
+		FLOAT scale = 1.0f + 3.0f * ::rand() / RAND_MAX;
+		g.SetScale(scale);
+	}
+	container.SetPosition(size.width / 2, size.height / 2);
+
+	chart_data.SetLength(20);
+	chart_legend.SetFillColor(D2D1::ColorF::Olive);
+	chart_legend.SetLineColor(D2D1::ColorF::WhiteSmoke);
+	chart_legend.ShowMarker(TRUE);
+	chart_graph.AddDataSeries(_T("sample"), &chart_data, &chart_legend);
+	chart_graph.SetChartAreaSize(size.width / 2, size.height / 2);
+	chart_graph.SetPosition(-size.width / 4, -size.height / 4);
+
+	chart_graph.SetForegroundColor(D2D1::ColorF::DarkGreen);
+
+	container.AddGraphics(&chart_graph);
+}
+
+static void paint_graphics()
+{
+	if (pRenderer) {
+		chart_data.Update();
+		//auto min = chart_data.GetMinDataValues();
+		//auto max = chart_data.GetMaxDataValues();
+		//chart_graph.SetChartAxisX(min.x, max.x);
+		//chart_graph.SetChartAxisY(min.y, max.y);
+		chart_graph.AdjustChartAxesAuto();
+	
+		SYSTEMTIME t; ::GetSystemTime(&t);
+		FLOAT deg = 6.0f * (t.wSecond + 0.001f * t.wMilliseconds);
+		container.SetRotation(deg);
+		pRenderer->Update();
+		pRenderer->Render();
+	}
+}
+
+static void destroy_graphic()
+{
+	pRenderer->Destroy();
+	delete pRenderer;
+	pRenderer = NULL;
+
+}
+
 //
 //  関数: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -136,10 +203,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
 	case WM_CREATE:
-		pRenderer = new fxxxv::GraphicsRenderer(hWnd);
-		pRenderer->Init();
-		for(auto &g: graphs) container.AddGraphics(&g);
-		pRenderer->AddGraphics(&container);
+		init_graphics(hWnd);
 		break;
     case WM_COMMAND:
         {
@@ -159,27 +223,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_PAINT:
-        if (pRenderer) {
-			static SYSTEMTIME t_last;
-			SYSTEMTIME t; ::GetSystemTime(&t);
-			if (t.wSecond != t_last.wSecond)
-			{
-				container.SetRotation(360.0f * ::rand() / RAND_MAX);
-				for (auto &g : graphs)
-				{
-					auto size = pRenderer->GetSize();
-					FLOAT x = size.width * ::rand() / RAND_MAX;
-					FLOAT y = size.height * ::rand() / RAND_MAX;
-					g.SetPosition(x, y);
-					FLOAT angle = (::rand() > RAND_MAX / 2) ? 0 : 90;
-					g.SetRotation(angle);
-					FLOAT scale = 1.0f + 3.0f * ::rand() / RAND_MAX;
-					g.SetScale(scale);
-				}
-				pRenderer->Update();
-				pRenderer->Render();
-			}
-			t_last = t;
+        {
+			paint_graphics();
 			//PAINTSTRUCT ps;
             //HDC hdc = BeginPaint(hWnd, &ps);
             //// TODO: HDC を使用する描画コードをここに追加してください...
@@ -188,9 +233,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
-		pRenderer->Destroy();
-		delete pRenderer;
-		pRenderer = NULL;
+		destroy_graphic();
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
