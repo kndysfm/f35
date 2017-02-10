@@ -59,12 +59,12 @@ namespace F35_NS
 		public:
 			R() : pResource(NULL) { }
 			R(Interface*p) : pResource(p) { }
-			R(R && rh) : R(rh.pResource) { }
+			R(R && rh) : R(rh.pResource) { rh.pResource = NULL; }
 			R & operator= (R && rh)
 			{
 				safeRelease(&this->pResource);
 				this->pResource = rh.pResource; // move value
-				rh.pResource = NULL;
+				rh.pResource = NULL; // prevent release
 				return *this;
 			}
 
