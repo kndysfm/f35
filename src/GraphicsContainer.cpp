@@ -29,14 +29,14 @@ BOOL F35_NS::GraphicsContainer::AddGraphics( GraphicsBase *graphics, LONG insert
 
 	if (idx >= pImpl->graphics.size())
 	{
-		if (child->AddContainer(self))
+		if (child->RegisterContainer(self))
 			pImpl->graphics.push_back(child);
 		else 
 			return FALSE;
 	}
 	else if (idx == 0)
 	{
-		if (child->AddContainer(self))
+		if (child->RegisterContainer(self))
 			pImpl->graphics.push_front(child);
 		else 
 			return FALSE;
@@ -80,7 +80,7 @@ BOOL F35_NS::GraphicsContainer::RemoveGraphics( GraphicsBase *g )
 		if ((*itr) == g)
 		{
 			pImpl->graphics.erase(itr);
-			g->RemoveContainer(self);
+			g->DeregisterContainer(self);
 			return TRUE;
 		}
 	}

@@ -4,8 +4,10 @@
 
 namespace F35_NS
 {
-	struct IGraphicsContainer
+	class IGraphicsContainer
 	{
+	public:
+
 		virtual BOOL AddGraphics(GraphicsBase *graphics, LONG insert_index = LONG_MAX) = 0;
 
 		virtual LONG GetIndexOfGraphics(GraphicsBase *graphics) = 0;
@@ -15,6 +17,8 @@ namespace F35_NS
 
 	class GraphicsContainer :public GraphicsBase, public IGraphicsContainer
 	{
+		friend class IGraphicsContainer;
+
 	private:
 		struct Impl;
 		Impl *pImpl;

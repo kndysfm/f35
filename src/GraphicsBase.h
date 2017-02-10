@@ -5,63 +5,63 @@
 
 namespace F35_NS
 {
+	class IGraphicsContainer;
 
-class GraphicsContainer;
+	class GraphicsBase : H::NonCopyable
+	{
 
-class GraphicsBase : H::NonCopyable
-{
-private:
-	struct Impl;
-	Impl *pImpl;
+	private:
+		struct Impl;
+		Impl *pImpl;
 
-public:
-	GraphicsBase(void);
-	virtual ~GraphicsBase(void);
+	public:
+		GraphicsBase(void);
+		virtual ~GraphicsBase(void);
 
-	D2D1_POINT_2F GetPosition (void) const;
+		D2D1_POINT_2F GetPosition (void) const;
 
-	void SetPosition (D2D1_POINT_2F pt);
-	void SetPosition (FLOAT x, FLOAT y);
+		void SetPosition (D2D1_POINT_2F pt);
+		void SetPosition (FLOAT x, FLOAT y);
 
-	D2D1_SIZE_F GetScale (void) const;
+		D2D1_SIZE_F GetScale (void) const;
 
-	void SetScale(FLOAT scale);
-	void SetScale (D2D1_SIZE_F sz);
-	void SetScale (FLOAT x, FLOAT y);
+		void SetScale(FLOAT scale);
+		void SetScale (D2D1_SIZE_F sz);
+		void SetScale (FLOAT x, FLOAT y);
 
-	FLOAT GetRotation(void) const;
-	void SetRotation(FLOAT degrees);
+		FLOAT GetRotation(void) const;
+		void SetRotation(FLOAT degrees);
 
-	GraphicsContainer *GetParent (void) const;
+		IGraphicsContainer const *GetParent (void) const;
 
-	RendererBase *GetRenderer (void) const;
+		RendererBase *GetRenderer (void) const;
 
-	BOOL AddContainer(GraphicsContainer *parent);
+		BOOL RegisterContainer(IGraphicsContainer const *parent);
 
-	void RemoveContainer(GraphicsContainer *parent);
+		void DeregisterContainer(IGraphicsContainer const *parent);
 
-	virtual BOOL AttachRenderer(RendererBase * renderer);
+		virtual BOOL AttachRenderer(RendererBase * renderer);
 
-	virtual void DettachRenderer(void);
+		virtual void DettachRenderer(void);
 
-	void Init(RendererBase * renderer);
+		void Init(RendererBase * renderer);
 
-	void Update(RendererBase * renderer);
+		void Update(RendererBase * renderer);
 
-	BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target);
+		BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target);
 
-	void Destroy(RendererBase * renderer);
+		void Destroy(RendererBase * renderer);
 
-protected:
+	protected:
 
-	virtual void InternalInit( RendererBase * renderer ) { }
+		virtual void InternalInit( RendererBase * renderer ) { }
 
-	virtual void InternalUpdate( RendererBase * renderer) { };
+		virtual void InternalUpdate( RendererBase * renderer) { };
 
-	virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target) = 0;
+		virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target) = 0;
 
-	virtual void InternalDestroy( RendererBase * renderer ) { }
+		virtual void InternalDestroy( RendererBase * renderer ) { }
 
-};
+	};
 
 }

@@ -9,7 +9,7 @@ struct GraphicsBase::Impl
 	D2D1_POINT_2F position;
 	D2D1_SIZE_F scale;
 	FLOAT rotation;
-	GraphicsContainer * container;
+	IGraphicsContainer const * container;
 	RendererBase * renderer;
 		
 	Impl (void) : 
@@ -49,19 +49,19 @@ void F35_NS::GraphicsBase::SetPosition( FLOAT x, FLOAT y )
 	pImpl->position = D2D1::Point2F(x, y);
 }
 
-BOOL F35_NS::GraphicsBase::AddContainer( GraphicsContainer *parent )
+BOOL F35_NS::GraphicsBase::RegisterContainer( IGraphicsContainer const *parent )
 {
 	if (pImpl->container != NULL) return FALSE;
 	pImpl->container = parent;
 	return TRUE;
 }
 
-void F35_NS::GraphicsBase::RemoveContainer( GraphicsContainer *parent )
+void F35_NS::GraphicsBase::DeregisterContainer( IGraphicsContainer const *parent )
 {
 	if (pImpl->container == parent ) pImpl->container = NULL;
 }
 
-GraphicsContainer * F35_NS::GraphicsBase::GetParent( void ) const
+IGraphicsContainer const * F35_NS::GraphicsBase::GetParent( void ) const
 {
 	return pImpl->container;
 }
