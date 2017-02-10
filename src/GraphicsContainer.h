@@ -23,19 +23,19 @@ namespace F35_NS
 		struct Impl;
 		Impl *pImpl;
 
+		virtual BOOL AttachRenderer(RendererBase * renderer) sealed;
+
+		virtual void DettachRenderer(void) sealed;
+
 	public:
 		GraphicsContainer(void);
 		virtual ~GraphicsContainer(void);
 
-		virtual BOOL AddGraphics(GraphicsBase *graphics, LONG insert_index = LONG_MAX);
+		virtual BOOL AddGraphics(GraphicsBase *graphics, LONG insert_index = LONG_MAX) sealed;
 
-		virtual LONG GetIndexOfGraphics(GraphicsBase *graphics);
+		virtual LONG GetIndexOfGraphics(GraphicsBase *graphics) sealed;
 
-		virtual BOOL RemoveGraphics(GraphicsBase *graphics);
-
-		virtual BOOL AttachRenderer(RendererBase * renderer);
-
-		virtual void DettachRenderer(void);
+		virtual BOOL RemoveGraphics(GraphicsBase *graphics) sealed;
 
 	protected:
 

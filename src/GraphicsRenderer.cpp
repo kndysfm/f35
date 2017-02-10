@@ -9,6 +9,18 @@ struct GraphicsRenderer::Impl: public GraphicsContainer
 {
 	Impl(void){}
 	virtual ~Impl(void){}
+
+	void attach(RendererBase *r) 
+	{
+		IGraphics *g_self = this;
+		g_self->AttachRenderer(r); 
+	}
+
+	void dettach() 
+	{
+		IGraphics *g_self = this;
+		g_self->DettachRenderer(); 
+	}
 };
 
 GraphicsRenderer::GraphicsRenderer(HWND hwnd):
@@ -36,26 +48,26 @@ HRESULT F35_NS::GraphicsRenderer::InternalRender( ID2D1RenderTarget *target )
 
 HRESULT F35_NS::GraphicsRenderer::InternalInit( ID2D1RenderTarget *target )
 {
-	pImpl->AttachRenderer(this);
+	pImpl->attach(this);
 	return S_OK;
 }
 
 void F35_NS::GraphicsRenderer::InternalDestroy( void )
 {
-	pImpl->DettachRenderer();
+	pImpl->dettach();
 }
 
-BOOL F35_NS::GraphicsRenderer::AddGraphics( GraphicsBase *graphics, LONG insert_index /*= LONG_MAX */ )
+BOOL F35_NS::GraphicsRenderer::AddGraphics(GraphicsBase *graphics, LONG insert_index /*= LONG_MAX */ )
 {
 	return pImpl->AddGraphics(graphics, insert_index);
 }
 
-LONG F35_NS::GraphicsRenderer::GetIndexOfGraphics( GraphicsBase *graphics )
+LONG F35_NS::GraphicsRenderer::GetIndexOfGraphics(GraphicsBase *graphics )
 {
 	return pImpl->GetIndexOfGraphics(graphics);
 }
 
-BOOL F35_NS::GraphicsRenderer::RemoveGraphics( GraphicsBase *graphics )
+BOOL F35_NS::GraphicsRenderer::RemoveGraphics(GraphicsBase *graphics )
 {
 	return pImpl->RemoveGraphics(graphics);
 }

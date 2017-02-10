@@ -7,12 +7,46 @@ namespace F35_NS
 {
 	class IGraphicsContainer;
 
-	class GraphicsBase : H::NonCopyable
+	class IGraphics
+	{
+	public:
+
+		virtual BOOL RegisterContainer(IGraphicsContainer const *parent) = 0;
+
+		virtual void DeregisterContainer(IGraphicsContainer const *parent) = 0;
+
+		virtual IGraphicsContainer const *GetContainer(void) const = 0;
+
+		virtual BOOL AttachRenderer(RendererBase * renderer) = 0;
+
+		virtual void DettachRenderer(void) = 0;
+
+		virtual RendererBase *GetRenderer(void) const = 0;
+
+		virtual void Init(RendererBase * renderer) = 0;
+
+		virtual void Update(RendererBase * renderer) = 0;
+
+		virtual BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target) = 0;
+
+		virtual void Destroy(RendererBase * renderer) = 0;
+
+	};
+
+	class GraphicsBase : H::NonCopyable, protected IGraphics
 	{
 
 	private:
 		struct Impl;
 		Impl *pImpl;
+
+		virtual BOOL RegisterContainer(IGraphicsContainer const *parent) sealed;
+
+		virtual void DeregisterContainer(IGraphicsContainer const *parent) sealed;
+
+		virtual IGraphicsContainer const *GetContainer(void) const sealed;
+
+		virtual RendererBase *GetRenderer(void) const sealed;
 
 	public:
 		GraphicsBase(void);
@@ -32,27 +66,19 @@ namespace F35_NS
 		FLOAT GetRotation(void) const;
 		void SetRotation(FLOAT degrees);
 
-		IGraphicsContainer const *GetParent (void) const;
+		virtual void Init(RendererBase * renderer) sealed;
 
-		RendererBase *GetRenderer (void) const;
+		virtual void Update(RendererBase * renderer) sealed;
 
-		BOOL RegisterContainer(IGraphicsContainer const *parent);
+		virtual BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target) sealed;
 
-		void DeregisterContainer(IGraphicsContainer const *parent);
+		virtual void Destroy(RendererBase * renderer) sealed;
+
+	protected:
 
 		virtual BOOL AttachRenderer(RendererBase * renderer);
 
 		virtual void DettachRenderer(void);
-
-		void Init(RendererBase * renderer);
-
-		void Update(RendererBase * renderer);
-
-		BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target);
-
-		void Destroy(RendererBase * renderer);
-
-	protected:
 
 		virtual void InternalInit( RendererBase * renderer ) { }
 

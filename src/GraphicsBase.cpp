@@ -61,7 +61,7 @@ void F35_NS::GraphicsBase::DeregisterContainer( IGraphicsContainer const *parent
 	if (pImpl->container == parent ) pImpl->container = NULL;
 }
 
-IGraphicsContainer const * F35_NS::GraphicsBase::GetParent( void ) const
+IGraphicsContainer const * F35_NS::GraphicsBase::GetContainer( void ) const
 {
 	return pImpl->container;
 }

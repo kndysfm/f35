@@ -4,10 +4,15 @@
 #include <deque>
 
 USING_F35_NS;
+
+namespace
+{
+	typedef std::deque<IGraphics *> GraphicsQue;
+}
+
 struct GraphicsContainer::Impl
 {
-	std::deque<GraphicsBase *> graphics;
-
+	GraphicsQue graphics;
 };
 
 GraphicsContainer::GraphicsContainer(void):
@@ -21,23 +26,23 @@ GraphicsContainer::~GraphicsContainer(void)
 	delete pImpl;
 }
 
-BOOL F35_NS::GraphicsContainer::AddGraphics( GraphicsBase *graphics, LONG insert_index /*= LONG_MAX */ )
+BOOL F35_NS::GraphicsContainer::AddGraphics(GraphicsBase *graphics, LONG insert_index /*= LONG_MAX */ )
 {
-	GraphicsContainer *self = this;
-	GraphicsBase * child = graphics;
+	IGraphics *g_self = this;
+	IGraphics * g_new = graphics;
 	LONG idx = insert_index;
 
 	if (idx >= pImpl->graphics.size())
 	{
-		if (child->RegisterContainer(self))
-			pImpl->graphics.push_back(child);
+		if (g_new->RegisterContainer(this))
+			pImpl->graphics.push_back(g_new);
 		else 
 			return FALSE;
 	}
 	else if (idx == 0)
 	{
-		if (child->RegisterContainer(self))
-			pImpl->graphics.push_front(child);
+		if (g_new->RegisterContainer(this))
+			pImpl->graphics.push_front(g_new);
 		else 
 			return FALSE;
 	}
@@ -50,37 +55,39 @@ BOOL F35_NS::GraphicsContainer::AddGraphics( GraphicsBase *graphics, LONG insert
 				return FALSE;
 		}
 
-		pImpl->graphics.insert(pImpl->graphics.begin() + idx, child);
+		pImpl->graphics.insert(pImpl->graphics.begin() + idx, g_new);
 	}
 
-	if (child->GetRenderer() != NULL) child->DettachRenderer();
-	child->AttachRenderer(self->GetRenderer());
+	if (g_new->GetRenderer() != NULL) g_new->DettachRenderer();
+	g_new->AttachRenderer(g_self->GetRenderer());
 
 	return TRUE;
 }
 
-LONG F35_NS::GraphicsContainer::GetIndexOfGraphics(GraphicsBase *g )
+LONG F35_NS::GraphicsContainer::GetIndexOfGraphics(GraphicsBase *graphics)
 {
+	IGraphics *p = graphics;
 	LONG idx = 0;
 	for (; idx < pImpl->graphics.size(); idx++)
 	{
-		if (g == pImpl->graphics[idx])
+		if (p == pImpl->graphics[idx])
 			return idx;
 	}
 	return LONG_MIN;
 }
 
-BOOL F35_NS::GraphicsContainer::RemoveGraphics( GraphicsBase *g )
+BOOL F35_NS::GraphicsContainer::RemoveGraphics(GraphicsBase *graphics)
 {
+	IGraphics *p = graphics;
 	GraphicsContainer* self = this;
 
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		if ((*itr) == g)
+		if ((*itr) == p)
 		{
 			pImpl->graphics.erase(itr);
-			g->DeregisterContainer(self);
+			p->DeregisterContainer(self);
 			return TRUE;
 		}
 	}
@@ -89,7 +96,7 @@ BOOL F35_NS::GraphicsContainer::RemoveGraphics( GraphicsBase *g )
 
 void F35_NS::GraphicsContainer::InternalUpdate( RendererBase * renderer )
 {
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
 		(*itr)->Update(renderer);
@@ -98,7 +105,7 @@ void F35_NS::GraphicsContainer::InternalUpdate( RendererBase * renderer )
 
 void F35_NS::GraphicsContainer::InternalInit( RendererBase * renderer )
 {
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
 		(*itr)->Init(renderer);
@@ -107,7 +114,7 @@ void F35_NS::GraphicsContainer::InternalInit( RendererBase * renderer )
 
 void F35_NS::GraphicsContainer::InternalDestroy( RendererBase * renderer )
 {
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
 		(*itr)->Destroy(renderer);
@@ -117,7 +124,7 @@ void F35_NS::GraphicsContainer::InternalDestroy( RendererBase * renderer )
 BOOL F35_NS::GraphicsContainer::InternalRender( RendererBase * renderer, ID2D1RenderTarget * target)
 {
 	BOOL ret = FALSE;
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
 		ret = (*itr)->Render(renderer, target) || ret;
@@ -129,10 +136,10 @@ BOOL F35_NS::GraphicsContainer::AttachRenderer( RendererBase * renderer )
 {
 	BOOL ret = FALSE;
 	GraphicsBase::AttachRenderer(renderer);
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		GraphicsBase *g = *itr;
+		IGraphics *g = *itr;
 		if (g->GetRenderer() != NULL) g->DettachRenderer();
 		ret = g->AttachRenderer(renderer) || ret;
 	}
@@ -141,7 +148,7 @@ BOOL F35_NS::GraphicsContainer::AttachRenderer( RendererBase * renderer )
 
 void F35_NS::GraphicsContainer::DettachRenderer( void )
 {
-	for (std::deque<GraphicsBase *>::iterator itr = pImpl->graphics.begin();
+	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
 		(*itr)->DettachRenderer();
