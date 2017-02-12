@@ -89,6 +89,8 @@ void F35_NS::GeometryBase::InternalInit( RendererBase * renderer )
 
 void F35_NS::GeometryBase::InternalDestroy( RendererBase * renderer )
 {
+	pImpl->line_brush = NULL;
+	pImpl->fill_brush = NULL;
 }
 
 ID2D1Brush * F35_NS::GeometryBase::GetLineBrush( void )

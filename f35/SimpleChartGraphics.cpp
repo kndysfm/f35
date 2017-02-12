@@ -12,7 +12,7 @@ struct SimpleChartGraphics::Impl
 	H::R<ID2D1SolidColorBrush> axis_line_brush;
 	H::R<ID2D1SolidColorBrush> major_grid_brush;
 	H::R<ID2D1SolidColorBrush> minor_grid_brush;
-	H::R<ID2D1SolidColorBrush> mess_brush;
+	H::R<ID2D1SolidColorBrush> text_brush;
 	H::R<IDWriteTextFormat> x_label_textf;
 	H::R<IDWriteTextFormat> y_label_textf;
 	H::R<IDWriteTextFormat> mess_textf;
@@ -24,7 +24,7 @@ struct SimpleChartGraphics::Impl
 		axis_line_brush( r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
 		major_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.75f))),
 		minor_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.50f))),
-		mess_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
+		text_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
 		y_label_textf(r->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_TRAILING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
 		x_label_textf(r->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
 		mess_textf(r->MakeTextFormat(_T("MS Gothic"), 20.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_PARAGRAPH_ALIGNMENT_CENTER)),
@@ -107,8 +107,8 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1
 
 	if (pImpl->mess != NULL)
 	{
-		(&pImpl->mess_brush)->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
-		H::WriteText(target, pImpl->mess_textf, rect,  pImpl->mess_brush, pImpl->mess);
+		(&pImpl->text_brush)->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
+		H::WriteText(target, pImpl->mess_textf, rect,  pImpl->text_brush, pImpl->mess);
 	}
 
 	return TRUE;

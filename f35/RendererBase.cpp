@@ -35,7 +35,6 @@ public:
 
 	virtual ~Impl(void)
 	{
-		Destroy();
 	}
 
 	ID2D1RenderTarget* GetTarget(void)
@@ -70,9 +69,7 @@ public:
 				pFormat->SetParagraphAlignment(paragraphAlign);
 				return pFormat;
 			}
-			else
-			{
-			}
+			else if (pFormat) pFormat->Release();
 		}
 		return NULL;
 	}
@@ -92,9 +89,7 @@ public:
 			{
 				return pBrush;
 			}
-			else
-			{
-			}
+			else if (pBrush) pBrush->Release();
 		}
 		return NULL;
 	}
@@ -110,9 +105,7 @@ public:
 			{
 				return pStyle;
 			}
-			else
-			{
-			}
+			else if (pStyle) pStyle->Release();
 		}
 		return NULL;
 	}
@@ -127,9 +120,7 @@ public:
 			{
 				return pPath;
 			}
-			else
-			{
-			}
+			else if (pPath) pPath->Release();
 		}
 		return NULL;
 	}
@@ -241,6 +232,9 @@ public:
 
 	void Destroy(void)
 	{
+		pD2dFactory = NULL;
+		pRenderTarget = NULL;
+		pDWriteFactory = NULL;
 	}
 
 	void EnableAutoErase(D2D1_COLOR_F c) { enable_auto_erase = TRUE;  color_to_erase = c; }
