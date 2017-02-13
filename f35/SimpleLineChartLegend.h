@@ -16,6 +16,7 @@ public:
 
 	void ShowMarker(BOOL show);
 
+protected:
 	virtual void BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const;
 
 	virtual void Draw( RendererBase *renderer, ID2D1RenderTarget * target, 
