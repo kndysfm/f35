@@ -46,20 +46,20 @@ Simple4DChartLegend::~Simple4DChartLegend(void)
 	pImpl = NULL;
 }
 
-void F35_NS::Simple4DChartLegend::BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::Simple4DChartLegend::BeginDraw( ) const
 {
-	pImpl->line_brush = renderer->MakeBrush(GetLineColor());
+	pImpl->line_brush = GetCurrentRenderer()->MakeBrush(GetLineColor());
 }
 
-void F35_NS::Simple4DChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
+void F35_NS::Simple4DChartLegend::Draw( D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->line_brush) return;
 
-	D2D1_POINT_2F pt0 = Impl::convert_point_xy(chart_rect, point);
-	D2D1_POINT_2F pt1 = Impl::convert_point_zw(chart_rect, point);
-	target->DrawLine(pt0, pt1, pImpl->line_brush);
+	D2D1_POINT_2F pt0 = Impl::convert_point_xy(GetCurrentChartRect(), point);
+	D2D1_POINT_2F pt1 = Impl::convert_point_zw(GetCurrentChartRect(), point);
+	GetCurrentTarget()->DrawLine(pt0, pt1, pImpl->line_brush);
 }
 
-void F35_NS::Simple4DChartLegend::EndDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::Simple4DChartLegend::EndDraw( ) const
 {
 }

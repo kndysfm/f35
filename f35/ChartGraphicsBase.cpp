@@ -133,7 +133,20 @@ struct ChartGraphicsBase::Impl
 		return pt_ret;
 	}
 
-	void plot_chart_data( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect )
+	D2D_VECTOR_4F get_ratio_plot_to_value()
+	{
+		D2D_VECTOR_4F r;
+
+		r.x = 1.0f / axis_x.range;
+		r.y = 1.0f / axis_y.range;
+		r.z = 1.0f / axis_z.range;
+		r.w = 1.0f / axis_w.range;
+
+		return r;
+	}
+
+
+	void plot_chart_data( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
 	{
 		for (ChartLegendMap::iterator itr = legend_map.begin();
 			itr != legend_map.end(); itr++)
@@ -141,42 +154,43 @@ struct ChartGraphicsBase::Impl
 			Tstring name = itr->first;
 			if (data_series_map.count(name) == 1)
 			{
-				ChartLegendBase const * l = itr->second;
+				IChartLegend const * l = itr->second;
 				ChartDataSeriesBase const * ds = data_series_map[name];
 
 				//UINT cnt = ds->GetCount();
 				if (ds->GetCount() > 0)
 				{
 					data_point_2vec pt_prev, pt_curr, pt_next;
-					l->BeginDraw(renderer, target);
+					l->Setup(renderer, target, *rect, get_ratio_plot_to_value());
+					l->BeginDraw();
 					pt_curr = convert_data_point(ds->GetDataPoint(0));
 					if (ds->GetCount() == 1)
 					{
-						l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, NULL, NULL);
+						l->Draw(&pt_curr.value, &pt_curr.plot, NULL, NULL);
 					}
 					else
 					{
 						pt_next = convert_data_point(ds->GetDataPoint(1));
-						l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, NULL, &pt_next.plot);
+						l->Draw(&pt_curr.value, &pt_curr.plot, NULL, &pt_next.plot);
 						for (UINT idx = 2; idx < ds->GetCount(); idx++)
 						{
 							pt_prev = pt_curr;
 							pt_curr = pt_next;
 							pt_next = convert_data_point(ds->GetDataPoint(idx));
-							l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, &pt_prev.plot, &pt_next.plot);
+							l->Draw(&pt_curr.value, &pt_curr.plot, &pt_prev.plot, &pt_next.plot);
 						}
 						pt_prev = pt_curr;
 						pt_curr = pt_next;
-						l->Draw(renderer, target, rect, &pt_curr.value, &pt_curr.plot, &pt_prev.plot, NULL);
+						l->Draw(&pt_curr.value, &pt_curr.plot, &pt_prev.plot, NULL);
 					}
-					l->EndDraw(renderer, target);
+					l->EndDraw();
 				}
 			}
 		}
 
 	}
 
-	void plot_legends( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect )
+	void plot_legends( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
 	{
 		FLOAT w_rect = rect->right - rect->left;
 		FLOAT h_rect = rect->bottom - rect->top;
@@ -191,7 +205,7 @@ struct ChartGraphicsBase::Impl
 			Tstring name = itr->first;
 			if (data_series_map.count(name) == 1)
 			{
-				ChartLegendBase const * l = itr->second;
+				IChartLegend const * l = itr->second;
 				ChartDataSeriesBase const * ds = data_series_map[name];
 
 				D2D_VECTOR_4F cdp_max = ds->GetMaxDataValues();
@@ -200,16 +214,16 @@ struct ChartGraphicsBase::Impl
 				if (cnt > 0)
 				{
 					D2D_VECTOR_4F pt_curr, pt_next;
-					l->BeginDraw(renderer, target);
+					l->Setup(renderer, target, *rect, get_ratio_plot_to_value());
+					l->BeginDraw();
 					pt_curr.x = 0.06f; pt_next.x = 0.14f;
 					pt_curr.y = pt_next.y = y_pos;
-					l->Draw(renderer, target, rect, NULL, &pt_curr, NULL, &pt_next);
-					l->Draw(renderer, target, rect, NULL, &pt_next, &pt_curr, NULL);
+					l->Draw(NULL, &pt_next, &pt_curr, NULL);
 
 					pt_curr.x = 0.15f;
-					l->Print(renderer, target, rect, &pt_curr, name.c_str());
+					l->Print(&pt_curr, name.c_str());
 
-					l->EndDraw(renderer, target);
+					l->EndDraw();
 				}
 			}
 			y_pos += h_line;

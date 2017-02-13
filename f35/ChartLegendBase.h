@@ -6,7 +6,23 @@
 
 namespace F35_NS
 {
-	class ChartLegendBase : H::NonCopyable
+	class IChartLegend
+	{
+	public:
+		virtual void Setup(RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const = 0;
+
+		virtual void BeginDraw(void) const = 0;
+
+		virtual void Draw(D2D_VECTOR_4F const *point_value, D2D_VECTOR_4F const *point_draw,
+			D2D_VECTOR_4F const *point_previous = NULL, D2D_VECTOR_4F const *point_next = NULL) const = 0;
+
+		virtual void Print(D2D_VECTOR_4F const *point, LPCTSTR str_fmt, ...) const = 0;
+
+		virtual void EndDraw(void) const = 0;
+
+	};
+
+	class ChartLegendBase : public IChartLegend, H::NonCopyable
 	{
 		struct Impl;
 		Impl *pImpl;
@@ -20,17 +36,26 @@ namespace F35_NS
 		void SetFillColor(const D2D1::ColorF & color);
 		D2D1::ColorF  GetFillColor(void) const;
 
-		virtual void BeginDraw(RendererBase *renderer, ID2D1RenderTarget * target) const = 0;
+	protected:
+		virtual void Setup(RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const sealed;
 
-		virtual void Draw(RendererBase *renderer, ID2D1RenderTarget * target,
-			D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point,
+		RendererBase *GetCurrentRenderer() const;
+
+		ID2D1RenderTarget * GetCurrentTarget() const;
+
+		D2D1_RECT_F const * GetCurrentChartRect() const;
+
+		D2D_VECTOR_4F const * GetCurrentRatioPlotToValue() const;
+
+		virtual void BeginDraw(void) const = 0;
+
+		virtual void Draw(D2D_VECTOR_4F const *point_value, D2D_VECTOR_4F const *point_draw,
 			D2D_VECTOR_4F const *point_previous = NULL, D2D_VECTOR_4F const *point_next = NULL) const = 0;
 
-		virtual void Print(RendererBase *renderer, ID2D1RenderTarget * target,
-			D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *point,
-			LPCTSTR str_fmt, ...) const = 0;
+		virtual void Print(D2D_VECTOR_4F const *point, LPCTSTR str_fmt, ...) const = 0;
 
-		virtual void EndDraw(RendererBase *renderer, ID2D1RenderTarget * target) const = 0;
+		virtual void EndDraw(void) const = 0;
+
 
 	};
 }

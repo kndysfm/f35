@@ -43,22 +43,22 @@ void F35_NS::SimpleLineChartLegend::ShowMarker( BOOL show )
 	if (pImpl) pImpl->marker = show;
 }
 
-void F35_NS::SimpleLineChartLegend::BeginDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::SimpleLineChartLegend::BeginDraw( ) const
 {
-	pImpl->line_brush = renderer->MakeBrush(GetLineColor());
+	pImpl->line_brush = GetCurrentRenderer()->MakeBrush(GetLineColor());
 
-	pImpl->textf = renderer->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+	pImpl->textf = GetCurrentRenderer()->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }
 
-void F35_NS::SimpleLineChartLegend::Draw( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
+void F35_NS::SimpleLineChartLegend::Draw( D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
 {
 	if (!pImpl || !pImpl->line_brush) return;
 
-	D2D1_POINT_2F pt1 = Impl::convert_point(chart_rect, point);
+	D2D1_POINT_2F pt1 = Impl::convert_point(GetCurrentChartRect(), point);
 	if (point_previous)
 	{
-		D2D1_POINT_2F pt0 = Impl::convert_point(chart_rect, point_previous);
-		target->DrawLine(pt0, pt1, pImpl->line_brush);
+		D2D1_POINT_2F pt0 = Impl::convert_point(GetCurrentChartRect(), point_previous);
+		GetCurrentTarget()->DrawLine(pt0, pt1, pImpl->line_brush);
 	}
 
 	if(pImpl->marker)
@@ -66,12 +66,12 @@ void F35_NS::SimpleLineChartLegend::Draw( RendererBase *renderer, ID2D1RenderTar
 		D2D1_ELLIPSE e;
 		e.point = pt1;
 		e.radiusX = e.radiusY = 2.0f;
-		target->FillEllipse(e, pImpl->line_brush);
+		GetCurrentTarget()->FillEllipse(e, pImpl->line_brush);
 	}
 }
 
 
-void F35_NS::SimpleLineChartLegend::Print( RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const *chart_rect, D2D_VECTOR_4F const *point, LPCTSTR str_fmt, ... ) const
+void F35_NS::SimpleLineChartLegend::Print( D2D_VECTOR_4F const *point, LPCTSTR str_fmt, ... ) const
 {
 	va_list arg_ptr;
 	va_start(arg_ptr, str_fmt);
@@ -80,11 +80,11 @@ void F35_NS::SimpleLineChartLegend::Print( RendererBase *renderer, ID2D1RenderTa
 	_TCHAR *str = new _TCHAR[len];
 	_vstprintf_s(str, len, str_fmt, arg_ptr);
 
-	D2D1_RECT_F rect = *chart_rect;
-	rect.left += point->x * (chart_rect->right - chart_rect->left);
-	rect.top += point->y * (chart_rect->bottom - chart_rect->top);
+	D2D1_RECT_F rect = *GetCurrentChartRect();
+	rect.left += point->x * (GetCurrentChartRect()->right - GetCurrentChartRect()->left);
+	rect.top += point->y * (GetCurrentChartRect()->bottom - GetCurrentChartRect()->top);
 
-	H::WriteText(target, pImpl->textf, rect, pImpl->line_brush, str);
+	H::WriteText(GetCurrentTarget(), pImpl->textf, rect, pImpl->line_brush, str);
 
 	delete[] str;
 
@@ -92,6 +92,6 @@ void F35_NS::SimpleLineChartLegend::Print( RendererBase *renderer, ID2D1RenderTa
 }
 
 
-void F35_NS::SimpleLineChartLegend::EndDraw( RendererBase *renderer, ID2D1RenderTarget * target ) const
+void F35_NS::SimpleLineChartLegend::EndDraw( ) const
 {
 }
