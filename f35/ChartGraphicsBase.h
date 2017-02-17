@@ -85,6 +85,8 @@ public:
 
 	void AdjustChartAxesAuto(void);
 
+	void ShowLegends(BOOL show);
+
 protected:
 
 	HRESULT PlotChartData( RendererBase *renderer, ID2D1RenderTarget *target, 

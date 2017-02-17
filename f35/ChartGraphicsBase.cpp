@@ -42,11 +42,15 @@ struct ChartGraphicsBase::Impl
 
 	D2D1_SIZE_F area_size;
 
+	BOOL shows_legends;
+
 	Impl(ChartGraphicsBase *p): 
 		parent(p), 
 		number_format(_T("%.1f")),
 		color_bg(D2D1::ColorF(D2D1::ColorF::White, 1.0f)),
-		color_fg(D2D1::ColorF(D2D1::ColorF::Black, 1.0f))
+		color_fg(D2D1::ColorF(D2D1::ColorF::Black, 1.0f)),
+		shows_legends(TRUE),
+		rect_ratio_legends_(D2D1::RectF(0.05f, 0.05f, 0.1f, 0.1f))
 	{
 		// initialize four axes
 		axis_x.min =	axis_y.min =	axis_z.min =	axis_w.min =	0.0f;
@@ -190,14 +194,22 @@ struct ChartGraphicsBase::Impl
 
 	}
 
+	D2D1_RECT_F rect_ratio_legends_; // stack it vertically
+
 	void plot_legends( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
 	{
 		FLOAT w_rect = rect->right - rect->left;
 		FLOAT h_rect = rect->bottom - rect->top;
-		UINT num = legend_map.size();
-
-		FLOAT h_line = 0.3f / (num + 1.0f);
-		FLOAT y_pos = h_line * 0.5f;
+		D2D1_RECT_F rect_leg = D2D1::RectF(
+			rect->left + rect_ratio_legends_.left * w_rect,
+			rect->top + rect_ratio_legends_.top * h_rect,
+			rect->left + rect_ratio_legends_.right * w_rect,
+			rect->top + rect_ratio_legends_.bottom * h_rect);
+		FLOAT w_rect_leg = rect_leg.right - rect_leg.left;
+		FLOAT h_rect_leg = rect_leg.bottom - rect_leg.top;
+		D2D_VECTOR_4F ratio_plot_to_value = get_ratio_plot_to_value();
+		ratio_plot_to_value.x *= w_rect / w_rect_leg;
+		ratio_plot_to_value.y *= h_rect / h_rect_leg;
 
 		for (ChartLegendMap::iterator itr = legend_map.begin();
 			itr != legend_map.end(); itr++)
@@ -214,19 +226,19 @@ struct ChartGraphicsBase::Impl
 				if (cnt > 0)
 				{
 					D2D_VECTOR_4F pt_curr, pt_next;
-					l->Setup(renderer, target, *rect, get_ratio_plot_to_value());
+					l->Setup(renderer, target, rect_leg, ratio_plot_to_value);
 					l->BeginDraw();
-					pt_curr.x = 0.06f; pt_next.x = 0.14f;
-					pt_curr.y = pt_next.y = y_pos;
+					pt_curr.x = 0.0f; pt_next.x = 0.5f;
+					pt_curr.y = 1.0f; pt_next.y = 0.0f;
 					l->Draw(NULL, &pt_next, &pt_curr, NULL);
-
-					pt_curr.x = 0.15f;
+					pt_curr.x = 0.0f, pt_curr.y = 0.0f;
 					l->Print(&pt_curr, name.c_str());
-
 					l->EndDraw();
+
+					rect_leg.top += h_rect_leg;
+					rect_leg.bottom += h_rect_leg;
 				}
 			}
-			y_pos += h_line;
 		}
 
 	}
@@ -403,15 +415,6 @@ struct ChartGraphicsBase::Impl
 		parent->SetChartAxisY(y_min, y_max);
 		parent->SetChartAxisZ(z_min, z_max);
 		parent->SetChartAxisW(w_min, w_max);
-
-		FLOAT ux = range_to_unit(axis_x.range);
-		FLOAT uy = range_to_unit(axis_y.range);
-		FLOAT uz = range_to_unit(axis_z.range);
-		FLOAT uw = range_to_unit(axis_w.range);
-		parent->SetChartUnitX(ux, ux*0.2f);
-		parent->SetChartUnitY(uy, uy*0.2f);
-		parent->SetChartUnitZ(uz, uz*0.2f);
-		parent->SetChartUnitW(uw, uw*0.2f);
 	}
 
 };
@@ -481,6 +484,8 @@ void F35_NS::ChartGraphicsBase::SetChartAxisX (FLOAT min, FLOAT max)
 		pImpl->axis_x.min = min;
 		pImpl->axis_x.max = max;
 		pImpl->axis_x.range = max - min;
+		FLOAT ux = Impl::range_to_unit(pImpl->axis_x.range);
+		SetChartUnitX(ux, ux*0.2f);
 	}
 }
 void F35_NS::ChartGraphicsBase::SetChartAxisY (FLOAT min, FLOAT max)
@@ -490,6 +495,8 @@ void F35_NS::ChartGraphicsBase::SetChartAxisY (FLOAT min, FLOAT max)
 		pImpl->axis_y.min = min;
 		pImpl->axis_y.max = max;
 		pImpl->axis_y.range = max - min;
+		FLOAT uy = Impl::range_to_unit(pImpl->axis_y.range);
+		SetChartUnitY(uy, uy*0.2f);
 	}
 }
 void F35_NS::ChartGraphicsBase::SetChartAxisZ (FLOAT min, FLOAT max)
@@ -499,6 +506,8 @@ void F35_NS::ChartGraphicsBase::SetChartAxisZ (FLOAT min, FLOAT max)
 		pImpl->axis_z.min = min;
 		pImpl->axis_z.max = max;
 		pImpl->axis_z.range = max - min;
+		FLOAT uz = Impl::range_to_unit(pImpl->axis_z.range);
+		SetChartUnitZ(uz, uz*0.2f);
 	}
 }
 void F35_NS::ChartGraphicsBase::SetChartAxisW (FLOAT min, FLOAT max)
@@ -508,6 +517,8 @@ void F35_NS::ChartGraphicsBase::SetChartAxisW (FLOAT min, FLOAT max)
 		pImpl->axis_w.min = min;
 		pImpl->axis_w.max = max;
 		pImpl->axis_w.range = max - min;
+		FLOAT uw = Impl::range_to_unit(pImpl->axis_w.range);
+		SetChartUnitW(uw, uw*0.2f);
 	}
 }
 
@@ -622,7 +633,7 @@ HRESULT F35_NS::ChartGraphicsBase::PlotLegends(
 	RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->plot_legends(renderer, target, rect);
+	if (pImpl->shows_legends) pImpl->plot_legends(renderer, target, rect);
 	return S_OK;
 }
 
@@ -836,4 +847,9 @@ void F35_NS::ChartGraphicsBase::SetChartAreaSize(FLOAT x, FLOAT y)
 void F35_NS::ChartGraphicsBase::AdjustChartAxesAuto(void)
 {
 	pImpl->adjust_chart_axes_auto();
+}
+
+void F35_NS::ChartGraphicsBase::ShowLegends(BOOL show)
+{
+	pImpl->shows_legends = show;
 }
