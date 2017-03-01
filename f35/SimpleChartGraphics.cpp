@@ -74,11 +74,11 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1
 	D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width, size.height);
 
 	D2D1::ColorF color_fg = GetForegroundColor();
-	(&pImpl->axis_line_brush)->SetColor(color_fg);
+	pImpl->axis_line_brush->SetColor(color_fg);
 	color_fg.a = 0.75f;
-	(&pImpl->major_grid_brush)->SetColor(color_fg);
+	pImpl->major_grid_brush->SetColor(color_fg);
 	color_fg.a = 0.25f;
-	(&pImpl->minor_grid_brush)->SetColor(color_fg);
+	pImpl->minor_grid_brush->SetColor(color_fg);
 
 	rect.left += 30.0f;
 	rect.right -= 5.0f;
@@ -107,7 +107,7 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1
 
 	if (pImpl->mess != NULL)
 	{
-		(&pImpl->text_brush)->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
+		pImpl->text_brush->SetColor(D2D1::ColorF(D2D1::ColorF::Silver));
 		H::WriteText(target, pImpl->mess_textf, rect,  pImpl->text_brush, pImpl->mess);
 	}
 

@@ -79,7 +79,11 @@ namespace F35_NS
 
 			operator BOOL() { return pResource != NULL; }
 
-			Interface * operator& () const { return pResource; }
+			Interface * const * operator& () const { return &pResource; }
+
+			Interface * operator->() { return pResource; }
+
+			Interface const * operator->() const { return pResource; }
 
 			operator Interface *() { return pResource; }
 

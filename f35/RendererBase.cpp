@@ -53,7 +53,7 @@ public:
 		if (pDWriteFactory)
 		{
 			IDWriteTextFormat *pFormat = NULL;
-			HRESULT hr = (&pDWriteFactory)->CreateTextFormat(
+			HRESULT hr = pDWriteFactory->CreateTextFormat(
 				fontName,
 				NULL,
 				DWRITE_FONT_WEIGHT_NORMAL,
@@ -76,7 +76,7 @@ public:
 
 	D2D1_SIZE_F GetSize(void) const
 	{
-		return (&pRenderTarget)->GetSize();
+		return pRenderTarget->GetSize();
 	}
 
 	ID2D1SolidColorBrush * GetSolidBrush( const D2D1::ColorF & color )
@@ -84,7 +84,7 @@ public:
 		if (pRenderTarget)
 		{
 			ID2D1SolidColorBrush *pBrush = NULL;
-			HRESULT hr = (&pRenderTarget)->CreateSolidColorBrush(color, &pBrush);
+			HRESULT hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);
 			if (SUCCEEDED(hr))
 			{
 				return pBrush;
@@ -100,7 +100,7 @@ public:
 		{
 			ID2D1StrokeStyle *pStyle;
 			D2D1_STROKE_STYLE_PROPERTIES props = D2D1::StrokeStyleProperties();
-			HRESULT hr = (&pD2dFactory)->CreateStrokeStyle(props, &dashes, dashesCount, &pStyle);
+			HRESULT hr = pD2dFactory->CreateStrokeStyle(props, &dashes, dashesCount, &pStyle);
 			if (SUCCEEDED(hr))
 			{
 				return pStyle;
@@ -115,7 +115,7 @@ public:
 		if (pD2dFactory)
 		{
 			ID2D1PathGeometry *pPath;
-			HRESULT hr = (&pD2dFactory)->CreatePathGeometry(&pPath);
+			HRESULT hr = pD2dFactory->CreatePathGeometry(&pPath);
 			if (SUCCEEDED(hr))
 			{
 				return pPath;
@@ -141,7 +141,7 @@ public:
 			GetClientRect(this->hWnd, &rc);
 			D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
 			ID2D1HwndRenderTarget *pRT;
-			hr = (&pD2dFactory)->CreateHwndRenderTarget(
+			hr = pD2dFactory->CreateHwndRenderTarget(
 				D2D1::RenderTargetProperties(),
 				D2D1::HwndRenderTargetProperties(this->hWnd, size),
 				&pRT
@@ -193,7 +193,7 @@ public:
 		if (pRenderTarget && ::GetCursorPos(&pt) && ::ScreenToClient(hWnd, &pt))
 		{
 			FLOAT dpiX, dpiY;
-			(&pRenderTarget)->GetDpi(&dpiX, &dpiY);
+			pRenderTarget->GetDpi(&dpiX, &dpiY);
 			currPos.x = (FLOAT)pt.x*96.0f/dpiX;
 			currPos.y = (FLOAT)pt.y*96.0f/dpiY;
 		}
@@ -204,9 +204,9 @@ public:
 	{
 		if (!pRenderTarget) return S_FALSE;
 
-		(&pRenderTarget)->BeginDraw();
-		(&pRenderTarget)->SetTransform(D2D1::Matrix3x2F::Identity());
-		if (enable_auto_erase) (&pRenderTarget)->Clear(color_to_erase);
+		pRenderTarget->BeginDraw();
+		pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		if (enable_auto_erase) pRenderTarget->Clear(color_to_erase);
 
 		return S_OK;
 	}
@@ -215,7 +215,7 @@ public:
 	{
 		if (SUCCEEDED(hr))
 		{
-			if (pRenderTarget) hr = (&pRenderTarget)->EndDraw();
+			if (pRenderTarget) hr = pRenderTarget->EndDraw();
 		}
 		if (hr == D2DERR_RECREATE_TARGET)
 		{

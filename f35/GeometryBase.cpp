@@ -62,23 +62,23 @@ ID2D1StrokeStyle * F35_NS::GeometryBase::GetLineStyle( void )
 void F35_NS::GeometryBase::SetLineColor( const D2D1::ColorF & c )
 {
 	pImpl->line_color = c;
-	if (pImpl->line_brush) (&pImpl->line_brush)->SetColor(c);
+	if (pImpl->line_brush) pImpl->line_brush->SetColor(c);
 }
 
 D2D1_COLOR_F F35_NS::GeometryBase::GetLineColor( void )
 {
-	return (&pImpl->line_brush)->GetColor();
+	return pImpl->line_brush->GetColor();
 }
 
 void F35_NS::GeometryBase::SetFillColor( const D2D1::ColorF & c )
 {
 	pImpl->fill_color = c;
-	if (pImpl->fill_brush) (&pImpl->fill_brush)->SetColor(c);
+	if (pImpl->fill_brush) pImpl->fill_brush->SetColor(c);
 }
 
 D2D1_COLOR_F F35_NS::GeometryBase::GetFillColor( void )
 {
-	return (&pImpl->fill_brush)->GetColor();
+	return pImpl->fill_brush->GetColor();
 }
 
 void F35_NS::GeometryBase::InternalInit( RendererBase * renderer )
