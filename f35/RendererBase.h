@@ -40,7 +40,10 @@ public:
 	 */
 	H::R<ID2D1SolidColorBrush> MakeBrush(const D2D1::ColorF &color);
 
-	
+	H::R<ID2D1Layer> MakeLayer(void);
+
+	H::R<ID2D1Bitmap> MakeBitmap(void);
+
 	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
 	 *  \brief 
 	 *  \param void
@@ -163,6 +166,13 @@ public:
 	void EnableAutoErase(D2D1_COLOR_F color_to_erase = D2D1::ColorF(0));
 
 	void DisableAutoErase(void);
+
+	enum ImageFileFormat{
+		IFF_PNG, IFF_BMP, IFF_JPEG, IFF_GIF,
+	};
+	HRESULT SaveImageFile(LPCTSTR filename, ImageFileFormat fmt = IFF_PNG);
+
+	void Resize(BOOL scaling = TRUE);
 };
 
 }

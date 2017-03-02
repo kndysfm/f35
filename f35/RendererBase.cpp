@@ -2,6 +2,7 @@
 
 #include "RendererBase.h"
 #include <stdarg.h>
+#include <wincodec.h>
 
 USING_F35_NS;
 
@@ -18,6 +19,7 @@ class RendererBase::Impl
 
 	BOOL enable_auto_erase;
 	D2D1_COLOR_F color_to_erase;
+	D2D1_RENDER_TARGET_PROPERTIES rtProps_shared;
 
 public:
 	Impl(RendererBase *renderer, HWND hwnd)
@@ -31,6 +33,8 @@ public:
 			hp = ::GetParent(hc);
 		}while (hp != NULL);
 		this->hParent = hc;
+		this->enable_auto_erase = FALSE;
+		color_to_erase = D2D1::ColorF(0);
 	}
 
 	virtual ~Impl(void)
@@ -110,6 +114,47 @@ public:
 		return NULL;
 	}
 
+	ID2D1Layer * GetLayer(void)
+	{
+		if (pRenderTarget)
+		{
+			ID2D1Layer *pLayer = NULL;
+			D2D1_SIZE_F size = pRenderTarget->GetSize();
+			HRESULT hr = pRenderTarget->CreateLayer(size, &pLayer);
+			if (SUCCEEDED(hr))
+			{
+				return pLayer;
+			}
+			else if (pLayer) pLayer->Release();
+		}
+		return NULL;
+	}
+
+	ID2D1Bitmap * GetBitmap(void)
+	{
+		if (pRenderTarget)
+		{
+			ID2D1Bitmap *pBitmap = NULL;
+			D2D1_SIZE_F sizeF = pRenderTarget->GetSize();
+			D2D1_SIZE_U sizeU = D2D1::SizeU((UINT32)sizeF.width, (UINT32)sizeF.height);
+			D2D1_BITMAP_PROPERTIES prop;
+			pRenderTarget->GetDpi(&prop.dpiX, &prop.dpiY);
+			prop.pixelFormat = pRenderTarget->GetPixelFormat();
+			HRESULT hr = pRenderTarget->CreateBitmap(sizeU, prop, &pBitmap);
+			if (SUCCEEDED(hr))
+			{
+				hr = pBitmap->CopyFromRenderTarget(NULL, pRenderTarget, NULL);
+				if (SUCCEEDED(hr))
+				{
+					return pBitmap;
+				}
+			}
+			
+			if (pBitmap) pBitmap->Release();
+		}
+		return NULL;
+	}
+
 	ID2D1PathGeometry * GetPathGeometry (void)
 	{
 		if (pD2dFactory)
@@ -125,6 +170,29 @@ public:
 		return NULL;
 	}
 
+	HRESULT ResetRenderer(void)
+	{
+		HRESULT hr = S_OK;
+		pRenderTarget = NULL;
+		if (pD2dFactory)
+		{
+			RECT rc;
+			GetClientRect(this->hWnd, &rc);
+			D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
+			rtProps_shared = D2D1::RenderTargetProperties();
+			rtProps_shared.type = D2D1_RENDER_TARGET_TYPE_SOFTWARE;
+			rtProps_shared.usage = D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE;
+			ID2D1HwndRenderTarget *pRT;
+			hr = pD2dFactory->CreateHwndRenderTarget(
+				rtProps_shared,//D2D1::RenderTargetProperties(),
+				D2D1::HwndRenderTargetProperties(this->hWnd, size),
+				&pRT
+			);
+			pRenderTarget = pRT;
+		}
+		return hr;
+	}
+
 	HRESULT Init(void)
 	{
 		HRESULT hr = S_OK;
@@ -135,20 +203,7 @@ public:
 			hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &pFactory);
 			pD2dFactory = pFactory;
 		}
-		if (!pRenderTarget && SUCCEEDED(hr) && pD2dFactory)
-		{
-			RECT rc;
-			GetClientRect(this->hWnd, &rc);
-			D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
-			ID2D1HwndRenderTarget *pRT;
-			hr = pD2dFactory->CreateHwndRenderTarget(
-				D2D1::RenderTargetProperties(),
-				D2D1::HwndRenderTargetProperties(this->hWnd, size),
-				&pRT
-				);
-			pRenderTarget = pRT;
-		}
-		if (!pDWriteFactory && SUCCEEDED(hr) && pD2dFactory)
+		if (!pDWriteFactory && SUCCEEDED(hr)/* && pD2dFactory*/)
 		{
 			IDWriteFactory *pFactory;
 			// Create a DirectWrite factory.
@@ -159,6 +214,7 @@ public:
 				);
 			pDWriteFactory = pFactory;
 		}
+		if (SUCCEEDED(hr)) hr = ResetRenderer();
 
 		return hr;
 	}
@@ -239,6 +295,168 @@ public:
 
 	void EnableAutoErase(D2D1_COLOR_F c) { enable_auto_erase = TRUE;  color_to_erase = c; }
 	void DisableAutoErase() { enable_auto_erase = FALSE; }
+
+	HRESULT SaveImageFile(LPCTSTR filename, ImageFileFormat fmt)
+	{
+		if (!pD2dFactory || !pRenderTarget) return S_FALSE;
+
+		HRESULT hr = S_OK;
+
+		IWICImagingFactory * pWICFactory = NULL;
+		IWICBitmap * pDstBitmap = NULL;
+		ID2D1Bitmap *pSrcBitmap = NULL;
+		ID2D1RenderTarget *pRT = NULL;
+		IWICBitmapEncoder * pEncoder = NULL;
+		IWICBitmapFrameEncode * pFrameEncode = NULL;
+		IWICStream * pStream = NULL;
+
+		if (SUCCEEDED(hr))
+		{
+			hr = CoCreateInstance(
+				CLSID_WICImagingFactory,
+				NULL,
+				CLSCTX_INPROC_SERVER,
+				IID_IWICImagingFactory,
+				(LPVOID*)&pWICFactory
+			);
+		}
+
+		//
+		// Create IWICBitmap and RT
+		//
+
+		UINT sc_bitmapWidth = pRenderTarget->GetSize().width;
+		UINT sc_bitmapHeight = pRenderTarget->GetSize().height;
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pWICFactory->CreateBitmap(
+				sc_bitmapWidth,
+				sc_bitmapHeight,
+				GUID_WICPixelFormat32bppPBGRA,
+				WICBitmapCacheOnLoad,
+				&pDstBitmap
+			);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pD2dFactory->CreateWicBitmapRenderTarget(
+				pDstBitmap,
+				rtProps_shared,
+				&pRT
+			);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			//
+			// Render into the bitmap
+			//
+			pRT->BeginDraw();
+			pRT->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+			pSrcBitmap = GetBitmap();
+			pRT->DrawBitmap(pSrcBitmap);
+			hr = pRT->EndDraw();
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pWICFactory->CreateStream(&pStream);
+		}
+
+		WICPixelFormatGUID format = GUID_WICPixelFormat32bppPBGRA;
+		if (SUCCEEDED(hr))
+		{
+			hr = pStream->InitializeFromFilename(filename, GENERIC_WRITE);
+		}
+		if (SUCCEEDED(hr))
+		{
+			GUID guid = GUID_ContainerFormatPng;
+			switch (fmt)
+			{
+			case fxxxv::RendererBase::IFF_PNG:
+				guid = GUID_ContainerFormatPng;
+				break;
+			case fxxxv::RendererBase::IFF_BMP:
+				guid = GUID_ContainerFormatBmp;
+				break;
+			case fxxxv::RendererBase::IFF_JPEG:
+				guid = GUID_ContainerFormatJpeg;
+				break;
+			case fxxxv::RendererBase::IFF_GIF:
+				guid = GUID_ContainerFormatGif;
+				break;
+			}
+			hr = pWICFactory->CreateEncoder(guid, NULL, &pEncoder);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pEncoder->Initialize(pStream, WICBitmapEncoderNoCache);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pEncoder->CreateNewFrame(&pFrameEncode, NULL);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameEncode->Initialize(NULL);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameEncode->SetSize(sc_bitmapWidth, sc_bitmapHeight);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameEncode->SetPixelFormat(&format);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameEncode->WriteSource(pDstBitmap, NULL);
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameEncode->Commit();
+		}
+		if (SUCCEEDED(hr))
+		{
+			hr = pEncoder->Commit();
+		}
+
+		if (pWICFactory) pWICFactory->Release();
+		if (pDstBitmap) pDstBitmap->Release();
+		if (pSrcBitmap) pSrcBitmap->Release();
+		if (pRT) pRT->Release();
+		if (pEncoder) pEncoder->Release();
+		if (pFrameEncode) pFrameEncode->Release();
+		if (pStream) pStream->Release();
+
+		return hr;
+	}
+
+	void Resize(BOOL scaling)
+	{
+		D2D1_SIZE_F size_last = pRenderTarget->GetSize();
+		D2D1_RECT_U rect_src = D2D1::RectU(0, 0, (UINT32)size_last.width, (UINT32)size_last.height);
+		H::R<ID2D1Bitmap> bmp_last = GetBitmap();
+		HRESULT hr = ResetRenderer();
+		if (SUCCEEDED(hr))
+		{
+			pRenderTarget->BeginDraw();
+			if (scaling)
+			{
+				D2D1_SIZE_U size_px = bmp_last->GetPixelSize();
+				D2D1_RECT_F rect_px = D2D1::RectF(0, 0, size_px.width, size_px.height);
+				D2D1_SIZE_F size = pRenderTarget->GetSize();
+				D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width, size.height);
+				pRenderTarget->DrawBitmap(bmp_last, rect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, rect_px);
+			}
+			else
+			{
+				pRenderTarget->DrawBitmap(bmp_last);
+			}
+			pRenderTarget->EndDraw();
+		}
+	}
 };
 
 RendererBase::RendererBase(HWND hwnd):
@@ -324,6 +542,16 @@ H::R<ID2D1SolidColorBrush> RendererBase::MakeBrush( const D2D1::ColorF & color )
 	return pImpl->GetSolidBrush(color);
 }
 
+H::R<ID2D1Layer> RendererBase::MakeLayer(void)
+{
+	return pImpl->GetLayer();
+}
+
+H::R<ID2D1Bitmap> RendererBase::MakeBitmap(void)
+{
+	return pImpl->GetBitmap();
+}
+
 D2D1_POINT_2F RendererBase::GetCurrentCursorPosDpi( void )
 {
 	return pImpl->GetCurrPosDpi();
@@ -367,4 +595,14 @@ void F35_NS::RendererBase::EnableAutoErase(D2D1_COLOR_F color_to_erase)
 void F35_NS::RendererBase::DisableAutoErase(void)
 {
 	pImpl->DisableAutoErase();
+}
+
+HRESULT F35_NS::RendererBase::SaveImageFile(LPCTSTR filename, ImageFileFormat fmt)
+{
+	return pImpl->SaveImageFile(filename, fmt);
+}
+
+void F35_NS::RendererBase::Resize(BOOL scaling)
+{
+	return pImpl->Resize(scaling);
 }
