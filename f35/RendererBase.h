@@ -1,5 +1,6 @@
 #pragma once
 #include "F35Helper.h"
+#include <wincodec.h>
 
 namespace F35_NS
 {
@@ -43,6 +44,10 @@ public:
 	H::R<ID2D1Layer> MakeLayer(void);
 
 	H::R<ID2D1Bitmap> MakeBitmap(void);
+
+	H::R<IWICBitmap> MakeWICBitmap(void);
+
+	H::R<ID2D1RenderTarget> MakeWicBitmapRenderTarget(void);
 
 	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
 	 *  \brief 

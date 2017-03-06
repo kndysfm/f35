@@ -2,15 +2,17 @@
 
 #include "RendererBase.h"
 #include <stdarg.h>
-#include <wincodec.h>
 
 USING_F35_NS;
 
 class RendererBase::Impl
 {
-	H::R<ID2D1Factory> pD2dFactory;
+	static H::R<ID2D1Factory> pD2dFactory;
+	static H::R<IDWriteFactory> pDWriteFactory;
+	static H::R<IWICImagingFactory> pWICFactory;
+	static D2D1_RENDER_TARGET_PROPERTIES rtProps_shared;
+	
 	H::R<ID2D1HwndRenderTarget> pRenderTarget;
-	H::R<IDWriteFactory> pDWriteFactory;
 
 	HWND hWnd;
 	HWND hParent;
@@ -19,7 +21,6 @@ class RendererBase::Impl
 
 	BOOL enable_auto_erase;
 	D2D1_COLOR_F color_to_erase;
-	D2D1_RENDER_TARGET_PROPERTIES rtProps_shared;
 
 public:
 	Impl(RendererBase *renderer, HWND hwnd)
@@ -179,9 +180,6 @@ public:
 			RECT rc;
 			GetClientRect(this->hWnd, &rc);
 			D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
-			rtProps_shared = D2D1::RenderTargetProperties();
-			rtProps_shared.type = D2D1_RENDER_TARGET_TYPE_SOFTWARE;
-			rtProps_shared.usage = D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE;
 			ID2D1HwndRenderTarget *pRT;
 			hr = pD2dFactory->CreateHwndRenderTarget(
 				rtProps_shared,//D2D1::RenderTargetProperties(),
@@ -202,18 +200,35 @@ public:
 			ID2D1Factory *pFactory;
 			hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &pFactory);
 			pD2dFactory = pFactory;
+
+			rtProps_shared = D2D1::RenderTargetProperties();
+			rtProps_shared.type = D2D1_RENDER_TARGET_TYPE_SOFTWARE;
+			rtProps_shared.usage = D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE;
 		}
-		if (!pDWriteFactory && SUCCEEDED(hr)/* && pD2dFactory*/)
+		if (!pDWriteFactory && SUCCEEDED(hr))
 		{
 			IDWriteFactory *pFactory;
 			// Create a DirectWrite factory.
-			hr = DWriteCreateFactory(
+			hr = ::DWriteCreateFactory(
 				DWRITE_FACTORY_TYPE_SHARED,
 				__uuidof(pDWriteFactory),
 				reinterpret_cast<IUnknown **>(&pFactory)
 				);
 			pDWriteFactory = pFactory;
 		}
+		if (!pWICFactory && SUCCEEDED(hr))
+		{
+			IWICImagingFactory *ptr = NULL;
+			hr = CoCreateInstance(
+				CLSID_WICImagingFactory,
+				NULL,
+				CLSCTX_INPROC_SERVER,
+				IID_IWICImagingFactory,
+				(LPVOID*)&ptr
+			);
+			pWICFactory = ptr;
+		}
+
 		if (SUCCEEDED(hr)) hr = ResetRenderer();
 
 		return hr;
@@ -296,32 +311,39 @@ public:
 	void EnableAutoErase(D2D1_COLOR_F c) { enable_auto_erase = TRUE;  color_to_erase = c; }
 	void DisableAutoErase() { enable_auto_erase = FALSE; }
 
+	static IWICBitmap *GetWICBitmap(UINT width_px, UINT height_px)
+	{
+		IWICBitmap *ptr = NULL;
+		HRESULT hr = pWICFactory->CreateBitmap(
+			width_px, height_px,
+			GUID_WICPixelFormat32bppPBGRA,
+			WICBitmapCacheOnLoad,
+			&ptr
+		);
+		if (SUCCEEDED(hr)) return ptr;
+		else if (ptr) ptr->Release();
+	}
+
+	static ID2D1RenderTarget *GetWICBitmapRenderTarget(IWICBitmap *pBmp)
+	{
+		ID2D1RenderTarget *ptr = NULL;
+		HRESULT hr = pD2dFactory->CreateWicBitmapRenderTarget(pBmp, rtProps_shared, &ptr);
+		if (SUCCEEDED(hr)) return ptr;
+		else if (ptr) ptr->Release();
+	}
+
 	HRESULT SaveImageFile(LPCTSTR filename, ImageFileFormat fmt)
 	{
 		if (!pD2dFactory || !pRenderTarget) return S_FALSE;
 
 		HRESULT hr = S_OK;
 
-		H::R<IWICImagingFactory> pWICFactory;
 		H::R<IWICBitmap> pWICBitmap;
 		H::R<ID2D1Bitmap>pSrcBitmap;
 		H::R<ID2D1RenderTarget> pBitmapRenderTarget;
 		H::R<IWICBitmapEncoder> pEncoder;
 		H::R<IWICBitmapFrameEncode> pFrameEncode;
 		H::R<IWICStream> pStream;
-
-		if (SUCCEEDED(hr))
-		{
-			IWICImagingFactory *ptr = NULL;
-			hr = CoCreateInstance(
-				CLSID_WICImagingFactory,
-				NULL,
-				CLSCTX_INPROC_SERVER,
-				IID_IWICImagingFactory,
-				(LPVOID*)&ptr
-			);
-			pWICFactory = ptr;
-		}
 
 		//
 		// Create IWICBitmap and RT
@@ -463,6 +485,12 @@ public:
 	}
 };
 
+H::R<ID2D1Factory> RendererBase::Impl::pD2dFactory;
+H::R<IDWriteFactory> RendererBase::Impl::pDWriteFactory;
+H::R<IWICImagingFactory> RendererBase::Impl::pWICFactory;
+D2D1_RENDER_TARGET_PROPERTIES RendererBase::Impl::rtProps_shared;
+
+
 RendererBase::RendererBase(HWND hwnd):
 	pImpl(new Impl(this, hwnd))
 {
@@ -555,6 +583,17 @@ H::R<ID2D1Bitmap> RendererBase::MakeBitmap(void)
 {
 	return pImpl->GetBitmap();
 }
+
+H::R<IWICBitmap> RendererBase::MakeWICBitmap(void)
+{
+	return Impl::GetWICBitmap(0, 0);
+}
+
+H::R<ID2D1RenderTarget> RendererBase::MakeWicBitmapRenderTarget(void)
+{
+	return Impl::GetWICBitmapRenderTarget(nullptr);
+}
+
 
 D2D1_POINT_2F RendererBase::GetCurrentCursorPosDpi( void )
 {
