@@ -302,23 +302,25 @@ public:
 
 		HRESULT hr = S_OK;
 
-		IWICImagingFactory * pWICFactory = NULL;
-		IWICBitmap * pDstBitmap = NULL;
-		ID2D1Bitmap *pSrcBitmap = NULL;
-		ID2D1RenderTarget *pRT = NULL;
-		IWICBitmapEncoder * pEncoder = NULL;
-		IWICBitmapFrameEncode * pFrameEncode = NULL;
-		IWICStream * pStream = NULL;
+		H::R<IWICImagingFactory> pWICFactory;
+		H::R<IWICBitmap> pWICBitmap;
+		H::R<ID2D1Bitmap>pSrcBitmap;
+		H::R<ID2D1RenderTarget> pBitmapRenderTarget;
+		H::R<IWICBitmapEncoder> pEncoder;
+		H::R<IWICBitmapFrameEncode> pFrameEncode;
+		H::R<IWICStream> pStream;
 
 		if (SUCCEEDED(hr))
 		{
+			IWICImagingFactory *ptr = NULL;
 			hr = CoCreateInstance(
 				CLSID_WICImagingFactory,
 				NULL,
 				CLSCTX_INPROC_SERVER,
 				IID_IWICImagingFactory,
-				(LPVOID*)&pWICFactory
+				(LPVOID*)&ptr
 			);
+			pWICFactory = ptr;
 		}
 
 		//
@@ -330,22 +332,26 @@ public:
 
 		if (SUCCEEDED(hr))
 		{
+			IWICBitmap *ptr = NULL;
 			hr = pWICFactory->CreateBitmap(
 				sc_bitmapWidth,
 				sc_bitmapHeight,
 				GUID_WICPixelFormat32bppPBGRA,
 				WICBitmapCacheOnLoad,
-				&pDstBitmap
+				&ptr
 			);
+			pWICBitmap = ptr;
 		}
 
 		if (SUCCEEDED(hr))
 		{
+			ID2D1RenderTarget *ptr = NULL;
 			hr = pD2dFactory->CreateWicBitmapRenderTarget(
-				pDstBitmap,
+				pWICBitmap,
 				rtProps_shared,
-				&pRT
+				&ptr
 			);
+			pBitmapRenderTarget = ptr;
 		}
 
 		if (SUCCEEDED(hr))
@@ -353,18 +359,19 @@ public:
 			//
 			// Render into the bitmap
 			//
-			pRT->BeginDraw();
-			pRT->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+			pBitmapRenderTarget->BeginDraw();
+			pBitmapRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 			pSrcBitmap = GetBitmap();
-			pRT->DrawBitmap(pSrcBitmap);
-			hr = pRT->EndDraw();
+			if (pSrcBitmap) pBitmapRenderTarget->DrawBitmap(pSrcBitmap);
+			hr = pBitmapRenderTarget->EndDraw();
 		}
 		if (SUCCEEDED(hr))
 		{
-			hr = pWICFactory->CreateStream(&pStream);
+			IWICStream * ptr = NULL;
+			hr = pWICFactory->CreateStream(&ptr);
+			pStream = ptr;
 		}
 
-		WICPixelFormatGUID format = GUID_WICPixelFormat32bppPBGRA;
 		if (SUCCEEDED(hr))
 		{
 			hr = pStream->InitializeFromFilename(filename, GENERIC_WRITE);
@@ -387,7 +394,9 @@ public:
 				guid = GUID_ContainerFormatGif;
 				break;
 			}
-			hr = pWICFactory->CreateEncoder(guid, NULL, &pEncoder);
+			IWICBitmapEncoder *ptr = NULL;
+			hr = pWICFactory->CreateEncoder(guid, NULL, &ptr);
+			pEncoder = ptr;
 		}
 		if (SUCCEEDED(hr))
 		{
@@ -395,7 +404,9 @@ public:
 		}
 		if (SUCCEEDED(hr))
 		{
-			hr = pEncoder->CreateNewFrame(&pFrameEncode, NULL);
+			IWICBitmapFrameEncode *ptr = NULL;
+			hr = pEncoder->CreateNewFrame(&ptr, NULL);
+			pFrameEncode = ptr;
 		}
 		if (SUCCEEDED(hr))
 		{
@@ -407,11 +418,12 @@ public:
 		}
 		if (SUCCEEDED(hr))
 		{
+			WICPixelFormatGUID format = GUID_WICPixelFormat32bppPBGRA;
 			hr = pFrameEncode->SetPixelFormat(&format);
 		}
 		if (SUCCEEDED(hr))
 		{
-			hr = pFrameEncode->WriteSource(pDstBitmap, NULL);
+			hr = pFrameEncode->WriteSource(pWICBitmap, NULL);
 		}
 		if (SUCCEEDED(hr))
 		{
@@ -421,14 +433,6 @@ public:
 		{
 			hr = pEncoder->Commit();
 		}
-
-		if (pWICFactory) pWICFactory->Release();
-		if (pDstBitmap) pDstBitmap->Release();
-		if (pSrcBitmap) pSrcBitmap->Release();
-		if (pRT) pRT->Release();
-		if (pEncoder) pEncoder->Release();
-		if (pFrameEncode) pFrameEncode->Release();
-		if (pStream) pStream->Release();
 
 		return hr;
 	}
@@ -511,7 +515,7 @@ HRESULT RendererBase::Render( void )
 		ID2D1RenderTarget* target = pImpl->GetTarget();
 		if (target)
 		{
-			hr = InternalRender(target);
+			InternalRender(target);
 		}
 	}
 	// Prepare to Render
