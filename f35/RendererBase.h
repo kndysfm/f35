@@ -95,7 +95,7 @@ protected:
 	 *  \param ID2D1RenderTarget * target
 	 *  \return HRESULT
 	 */
-	virtual HRESULT InternalRender(ID2D1RenderTarget *target) { return S_OK; }
+	virtual void InternalRender(ID2D1RenderTarget *target) { return; }
 
 	/*! \fn D2DRendererBase::InternalDestroy
 	 *  \brief 継承クラスにおけるリソース破棄処理

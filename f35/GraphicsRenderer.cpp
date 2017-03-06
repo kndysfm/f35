@@ -40,10 +40,10 @@ void F35_NS::GraphicsRenderer::InternalUpdate( void )
 	pImpl->Update(this);
 }
 
-HRESULT F35_NS::GraphicsRenderer::InternalRender( ID2D1RenderTarget *target )
+void F35_NS::GraphicsRenderer::InternalRender( ID2D1RenderTarget *target )
 {
 	pImpl->Render(this, target);
-	return S_OK;
+	return;
 }
 
 HRESULT F35_NS::GraphicsRenderer::InternalInit( ID2D1RenderTarget *target )

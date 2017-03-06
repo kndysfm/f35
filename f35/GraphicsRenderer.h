@@ -29,7 +29,7 @@ namespace F35_NS
 
 		virtual void InternalUpdate(void);
 
-		virtual HRESULT InternalRender(ID2D1RenderTarget *target);
+		virtual void InternalRender(ID2D1RenderTarget *target);
 
 		virtual void InternalDestroy(void);
 
