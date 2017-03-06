@@ -25,9 +25,9 @@ struct SimpleChartGraphics::Impl
 		major_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.75f))),
 		minor_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.50f))),
 		text_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
-		y_label_textf(r->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_TRAILING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
-		x_label_textf(r->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
-		mess_textf(r->MakeTextFormat(_T("MS Gothic"), 20.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_PARAGRAPH_ALIGNMENT_CENTER)),
+		y_label_textf(Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_TRAILING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
+		x_label_textf(Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
+		mess_textf(Factory::MakeTextFormat(_T("MS Gothic"), 20.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_PARAGRAPH_ALIGNMENT_CENTER)),
 		mess(NULL)
 	{
 	}

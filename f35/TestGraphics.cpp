@@ -44,7 +44,7 @@ BOOL F35_NS::TestGraphics::InternalRender( RendererBase * renderer, ID2D1RenderT
 void F35_NS::TestGraphics::InternalInit( RendererBase * renderer )
 {
 	GraphicsBase::InternalInit(renderer);
-	pImpl->textf = renderer->MakeTextFormat(_T("MS UI Gothic"), 12.0f);
+	pImpl->textf = Factory::MakeTextFormat(_T("MS UI Gothic"), 12.0f);
 	pImpl->brush = renderer->MakeBrush(D2D1::ColorF(D2D1::ColorF::White, 0.3F));
 }
 

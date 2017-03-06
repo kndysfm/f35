@@ -2,8 +2,71 @@
 #include "F35Helper.h"
 #include <wincodec.h>
 
+#include <memory>
+
 namespace F35_NS
 {
+
+class Factory
+{
+private:
+	struct Impl;
+	static std::unique_ptr<Impl> pImpl;
+
+	Factory() = delete;
+	Factory(Factory const &) = delete;
+	Factory(Factory &&) = delete;
+	Factory & operator=(Factory const &) = delete;
+	Factory & operator=(Factory &&) = delete;
+
+public:
+
+	static HRESULT Init(void);
+
+	static void Finalize(void);
+
+	/*! \fn D2DRendererBase::MakeTextFormat
+	*  \brief TextFormatオブジェクトの生成
+	*  \param LPCTSTR fontName
+	*  \param FLOAT fontSize
+	*  \param DWRITE_TEXT_ALIGNMENT textAlign
+	*  \param DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign
+	*  \return IDWriteTextFormat *
+	*/
+	static H::R<IDWriteTextFormat> MakeTextFormat(LPCTSTR fontName, FLOAT fontSize,
+		DWRITE_TEXT_ALIGNMENT textAlign = DWRITE_TEXT_ALIGNMENT_CENTER,
+		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakeStrokeStyle
+	*  \brief
+	*  \param FLOAT dashes
+	*  \param UINT32 dashesCount
+	*  \return ID2D1StrokeStyle *
+	*/
+	static H::R<ID2D1StrokeStyle> MakeStrokeStyle(FLOAT dashes, UINT32 dashesCount);
+
+
+	static H::R<IWICBitmap> MakeWICBitmap(UINT width_px, UINT height_px);
+
+	static H::R<ID2D1RenderTarget> MakeWicBitmapRenderTarget(IWICBitmap *pBmp);
+
+	static H::R<ID2D1HwndRenderTarget> MakeHwndRenderTarget(HWND hwnd, D2D1_SIZE_U size);
+
+
+	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
+	*  \brief
+	*  \param void
+	*  \return ID2D1PathGeometry *
+	*/
+	static H::R<ID2D1PathGeometry> MakePathGeometry(void);
+
+	static H::R<IWICStream> MakeWicStream(void);
+
+	enum ImageFileFormat {
+		IFF_PNG, IFF_BMP, IFF_JPEG, IFF_GIF,
+	};
+	static H::R<IWICBitmapEncoder> MakeWicEncoder(ImageFileFormat fmt);
+};
 
 class RendererBase: H::Lockable, H::NonCopyable
 {
@@ -13,26 +76,6 @@ private:
 	Impl *pImpl;
 
 public:
-
-	/*! \fn D2DRendererBase::MakeTextFormat
-	 *  \brief TextFormatオブジェクトの生成
-	 *  \param LPCTSTR fontName
-	 *  \param FLOAT fontSize
-	 *  \param DWRITE_TEXT_ALIGNMENT textAlign
-	 *  \param DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign
-	 *  \return IDWriteTextFormat *
-	 */
-	H::R<IDWriteTextFormat> MakeTextFormat(LPCTSTR fontName, FLOAT fontSize,
-		DWRITE_TEXT_ALIGNMENT textAlign = DWRITE_TEXT_ALIGNMENT_CENTER,
-		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-
-	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakeStrokeStyle
-	 *  \brief 
-	 *  \param FLOAT dashes
-	 *  \param UINT32 dashesCount
-	 *  \return ID2D1StrokeStyle *
-	 */
-	H::R<ID2D1StrokeStyle> MakeStrokeStyle(  FLOAT dashes, UINT32 dashesCount );
 	
 	/*! \fn D2DRendererBase::MakeBrush
 	 *  \brief ブラシオブジェクトの生成
@@ -44,17 +87,6 @@ public:
 	H::R<ID2D1Layer> MakeLayer(void);
 
 	H::R<ID2D1Bitmap> MakeBitmap(void);
-
-	H::R<IWICBitmap> MakeWICBitmap(void);
-
-	H::R<ID2D1RenderTarget> MakeWicBitmapRenderTarget(void);
-
-	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
-	 *  \brief 
-	 *  \param void
-	 *  \return ID2D1PathGeometry *
-	 */
-	H::R<ID2D1PathGeometry> MakePathGeometry(void);
 
 	/*! \fn D2DRendererBase::GetCurrentCursorPosDpi
 	 *  \brief 現在のカーソル位置を取得
@@ -172,10 +204,7 @@ public:
 
 	void DisableAutoErase(void);
 
-	enum ImageFileFormat{
-		IFF_PNG, IFF_BMP, IFF_JPEG, IFF_GIF,
-	};
-	HRESULT SaveImageFile(LPCTSTR filename, ImageFileFormat fmt = IFF_PNG);
+	HRESULT SaveImageFile(LPCTSTR filename, Factory::ImageFileFormat fmt = Factory::IFF_PNG);
 
 	void Resize(BOOL scaling = TRUE);
 };

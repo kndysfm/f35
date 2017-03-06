@@ -57,7 +57,7 @@ FLOAT SimpleBarChartLegend::GetBarWidth(void)
 void F35_NS::SimpleBarChartLegend::BeginDraw( ) const
 {
 	pImpl->brush = GetCurrentRenderer()->MakeBrush(GetFillColor());
-	pImpl->textf = GetCurrentRenderer()->MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+	pImpl->textf = Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }
 
 void F35_NS::SimpleBarChartLegend::Draw( D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
