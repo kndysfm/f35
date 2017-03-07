@@ -18,13 +18,13 @@ public:
 	void ShowMessage(LPCTSTR mess);
 
 protected:
-	virtual void InternalInit( RendererBase * );
+	virtual void InternalInit(ID2D1RenderTarget * target);
 
-	virtual void InternalUpdate( RendererBase * );
+	virtual void InternalUpdate( void );
 
-	virtual BOOL InternalRender( RendererBase * renderer, ID2D1RenderTarget * target);
+	virtual BOOL InternalRender( ID2D1RenderTarget * target);
 
-	virtual void InternalDestroy( RendererBase * );
+	virtual void InternalDestroy( void );
 
 };
 

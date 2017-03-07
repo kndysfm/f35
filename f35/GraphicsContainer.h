@@ -23,9 +23,9 @@ namespace F35_NS
 		struct Impl;
 		Impl *pImpl;
 
-		virtual BOOL AttachRenderer(RendererBase * renderer) sealed;
+		virtual BOOL AttachRenderTarget(ID2D1RenderTarget * target) sealed;
 
-		virtual void DettachRenderer(void) sealed;
+		virtual void DettachRenderTarget(void) sealed;
 
 	public:
 		GraphicsContainer(void);
@@ -39,13 +39,13 @@ namespace F35_NS
 
 	protected:
 
-		virtual void InternalInit(RendererBase * renderer);
+		virtual void InternalInit(ID2D1RenderTarget * target);
 
-		virtual void InternalUpdate(RendererBase * renderer);
+		virtual void InternalUpdate(void);
 
-		virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target);
+		virtual BOOL InternalRender(ID2D1RenderTarget * target);
 
-		virtual void InternalDestroy(RendererBase * renderer);
+		virtual void InternalDestroy(void);
 
 	};
 

@@ -45,7 +45,7 @@ void F35_NS::SimpleLineChartLegend::ShowMarker( BOOL show )
 
 void F35_NS::SimpleLineChartLegend::BeginDraw( ) const
 {
-	pImpl->line_brush = GetCurrentRenderer()->MakeBrush(GetLineColor());
+	pImpl->line_brush = F35_NS::H::MakeSolidColorBrush(GetCurrentTarget(), GetLineColor());
 
 	pImpl->textf = Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }

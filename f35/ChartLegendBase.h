@@ -9,7 +9,7 @@ namespace F35_NS
 	class IChartLegend
 	{
 	public:
-		virtual void Setup(RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const = 0;
+		virtual void Setup(ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const = 0;
 
 		virtual void BeginDraw(void) const = 0;
 
@@ -37,9 +37,7 @@ namespace F35_NS
 		D2D1::ColorF  GetFillColor(void) const;
 
 	protected:
-		virtual void Setup(RendererBase *renderer, ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const sealed;
-
-		RendererBase *GetCurrentRenderer() const;
+		virtual void Setup(ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const sealed;
 
 		ID2D1RenderTarget * GetCurrentTarget() const;
 

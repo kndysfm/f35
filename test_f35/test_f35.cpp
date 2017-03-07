@@ -132,7 +132,7 @@ static void init_graphics(HWND hWnd)
 {
 	pRenderer = new fxxxv::GraphicsRenderer(hWnd);
 	pRenderer->Init();
-	pRenderer->EnableAutoErase(D2D1::ColorF(0, 0.1f));
+	pRenderer->DisableAutoErase();// EnableAutoErase(D2D1::ColorF(0, 0.1f));
 	for (auto &g : graphs) container.AddGraphics(&g);
 	pRenderer->AddGraphics(&container);
 
@@ -231,6 +231,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             //EndPaint(hWnd, &ps);
         }
         break;
+	case WM_SIZE:
+	{
+		if (pRenderer) pRenderer->Resize();
+		break;
+	}
     case WM_DESTROY:
         PostQuitMessage(0);
 		destroy_graphic();

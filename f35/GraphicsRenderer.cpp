@@ -10,16 +10,16 @@ struct GraphicsRenderer::Impl: public GraphicsContainer
 	Impl(void){}
 	virtual ~Impl(void){}
 
-	void attach(RendererBase *r) 
+	void attach(ID2D1RenderTarget * target)
 	{
 		IGraphics *g_self = this;
-		g_self->AttachRenderer(r); 
+		g_self->AttachRenderTarget(target); 
 	}
 
 	void dettach() 
 	{
 		IGraphics *g_self = this;
-		g_self->DettachRenderer(); 
+		g_self->DettachRenderTarget(); 
 	}
 };
 
@@ -27,6 +27,7 @@ GraphicsRenderer::GraphicsRenderer(HWND hwnd):
 	RendererBase(hwnd),
 	pImpl(new Impl)
 {
+	this->EnableAutoErase();
 }
 
 
@@ -37,19 +38,18 @@ GraphicsRenderer::~GraphicsRenderer(void)
 
 void F35_NS::GraphicsRenderer::InternalUpdate( void )
 {
-	pImpl->Update(this);
+	pImpl->Update();
 }
 
 void F35_NS::GraphicsRenderer::InternalRender( ID2D1RenderTarget *target )
 {
-	pImpl->Render(this, target);
+	pImpl->Render(target);
 	return;
 }
 
 HRESULT F35_NS::GraphicsRenderer::InternalInit( ID2D1RenderTarget *target )
 {
-	this->EnableAutoErase();
-	pImpl->attach(this);
+	pImpl->attach(target);
 	return S_OK;
 }
 

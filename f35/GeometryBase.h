@@ -31,9 +31,9 @@ namespace F35_NS
 
 	protected:
 
-		virtual void InternalInit( RendererBase * renderer );
+		virtual void InternalInit(ID2D1RenderTarget * target);
 
-		virtual void InternalDestroy( RendererBase * renderer );
+		virtual void InternalDestroy(void);
 
 		ID2D1Brush *GetLineBrush(void);
 

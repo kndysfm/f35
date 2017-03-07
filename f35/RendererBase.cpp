@@ -54,37 +54,6 @@ public:
 		return pRenderTarget->GetSize();
 	}
 
-	ID2D1SolidColorBrush * GetSolidBrush( const D2D1::ColorF & color )
-	{
-		if (pRenderTarget)
-		{
-			ID2D1SolidColorBrush *pBrush = NULL;
-			HRESULT hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);
-			if (SUCCEEDED(hr))
-			{
-				return pBrush;
-			}
-			else if (pBrush) pBrush->Release();
-		}
-		return NULL;
-	}
-
-	ID2D1Layer * GetLayer(void)
-	{
-		if (pRenderTarget)
-		{
-			ID2D1Layer *pLayer = NULL;
-			D2D1_SIZE_F size = pRenderTarget->GetSize();
-			HRESULT hr = pRenderTarget->CreateLayer(size, &pLayer);
-			if (SUCCEEDED(hr))
-			{
-				return pLayer;
-			}
-			else if (pLayer) pLayer->Release();
-		}
-		return NULL;
-	}
-
 	ID2D1Bitmap * GetBitmap(void)
 	{
 		if (pRenderTarget)
@@ -110,21 +79,26 @@ public:
 		return NULL;
 	}
 
-	BOOL ResetRenderer(void)
+	BOOL ResetRenderer(RendererBase *that)
 	{
 		RECT rc;
 		::GetClientRect(this->hWnd, &rc);
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
+		that->InternalDestroy();
 		pRenderTarget = Factory::MakeHwndRenderTarget(this->hWnd, size);
+		if (pRenderTarget)
+		{
+			that->InternalInit(pRenderTarget);
+		}
 
-		return pRenderTarget ? TRUE : FALSE;
+		return pRenderTarget ? S_OK : S_FALSE;
 	}
 
-	HRESULT Init(void)
+	HRESULT Init(RendererBase *that)
 	{
 		HRESULT hr = Factory::Init();
 
-		if (SUCCEEDED(hr)) hr = ResetRenderer();
+		if (SUCCEEDED(hr)) hr = ResetRenderer(that);
 
 		return hr;
 	}
@@ -297,12 +271,12 @@ public:
 		return hr;
 	}
 
-	void Resize(BOOL scaling)
+	void Resize(RendererBase *that, BOOL scaling)
 	{
 		D2D1_SIZE_F size_last = pRenderTarget->GetSize();
 		D2D1_RECT_U rect_src = D2D1::RectU(0, 0, (UINT32)size_last.width, (UINT32)size_last.height);
 		H::R<ID2D1Bitmap> bmp_last = GetBitmap();
-		HRESULT hr = ResetRenderer();
+		HRESULT hr = ResetRenderer(that);
 		if (SUCCEEDED(hr))
 		{
 			pRenderTarget->BeginDraw();
@@ -340,12 +314,7 @@ HRESULT RendererBase::Init( void )
 	HRESULT hr;
 	Lock();
 
-	// Init Base Class
-	pImpl->Init();
-	// Init Extended Class
-	ID2D1RenderTarget* target = pImpl->GetTarget();
-	if (target) hr = InternalInit(target);
-	else hr = S_FALSE;
+	hr = pImpl->Init(this);
 
 	Unlock();
 	return hr;
@@ -396,22 +365,6 @@ void RendererBase::Destroy( void )
 	Unlock();
 }
 
-H::R<ID2D1SolidColorBrush> RendererBase::MakeBrush( const D2D1::ColorF & color )
-{
-	return pImpl->GetSolidBrush(color);
-}
-
-H::R<ID2D1Layer> RendererBase::MakeLayer(void)
-{
-	return pImpl->GetLayer();
-}
-
-H::R<ID2D1Bitmap> RendererBase::CopyToBitmap(void)
-{
-	return pImpl->GetBitmap();
-}
-
-
 D2D1_POINT_2F RendererBase::GetCurrentCursorPosDpi( void )
 {
 	return pImpl->GetCurrPosDpi();
@@ -455,5 +408,5 @@ HRESULT F35_NS::RendererBase::SaveImageFile(LPCTSTR filename, Factory::ImageFile
 
 void F35_NS::RendererBase::Resize(BOOL scaling)
 {
-	return pImpl->Resize(scaling);
+	return pImpl->Resize(this, scaling);
 }

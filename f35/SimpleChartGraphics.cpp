@@ -7,7 +7,7 @@ USING_F35_NS;
 
 struct SimpleChartGraphics::Impl
 {
-	RendererBase *renderer;
+	ID2D1RenderTarget * target;
 
 	H::R<ID2D1SolidColorBrush> axis_line_brush;
 	H::R<ID2D1SolidColorBrush> major_grid_brush;
@@ -19,12 +19,12 @@ struct SimpleChartGraphics::Impl
 
 	LPCTSTR mess;
 
-	Impl(RendererBase *r): 
-		renderer(r), 
-		axis_line_brush( r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
-		major_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.75f))),
-		minor_grid_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.50f))),
-		text_brush(r->MakeBrush(D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
+	Impl(ID2D1RenderTarget * t):
+		target(t), 
+		axis_line_brush( H::MakeSolidColorBrush(t, D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
+		major_grid_brush(H::MakeSolidColorBrush(t, D2D1::ColorF(D2D1::ColorF::Black, 0.75f))),
+		minor_grid_brush(H::MakeSolidColorBrush(t, D2D1::ColorF(D2D1::ColorF::Black, 0.50f))),
+		text_brush(H::MakeSolidColorBrush(t, D2D1::ColorF(D2D1::ColorF::Black, 1.00f))),
 		y_label_textf(Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_TRAILING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
 		x_label_textf(Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR)),
 		mess_textf(Factory::MakeTextFormat(_T("MS Gothic"), 20.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_PARAGRAPH_ALIGNMENT_CENTER)),
@@ -34,7 +34,7 @@ struct SimpleChartGraphics::Impl
 
 	~Impl(void)
 	{
-		renderer = NULL;
+		target = NULL;
 	}
 };
 
@@ -53,20 +53,20 @@ SimpleChartGraphics::~SimpleChartGraphics(void)
 	}
 }
 
-void F35_NS::SimpleChartGraphics::InternalInit( RendererBase * renderer)
+void F35_NS::SimpleChartGraphics::InternalInit(ID2D1RenderTarget * target)
 {
 	if (!pImpl)
 	{
-		pImpl = new Impl(renderer);
+		pImpl = new Impl(target);
 	}
 }
 
-void F35_NS::SimpleChartGraphics::InternalUpdate( RendererBase * )
+void F35_NS::SimpleChartGraphics::InternalUpdate( void)
 {
 	// do nothing	
 }
 
-BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1RenderTarget * target )
+BOOL F35_NS::SimpleChartGraphics::InternalRender( ID2D1RenderTarget * target )
 {
 	if (!pImpl) return FALSE;
 
@@ -87,23 +87,23 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1
 
 	target->DrawRectangle(rect, pImpl->axis_line_brush, 0.5f);
 
-	DrawMinorGridLinesX(renderer, target, &rect, pImpl->minor_grid_brush);
-	DrawMajorGridLinesX(renderer, target, &rect, pImpl->major_grid_brush);
-	DrawAxisLineX(renderer, target, &rect, pImpl->axis_line_brush, 1.5f);
-	DrawMajorGridLabelX(renderer, target, &rect, 2.0f, 20.0f,
+	DrawMinorGridLinesX(target, &rect, pImpl->minor_grid_brush);
+	DrawMajorGridLinesX(target, &rect, pImpl->major_grid_brush);
+	DrawAxisLineX(target, &rect, pImpl->axis_line_brush, 1.5f);
+	DrawMajorGridLabelX(target, &rect, 2.0f, 20.0f,
 		pImpl->x_label_textf, pImpl->major_grid_brush,
 		GetChartNumberStringFormat());
 
-	DrawMinorGridLinesY(renderer, target, &rect, pImpl->minor_grid_brush);
-	DrawMajorGridLinesY(renderer, target, &rect, pImpl->major_grid_brush);
-	DrawAxisLineY(renderer, target, &rect, pImpl->axis_line_brush, 1.5f);
-	DrawMajorGridLabelY(renderer, target, &rect, -2.0f, 30.0f,
+	DrawMinorGridLinesY(target, &rect, pImpl->minor_grid_brush);
+	DrawMajorGridLinesY(target, &rect, pImpl->major_grid_brush);
+	DrawAxisLineY(target, &rect, pImpl->axis_line_brush, 1.5f);
+	DrawMajorGridLabelY(target, &rect, -2.0f, 30.0f,
 		pImpl->y_label_textf, pImpl->major_grid_brush, 
 		GetChartNumberStringFormat());
 
-	PlotChartData(renderer, target, &rect);
+	PlotChartData(target, &rect);
 
-	PlotLegends(renderer, target, &rect);
+	PlotLegends(target, &rect);
 
 	if (pImpl->mess != NULL)
 	{
@@ -114,7 +114,7 @@ BOOL F35_NS::SimpleChartGraphics::InternalRender( RendererBase * renderer, ID2D1
 	return TRUE;
 }
 
-void F35_NS::SimpleChartGraphics::InternalDestroy( RendererBase * )
+void F35_NS::SimpleChartGraphics::InternalDestroy( void )
 {
 	if (!pImpl) return;
 

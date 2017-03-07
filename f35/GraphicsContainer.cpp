@@ -57,8 +57,8 @@ BOOL F35_NS::GraphicsContainer::AddGraphics(GraphicsBase *graphics, LONG insert_
 		pImpl->graphics.insert(pImpl->graphics.begin() + idx, g_new);
 	}
 
-	if (g_new->GetRenderer() != NULL) g_new->DettachRenderer();
-	g_new->AttachRenderer(g_self->GetRenderer());
+	if (g_new->GetRenderTarget() != NULL) g_new->DettachRenderTarget();
+	g_new->AttachRenderTarget(g_self->GetRenderTarget());
 
 	return TRUE;
 }
@@ -93,64 +93,64 @@ BOOL F35_NS::GraphicsContainer::RemoveGraphics(GraphicsBase *graphics)
 	return FALSE;
 }
 
-void F35_NS::GraphicsContainer::InternalUpdate( RendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalUpdate(void )
 {
 	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->Update(renderer);
+		(*itr)->Update();
 	}
 }
 
-void F35_NS::GraphicsContainer::InternalInit( RendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalInit(ID2D1RenderTarget * target)
 {
 	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->Init(renderer);
+		(*itr)->Init(target);
 	}
 }
 
-void F35_NS::GraphicsContainer::InternalDestroy( RendererBase * renderer )
+void F35_NS::GraphicsContainer::InternalDestroy( void )
 {
 	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->Destroy(renderer);
+		(*itr)->Destroy();
 	}
 }
 
-BOOL F35_NS::GraphicsContainer::InternalRender( RendererBase * renderer, ID2D1RenderTarget * target)
+BOOL F35_NS::GraphicsContainer::InternalRender( ID2D1RenderTarget * target)
 {
 	BOOL ret = FALSE;
 	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		ret = (*itr)->Render(renderer, target) || ret;
+		ret = (*itr)->Render(target) || ret;
 	}
 	return ret;
 }
 
-BOOL F35_NS::GraphicsContainer::AttachRenderer( RendererBase * renderer )
+BOOL F35_NS::GraphicsContainer::AttachRenderTarget(ID2D1RenderTarget * target)
 {
 	BOOL ret = FALSE;
-	GraphicsBase::AttachRenderer(renderer);
+	GraphicsBase::AttachRenderTarget(target);
 	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
 		IGraphics *g = *itr;
-		if (g->GetRenderer() != NULL) g->DettachRenderer();
-		ret = g->AttachRenderer(renderer) || ret;
+		if (g->GetRenderTarget() != NULL) g->DettachRenderTarget();
+		ret = g->AttachRenderTarget(target) || ret;
 	}
 	return ret;
 }
 
-void F35_NS::GraphicsContainer::DettachRenderer( void )
+void F35_NS::GraphicsContainer::DettachRenderTarget( void )
 {
 	for (GraphicsQue::iterator itr = pImpl->graphics.begin();
 		itr != pImpl->graphics.end(); itr++)
 	{
-		(*itr)->DettachRenderer();
+		(*itr)->DettachRenderTarget();
 	}
-	GraphicsBase::DettachRenderer();
+	GraphicsBase::DettachRenderTarget();
 }

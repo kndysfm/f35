@@ -17,19 +17,19 @@ namespace F35_NS
 
 		virtual IGraphicsContainer const *GetContainer(void) const = 0;
 
-		virtual BOOL AttachRenderer(RendererBase * renderer) = 0;
+		virtual BOOL AttachRenderTarget(ID2D1RenderTarget * target) = 0;
 
-		virtual void DettachRenderer(void) = 0;
+		virtual void DettachRenderTarget(void) = 0;
 
-		virtual RendererBase *GetRenderer(void) const = 0;
+		virtual ID2D1RenderTarget *GetRenderTarget(void) const = 0;
 
-		virtual void Init(RendererBase * renderer) = 0;
+		virtual void Init(ID2D1RenderTarget * target) = 0;
 
-		virtual void Update(RendererBase * renderer) = 0;
+		virtual void Update(void) = 0;
 
-		virtual BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target) = 0;
+		virtual BOOL Render(ID2D1RenderTarget * target) = 0;
 
-		virtual void Destroy(RendererBase * renderer) = 0;
+		virtual void Destroy(void) = 0;
 
 	};
 
@@ -46,7 +46,7 @@ namespace F35_NS
 
 		virtual IGraphicsContainer const *GetContainer(void) const sealed;
 
-		virtual RendererBase *GetRenderer(void) const sealed;
+		virtual ID2D1RenderTarget *GetRenderTarget(void) const sealed;
 
 	public:
 		GraphicsBase(void);
@@ -66,27 +66,27 @@ namespace F35_NS
 		FLOAT GetRotation(void) const;
 		void SetRotation(FLOAT degrees);
 
-		virtual void Init(RendererBase * renderer) sealed;
+		virtual void Init(ID2D1RenderTarget * target) sealed;
 
-		virtual void Update(RendererBase * renderer) sealed;
+		virtual void Update(void) sealed;
 
-		virtual BOOL Render(RendererBase * renderer, ID2D1RenderTarget * target) sealed;
+		virtual BOOL Render(ID2D1RenderTarget * target) sealed;
 
-		virtual void Destroy(RendererBase * renderer) sealed;
+		virtual void Destroy(void) sealed;
 
 	protected:
 
-		virtual BOOL AttachRenderer(RendererBase * renderer);
+		virtual BOOL AttachRenderTarget(ID2D1RenderTarget * target);
 
-		virtual void DettachRenderer(void);
+		virtual void DettachRenderTarget(void);
 
-		virtual void InternalInit( RendererBase * renderer ) { }
+		virtual void InternalInit(ID2D1RenderTarget * target) { }
 
-		virtual void InternalUpdate( RendererBase * renderer) { };
+		virtual void InternalUpdate( void) { };
 
-		virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target) = 0;
+		virtual BOOL InternalRender(ID2D1RenderTarget * target) = 0;
 
-		virtual void InternalDestroy( RendererBase * renderer ) { }
+		virtual void InternalDestroy( void ) { }
 
 	};
 

@@ -13,13 +13,13 @@ namespace F35_NS
 		TestGraphics(void);
 		virtual ~TestGraphics(void);
 
-		virtual BOOL InternalRender( RendererBase * renderer, ID2D1RenderTarget * target);
+		virtual BOOL InternalRender(ID2D1RenderTarget * target);
 
-		virtual void InternalInit( RendererBase * renderer );
+		virtual void InternalInit(ID2D1RenderTarget * target);
 
-		virtual void InternalUpdate( RendererBase * renderer );
+		virtual void InternalUpdate( void);
 
-		virtual void InternalDestroy( RendererBase * renderer );
+		virtual void InternalDestroy( void);
 
 	};
 }

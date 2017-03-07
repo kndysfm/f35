@@ -7,7 +7,6 @@ struct ChartLegendBase::Impl
 {
 	D2D1::ColorF line_color_, fill_color_;
 
-	RendererBase * renderer_;
 	ID2D1RenderTarget * target_;
 	D2D1_RECT_F chart_rect_;
 	D2D_VECTOR_4F ratio_plot_to_value_;
@@ -15,7 +14,7 @@ struct ChartLegendBase::Impl
 	Impl (void):
 		line_color_(D2D1::ColorF(D2D1::ColorF::Black, 1.0f)),
 		fill_color_(D2D1::ColorF(D2D1::ColorF::Black, 1.0f)),
-		renderer_(nullptr), target_(nullptr),
+		target_(nullptr),
 		chart_rect_(D2D1::RectF()), ratio_plot_to_value_({ 0.0f })
 	{
 
@@ -56,17 +55,11 @@ D2D1::ColorF F35_NS::ChartLegendBase::GetFillColor( void ) const
 	return pImpl->fill_color_;
 }
 
-void F35_NS::ChartLegendBase::Setup(RendererBase * renderer, ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const
+void F35_NS::ChartLegendBase::Setup(ID2D1RenderTarget * target, D2D1_RECT_F const &chart_rect, D2D_VECTOR_4F const &ratio_plot_to_value) const
 {
-	pImpl->renderer_ = renderer;
 	pImpl->target_ = target;
 	pImpl->chart_rect_ = chart_rect;
 	pImpl->ratio_plot_to_value_ = ratio_plot_to_value;
-}
-
-RendererBase * F35_NS::ChartLegendBase::GetCurrentRenderer() const
-{
-	return pImpl->renderer_;
 }
 
 ID2D1RenderTarget * F35_NS::ChartLegendBase::GetCurrentTarget() const

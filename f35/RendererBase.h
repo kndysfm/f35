@@ -13,17 +13,6 @@ private:
 
 public:
 	
-	/*! \fn D2DRendererBase::MakeBrush
-	 *  \brief ブラシオブジェクトの生成
-	 *  \param D2D1::ColorF color
-	 *  \return ID2D1Brush *
-	 */
-	H::R<ID2D1SolidColorBrush> MakeBrush(const D2D1::ColorF &color);
-
-	H::R<ID2D1Layer> MakeLayer(void);
-
-	H::R<ID2D1Bitmap> CopyToBitmap(void);
-
 	/*! \fn D2DRendererBase::GetCurrentCursorPosDpi
 	 *  \brief 現在のカーソル位置を取得
 	 *  \param void

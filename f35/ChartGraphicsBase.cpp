@@ -150,7 +150,7 @@ struct ChartGraphicsBase::Impl
 	}
 
 
-	void plot_chart_data( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
+	void plot_chart_data( ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
 	{
 		for (ChartLegendMap::iterator itr = legend_map.begin();
 			itr != legend_map.end(); itr++)
@@ -165,7 +165,7 @@ struct ChartGraphicsBase::Impl
 				if (ds->GetCount() > 0)
 				{
 					data_point_2vec pt_prev, pt_curr, pt_next;
-					l->Setup(renderer, target, *rect, get_ratio_plot_to_value());
+					l->Setup( target, *rect, get_ratio_plot_to_value());
 					l->BeginDraw();
 					pt_curr = convert_data_point(ds->GetDataPoint(0));
 					if (ds->GetCount() == 1)
@@ -196,7 +196,7 @@ struct ChartGraphicsBase::Impl
 
 	D2D1_RECT_F rect_ratio_legends_; // stack it vertically
 
-	void plot_legends( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
+	void plot_legends( ID2D1RenderTarget *target, D2D1_RECT_F const *rect)
 	{
 		FLOAT w_rect = rect->right - rect->left;
 		FLOAT h_rect = rect->bottom - rect->top;
@@ -226,7 +226,7 @@ struct ChartGraphicsBase::Impl
 				if (cnt > 0)
 				{
 					D2D_VECTOR_4F pt_curr, pt_next;
-					l->Setup(renderer, target, rect_leg, ratio_plot_to_value);
+					l->Setup(target, rect_leg, ratio_plot_to_value);
 					l->BeginDraw();
 					pt_curr.x = 0.0f; pt_next.x = 0.5f;
 					pt_curr.y = 1.0f; pt_next.y = 0.0f;
@@ -243,7 +243,7 @@ struct ChartGraphicsBase::Impl
 
 	}
 
-	void draw_line_h( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect, FLOAT y_value,
+	void draw_line_h( ID2D1RenderTarget *target, D2D1_RECT_F const *rect, FLOAT y_value,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL)
 	{
 		D2D1_POINT_2F pt0, pt1;
@@ -252,7 +252,7 @@ struct ChartGraphicsBase::Impl
 		target->DrawLine(pt0, pt1, brush, line_width, style);
 	}
 
-	void draw_major_grid_y( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
+	void draw_major_grid_y( ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL)
 	{
 		if (unit_y.major == 0.0f || 
@@ -262,11 +262,11 @@ struct ChartGraphicsBase::Impl
 		FLOAT val0 = pt_origin.y + unit_y.major * ceilf((axis_y.min - pt_origin.y) / unit_y.major);
 		for (FLOAT val = 0.0f; val < axis_y.range; val += unit_y.major)
 		{
-			draw_line_h(renderer, target, rect, val0 + val, brush, line_width, style);
+			draw_line_h(target, rect, val0 + val, brush, line_width, style);
 		}
 	}
 
-	void draw_major_label_y( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect, 
+	void draw_major_label_y( ID2D1RenderTarget *target, D2D1_RECT_F const *rect, 
 		FLOAT margin, FLOAT width,
 		IDWriteTextFormat *text_format, ID2D1Brush *brush, LPCTSTR format = _T("%.0f"))
 	{
@@ -298,7 +298,7 @@ struct ChartGraphicsBase::Impl
 
 	}
 
-	void draw_minor_grid_y( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
+	void draw_minor_grid_y(ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL)
 	{
 		if (unit_y.major == 0.0f || 
@@ -309,11 +309,11 @@ struct ChartGraphicsBase::Impl
 		FLOAT val0 = pt_origin.y + unit_y.minor * ceilf((axis_y.min - pt_origin.y) / unit_y.minor);
 		for (FLOAT val = 0.0f; val < axis_y.range; val += unit_y.minor)
 		{
-			draw_line_h(renderer, target, rect, val0 + val, brush, line_width, style);
+			draw_line_h(target, rect, val0 + val, brush, line_width, style);
 		}
 	}
 
-	void draw_line_v( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect, FLOAT x_value,
+	void draw_line_v( ID2D1RenderTarget *target, D2D1_RECT_F const *rect, FLOAT x_value,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL)
 	{
 		D2D1_POINT_2F pt0, pt1;
@@ -322,7 +322,7 @@ struct ChartGraphicsBase::Impl
 		target->DrawLine(pt0, pt1, brush, line_width, style);
 	}
 
-	void draw_major_grid_x( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
+	void draw_major_grid_x( ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL)
 	{
 		if (unit_x.major == 0.0f || rect->right <= rect->left ||
@@ -331,11 +331,11 @@ struct ChartGraphicsBase::Impl
 		FLOAT val0 = pt_origin.x + unit_x.major * ceilf((axis_x.min - pt_origin.x) / unit_x.major);
 		for (FLOAT val = 0.0f; val < axis_x.range; val += unit_x.major)
 		{
-			draw_line_v(renderer, target, rect, val0 + val, brush, line_width, style);
+			draw_line_v(target, rect, val0 + val, brush, line_width, style);
 		}
 	}
 
-	void draw_major_label_x( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect, 
+	void draw_major_label_x( ID2D1RenderTarget *target, D2D1_RECT_F const *rect, 
 		FLOAT margin, FLOAT height,
 		IDWriteTextFormat *text_format, ID2D1Brush *brush, LPCTSTR format = _T("%.0f"))
 	{
@@ -367,7 +367,7 @@ struct ChartGraphicsBase::Impl
 		}
 	}
 
-	void draw_minor_grid_x( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
+	void draw_minor_grid_x( ID2D1RenderTarget *target, D2D1_RECT_F const *rect,
 		ID2D1Brush *brush, FLOAT line_width = 1.0f, ID2D1StrokeStyle *style = NULL)
 	{
 		if (unit_x.major == 0.0f || unit_x.minor == 0.0f || rect->right <= rect->left ||
@@ -376,7 +376,7 @@ struct ChartGraphicsBase::Impl
 		FLOAT val0 = pt_origin.x + unit_x.minor * ceilf((axis_x.min - pt_origin.x) / unit_x.minor);
 		for (FLOAT val = 0.0f; val < axis_x.range; val += unit_x.minor)
 		{
-			draw_line_v(renderer, target, rect, val0 + val, brush, line_width, style);
+			draw_line_v(target, rect, val0 + val, brush, line_width, style);
 		}
 	}
 
@@ -622,94 +622,94 @@ void F35_NS::ChartGraphicsBase::GetChartUnitW (FLOAT *major, FLOAT *minor) const
 }
 
 HRESULT F35_NS::ChartGraphicsBase::PlotChartData( 
-	RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect )
+	ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->plot_chart_data(renderer, target, chart_rect);
+	pImpl->plot_chart_data(target, chart_rect);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::PlotLegends( 
-	RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *rect )
+	ID2D1RenderTarget *target, D2D1_RECT_F const *rect )
 {
 	if (! pImpl) return S_FALSE;
-	if (pImpl->shows_legends) pImpl->plot_legends(renderer, target, rect);
+	if (pImpl->shows_legends) pImpl->plot_legends(target, rect);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawHorizontalLine( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, FLOAT y_value, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_line_h(renderer, target, chart_rect, y_value, brush, line_width, style);
+	pImpl->draw_line_h(target, chart_rect, y_value, brush, line_width, style);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLinesY( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_major_grid_y(renderer, target, chart_rect, brush, line_width, style);
+	pImpl->draw_major_grid_y(target, chart_rect, brush, line_width, style);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawMinorGridLinesY( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_minor_grid_y(renderer, target, chart_rect, brush, line_width, style);
+	pImpl->draw_minor_grid_y(target, chart_rect, brush, line_width, style);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLabelY( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, 
 	FLOAT label_margin, FLOAT label_width, 
 	IDWriteTextFormat *text_format, ID2D1Brush *brush, LPCTSTR format /*= _T("%.0f") */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_major_label_y(renderer, target, chart_rect, label_margin, label_width, text_format, brush, format);
+	pImpl->draw_major_label_y(target, chart_rect, label_margin, label_width, text_format, brush, format);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawVerticalLine( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, FLOAT x_value, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL*/ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_line_v(renderer, target, chart_rect, x_value, brush, line_width, style);
+	pImpl->draw_line_v(target, chart_rect, x_value, brush, line_width, style);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLinesX( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_major_grid_x(renderer, target, chart_rect, brush, line_width, style);
+	pImpl->draw_major_grid_x(target, chart_rect, brush, line_width, style);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawMinorGridLinesX( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_minor_grid_x(renderer, target, chart_rect, brush, line_width, style);
+	pImpl->draw_minor_grid_x(target, chart_rect, brush, line_width, style);
 	return S_OK;
 }
 
 HRESULT F35_NS::ChartGraphicsBase::DrawMajorGridLabelX( 
-	RendererBase *renderer, ID2D1RenderTarget *target, 
+	ID2D1RenderTarget *target, 
 	D2D1_RECT_F const *chart_rect,
 	FLOAT label_margin, FLOAT label_height, 
 	IDWriteTextFormat *text_format, ID2D1Brush *brush, LPCTSTR format /*= _T("%.0f") */ )
 {
 	if (! pImpl) return S_FALSE;
-	pImpl->draw_major_label_x(renderer, target, chart_rect, label_margin, label_height, text_format, brush, format);
+	pImpl->draw_major_label_x(target, chart_rect, label_margin, label_height, text_format, brush, format);
 	return S_OK;
 }
 
@@ -783,20 +783,20 @@ FLOAT F35_NS::ChartGraphicsBase::GetAxisPositionY( void ) const
 	return pImpl->axis_pos_y * pImpl->axis_x.range + pImpl->axis_x.min;
 }
 
-HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineY( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
+HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineY( ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (pImpl == NULL) return S_FALSE;
 
 	FLOAT pos_x = pImpl->axis_x.min + pImpl->axis_pos_y * pImpl->axis_x.range;
-	return DrawVerticalLine(renderer, target, chart_rect, pos_x, brush, line_width, style);
+	return DrawVerticalLine(target, chart_rect, pos_x, brush, line_width, style);
 }
 
-HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineX( RendererBase *renderer, ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
+HRESULT F35_NS::ChartGraphicsBase::DrawAxisLineX(ID2D1RenderTarget *target, D2D1_RECT_F const *chart_rect, ID2D1Brush *brush, FLOAT line_width /*= 1.0f*/, ID2D1StrokeStyle *style /*= NULL */ )
 {
 	if (pImpl == NULL) return S_FALSE;
 
 	FLOAT pos_y = pImpl->axis_y.min + pImpl->axis_pos_x * pImpl->axis_y.range;
-	return DrawHorizontalLine(renderer, target, chart_rect, pos_y, brush, line_width, style);
+	return DrawHorizontalLine(target, chart_rect, pos_y, brush, line_width, style);
 }
 
 BOOL F35_NS::ChartGraphicsBase::IsInvertedAxisX( void ) const

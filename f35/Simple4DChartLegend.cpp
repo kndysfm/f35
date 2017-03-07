@@ -48,7 +48,7 @@ Simple4DChartLegend::~Simple4DChartLegend(void)
 
 void F35_NS::Simple4DChartLegend::BeginDraw( ) const
 {
-	pImpl->line_brush = GetCurrentRenderer()->MakeBrush(GetLineColor());
+	pImpl->line_brush = H::MakeSolidColorBrush(GetCurrentTarget(), GetLineColor());
 }
 
 void F35_NS::Simple4DChartLegend::Draw( D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
