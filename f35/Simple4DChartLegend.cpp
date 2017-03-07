@@ -27,7 +27,7 @@ struct Simple4DChartLegend::Impl
 		return pt;
 	}
 
-	Impl(): line_brush(NULL) { }
+	Impl() { }
 
 	~Impl()
 	{

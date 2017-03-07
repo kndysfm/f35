@@ -45,6 +45,7 @@ namespace F35_NS
 		private:
 			Interface *pResource;
 			R(const R &) = delete;
+			R(Interface const *p) = delete;
 			R & operator= (const R &) = delete;
 
 			static void safeRelease(Interface **ppInterfaceToRelease)
@@ -57,9 +58,11 @@ namespace F35_NS
 			}
 
 		public:
-			R() : pResource(NULL) { }
-			R(Interface*p) : pResource(p) { }
-			R(R && rh) : R(rh.pResource) { rh.pResource = NULL; }
+			R(Interface *p) : pResource(p) { }
+			R(nullptr_t ptr) : pResource(NULL) { }
+			R() : R(nullptr) { }
+			explicit R(R && rh) : R(rh.pResource) { rh.pResource = NULL; }
+
 			R & operator= (R && rh)
 			{
 				safeRelease(&this->pResource);

@@ -20,7 +20,7 @@ struct SimpleLineChartLegend::Impl
 		return pt;
 	}
 
-	Impl(): line_brush(NULL), marker(FALSE), textf(NULL) { }
+	Impl() { }
 	~Impl()
 	{
 	}

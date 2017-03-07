@@ -8,7 +8,7 @@ struct TestGraphics::Impl
 	H::R<IDWriteTextFormat> textf;
 	H::R<ID2D1SolidColorBrush> brush;
 
-	Impl(void): textf(NULL), brush(NULL)
+	Impl(void)
 	{
 
 	}

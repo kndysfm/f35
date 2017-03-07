@@ -12,15 +12,12 @@ struct GeometryBase::Impl
 
 	D2D1::ColorF line_color, fill_color;
 
-	ID2D1StrokeStyle *style;
+	H::R<ID2D1StrokeStyle> style;
 
 	Impl(void): 
-		line_brush(NULL), 
-		fill_brush(NULL), 
 		line_width(1.0f),
 		line_color(D2D1::ColorF(D2D1::ColorF::Black, 0.0f)),
-		fill_color(D2D1::ColorF(D2D1::ColorF::Black, 0.0f)),
-		style(NULL)
+		fill_color(D2D1::ColorF(D2D1::ColorF::Black, 0.0f))
 	{ }
 
 	~Impl(void)

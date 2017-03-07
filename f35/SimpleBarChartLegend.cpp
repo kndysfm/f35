@@ -26,7 +26,7 @@ struct SimpleBarChartLegend::Impl
 		return bar;
 	}
 
-	Impl(): brush(NULL), bar_width_(1.0f) { }
+	Impl(): bar_width_(1.0f) { }
 	~Impl()
 	{
 	}
