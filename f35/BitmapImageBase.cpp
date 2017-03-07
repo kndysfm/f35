@@ -14,9 +14,30 @@ struct F35_NS::BitmapImageBase::Impl
 	BOOL Resize(D2D1_SIZE_U size)
 	{
 		HRESULT hr = S_OK;
-		bitmap_size_ = size;;
+		bitmap_size_ = size;
+
+		H::R<ID2D1Bitmap> pBmp;
+		if (pWICBitmap_)
+		{
+			ID2D1Bitmap *ptr = NULL;
+			hr = pBitmapRenderTarget_->CreateBitmapFromWicBitmap(pWICBitmap_, &ptr);
+			if (SUCCEEDED(hr)) pBmp = ptr;
+			else if (ptr) ptr->Release();
+		}
+
 		pWICBitmap_ = Factory::MakeWICBitmap(size.width, size.height);
-		pBitmapRenderTarget_ = pWICBitmap_? Factory::MakeWicBitmapRenderTarget(pWICBitmap_): NULL;
+
+		if (pWICBitmap_)
+		{
+			pBitmapRenderTarget_ = Factory::MakeWicBitmapRenderTarget(pWICBitmap_);
+			if (pBmp)
+			{
+				pBitmapRenderTarget_->BeginDraw();
+				pBitmapRenderTarget_->DrawBitmap(pBmp);
+				pBitmapRenderTarget_->EndDraw();
+			}
+		}
+		else pBitmapRenderTarget_ = nullptr;
 
 		return pBitmapRenderTarget_? TRUE: FALSE;
 	}
@@ -116,9 +137,19 @@ void F35_NS::BitmapImageBase::SetImageSize(D2D1_SIZE_U size)
 	pImpl->Resize(size);
 }
 
+D2D1_SIZE_U F35_NS::BitmapImageBase::GetImageSize(void)
+{
+	return pImpl->bitmap_size_;
+}
+
 void F35_NS::BitmapImageBase::SetImageClipRect(D2D1_RECT_U rect)
 {
 	pImpl->shown_rect_ = rect;
+}
+
+D2D1_RECT_U F35_NS::BitmapImageBase::GetImageClipRect(void)
+{
+	return pImpl->shown_rect_;
 }
 
 BOOL F35_NS::BitmapImageBase::SaveImageFile(LPCTSTR filename, Factory::ImageFileFormat fmt)
@@ -133,7 +164,14 @@ void F35_NS::BitmapImageBase::InternalInit(RendererBase * renderer)
 	pImpl->shown_rect_ = D2D1::RectU(0, 0, size.width, size.height);
 }
 
+void F35_NS::BitmapImageBase::InternalUpdate(RendererBase * renderer)
+{
+	this->InternalUpdateImage();
+}
+
 BOOL F35_NS::BitmapImageBase::InternalRender(RendererBase * renderer, ID2D1RenderTarget * target)
 {
 	return pImpl->Render(this, renderer, target);
 }
+
+void F35_NS::BitmapImageBase::InternalDestroy(RendererBase * renderer) { }
