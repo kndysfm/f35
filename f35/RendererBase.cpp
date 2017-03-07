@@ -16,6 +16,8 @@ struct Factory::Impl
 	{
 		HRESULT hr = S_OK;
 
+		::CoInitialize(nullptr);
+
 		if (!pD2dFactory)
 		{
 			ID2D1Factory *ptr = NULL;
@@ -88,13 +90,13 @@ struct Factory::Impl
 	}
 
 
-	ID2D1StrokeStyle * GetStrokeStyle(FLOAT dashes, UINT32 dashesCount)
+	ID2D1StrokeStyle * GetStrokeStyle(FLOAT const *dashes, UINT32 dashesCount)
 	{
 		if (pDWriteFactory)
 		{
 			ID2D1StrokeStyle *ptr = NULL;
 			D2D1_STROKE_STYLE_PROPERTIES props = D2D1::StrokeStyleProperties();
-			HRESULT hr = pD2dFactory->CreateStrokeStyle(props, &dashes, dashesCount, &ptr);
+			HRESULT hr = pD2dFactory->CreateStrokeStyle(props, dashes, dashesCount, &ptr);
 			if (SUCCEEDED(hr)) return ptr;
 			else if (ptr) ptr->Release();
 		}
@@ -212,7 +214,7 @@ H::R<IDWriteTextFormat> Factory::MakeTextFormat(LPCTSTR fontName, FLOAT fontSize
 	return pImpl->GetTextFormat(fontName, fontSize, textAlign, paragraphAlign);
 }
 
-H::R<ID2D1StrokeStyle> Factory::MakeStrokeStyle(FLOAT dashes, UINT32 dashesCount)
+H::R<ID2D1StrokeStyle> Factory::MakeStrokeStyle(FLOAT const *dashes, UINT32 dashesCount)
 {
 	return pImpl->GetStrokeStyle(dashes, dashesCount);
 }
@@ -647,7 +649,7 @@ H::R<ID2D1Layer> RendererBase::MakeLayer(void)
 	return pImpl->GetLayer();
 }
 
-H::R<ID2D1Bitmap> RendererBase::MakeBitmap(void)
+H::R<ID2D1Bitmap> RendererBase::CopyToBitmap(void)
 {
 	return pImpl->GetBitmap();
 }

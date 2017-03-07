@@ -25,7 +25,9 @@ public:
 
 	static void Finalize(void);
 
-	/*! \fn D2DRendererBase::MakeTextFormat
+	static H::R<ID2D1HwndRenderTarget> MakeHwndRenderTarget(HWND hwnd, D2D1_SIZE_U size);
+
+	/*! \fn Factory::MakeTextFormat
 	*  \brief TextFormatオブジェクトの生成
 	*  \param LPCTSTR fontName
 	*  \param FLOAT fontSize
@@ -37,28 +39,24 @@ public:
 		DWRITE_TEXT_ALIGNMENT textAlign = DWRITE_TEXT_ALIGNMENT_CENTER,
 		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
-	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakeStrokeStyle
+	/*! \fn Factory::MakeStrokeStyle
 	*  \brief
 	*  \param FLOAT dashes
 	*  \param UINT32 dashesCount
 	*  \return ID2D1StrokeStyle *
 	*/
-	static H::R<ID2D1StrokeStyle> MakeStrokeStyle(FLOAT dashes, UINT32 dashesCount);
+	static H::R<ID2D1StrokeStyle> MakeStrokeStyle(FLOAT const *dashes, UINT32 dashesCount);
 
-
-	static H::R<IWICBitmap> MakeWICBitmap(UINT width_px, UINT height_px);
-
-	static H::R<ID2D1RenderTarget> MakeWicBitmapRenderTarget(IWICBitmap *pBmp);
-
-	static H::R<ID2D1HwndRenderTarget> MakeHwndRenderTarget(HWND hwnd, D2D1_SIZE_U size);
-
-
-	/*! \fn F35LIB_NAMESPACE::D2DRendererBase::MakePathGeometry
+	/*! \fn Factory::MakePathGeometry
 	*  \brief
 	*  \param void
 	*  \return ID2D1PathGeometry *
 	*/
 	static H::R<ID2D1PathGeometry> MakePathGeometry(void);
+
+	static H::R<IWICBitmap> MakeWICBitmap(UINT width_px, UINT height_px);
+
+	static H::R<ID2D1RenderTarget> MakeWicBitmapRenderTarget(IWICBitmap *pBmp);
 
 	static H::R<IWICStream> MakeWicStream(void);
 
@@ -86,7 +84,7 @@ public:
 
 	H::R<ID2D1Layer> MakeLayer(void);
 
-	H::R<ID2D1Bitmap> MakeBitmap(void);
+	H::R<ID2D1Bitmap> CopyToBitmap(void);
 
 	/*! \fn D2DRendererBase::GetCurrentCursorPosDpi
 	 *  \brief 現在のカーソル位置を取得

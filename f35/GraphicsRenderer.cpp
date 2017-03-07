@@ -48,6 +48,7 @@ void F35_NS::GraphicsRenderer::InternalRender( ID2D1RenderTarget *target )
 
 HRESULT F35_NS::GraphicsRenderer::InternalInit( ID2D1RenderTarget *target )
 {
+	this->EnableAutoErase();
 	pImpl->attach(this);
 	return S_OK;
 }

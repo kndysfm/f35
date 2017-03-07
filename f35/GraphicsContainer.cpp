@@ -20,7 +20,6 @@ GraphicsContainer::GraphicsContainer(void):
 {
 }
 
-
 GraphicsContainer::~GraphicsContainer(void)
 {
 	delete pImpl;
