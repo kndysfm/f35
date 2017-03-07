@@ -1,70 +1,8 @@
 #pragma once
 #include "F35Helper.h"
-#include <wincodec.h>
-
-#include <memory>
 
 namespace F35_NS
 {
-
-class Factory
-{
-private:
-	struct Impl;
-	static std::unique_ptr<Impl> pImpl;
-
-	Factory() = delete;
-	Factory(Factory const &) = delete;
-	Factory(Factory &&) = delete;
-	Factory & operator=(Factory const &) = delete;
-	Factory & operator=(Factory &&) = delete;
-
-public:
-
-	static HRESULT Init(void);
-
-	static void Finalize(void);
-
-	static H::R<ID2D1HwndRenderTarget> MakeHwndRenderTarget(HWND hwnd, D2D1_SIZE_U size);
-
-	/*! \fn Factory::MakeTextFormat
-	*  \brief TextFormatオブジェクトの生成
-	*  \param LPCTSTR fontName
-	*  \param FLOAT fontSize
-	*  \param DWRITE_TEXT_ALIGNMENT textAlign
-	*  \param DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign
-	*  \return IDWriteTextFormat *
-	*/
-	static H::R<IDWriteTextFormat> MakeTextFormat(LPCTSTR fontName, FLOAT fontSize,
-		DWRITE_TEXT_ALIGNMENT textAlign = DWRITE_TEXT_ALIGNMENT_CENTER,
-		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-
-	/*! \fn Factory::MakeStrokeStyle
-	*  \brief
-	*  \param FLOAT dashes
-	*  \param UINT32 dashesCount
-	*  \return ID2D1StrokeStyle *
-	*/
-	static H::R<ID2D1StrokeStyle> MakeStrokeStyle(FLOAT const *dashes, UINT32 dashesCount);
-
-	/*! \fn Factory::MakePathGeometry
-	*  \brief
-	*  \param void
-	*  \return ID2D1PathGeometry *
-	*/
-	static H::R<ID2D1PathGeometry> MakePathGeometry(void);
-
-	static H::R<IWICBitmap> MakeWICBitmap(UINT width_px, UINT height_px);
-
-	static H::R<ID2D1RenderTarget> MakeWicBitmapRenderTarget(IWICBitmap *pBmp);
-
-	static H::R<IWICStream> MakeWicStream(void);
-
-	enum ImageFileFormat {
-		IFF_PNG, IFF_BMP, IFF_JPEG, IFF_GIF,
-	};
-	static H::R<IWICBitmapEncoder> MakeWicEncoder(ImageFileFormat fmt);
-};
 
 class RendererBase: H::Lockable, H::NonCopyable
 {

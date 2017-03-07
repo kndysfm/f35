@@ -76,3 +76,268 @@ void F35_NS::H::WriteText(ID2D1RenderTarget *target, IDWriteTextFormat *format, 
 
 	va_end(arg_ptr);
 }
+
+F35_NS::H::R<ID2D1SolidColorBrush> F35_NS::H::MakeSolidColorBrush(ID2D1RenderTarget * target, const D2D1::ColorF & color)
+{
+	ID2D1SolidColorBrush *ptr = nullptr;
+	HRESULT hr = target->CreateSolidColorBrush(color, &ptr);
+	if (SUCCEEDED(hr)) return ptr;
+	else if (ptr) ptr->Release();
+	return nullptr;
+}
+
+F35_NS::H::R<ID2D1Layer> F35_NS::H::MakeLayer(ID2D1RenderTarget * target)
+{
+	ID2D1Layer *ptr = NULL;
+	D2D1_SIZE_F size = target->GetSize();
+	HRESULT hr = target->CreateLayer(size, &ptr);
+	if (SUCCEEDED(hr)) return ptr;
+	else if (ptr) ptr->Release();
+	return nullptr;
+}
+
+USING_F35_NS;
+
+struct Factory::Impl
+{
+	H::R<ID2D1Factory> pD2dFactory;
+	H::R<IDWriteFactory> pDWriteFactory;
+	H::R<IWICImagingFactory> pWICFactory;
+	D2D1_RENDER_TARGET_PROPERTIES rtProps_shared;
+
+	HRESULT Init(void)
+	{
+		HRESULT hr = S_OK;
+
+		::CoInitialize(nullptr);
+
+		if (!pD2dFactory)
+		{
+			ID2D1Factory *ptr = NULL;
+			hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &ptr);
+			pD2dFactory = ptr;
+
+			rtProps_shared = D2D1::RenderTargetProperties();
+			rtProps_shared.type = D2D1_RENDER_TARGET_TYPE_SOFTWARE;
+			rtProps_shared.usage = D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE;
+		}
+		if (!pDWriteFactory && SUCCEEDED(hr))
+		{
+			IDWriteFactory *ptr = NULL;
+			// Create a DirectWrite factory.
+			hr = ::DWriteCreateFactory(
+				DWRITE_FACTORY_TYPE_SHARED,
+				__uuidof(pDWriteFactory),
+				reinterpret_cast<IUnknown **>(&ptr)
+			);
+			pDWriteFactory = ptr;
+		}
+		if (!pWICFactory && SUCCEEDED(hr))
+		{
+			IWICImagingFactory *ptr = NULL;
+			hr = CoCreateInstance(
+				CLSID_WICImagingFactory,
+				NULL,
+				CLSCTX_INPROC_SERVER,
+				IID_IWICImagingFactory,
+				(LPVOID*)&ptr
+			);
+			pWICFactory = ptr;
+		}
+
+		return hr;
+	}
+
+	void Finalize(void)
+	{
+		pD2dFactory = NULL;
+		pDWriteFactory = NULL;
+		pWICFactory = NULL;
+	}
+
+	IDWriteTextFormat * GetTextFormat(LPCTSTR fontName, FLOAT fontSize,
+		DWRITE_TEXT_ALIGNMENT textAlign, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign)
+	{
+		if (pDWriteFactory)
+		{
+			IDWriteTextFormat *ptr = NULL;
+			HRESULT hr = pDWriteFactory->CreateTextFormat(
+				fontName,
+				NULL,
+				DWRITE_FONT_WEIGHT_NORMAL,
+				DWRITE_FONT_STYLE_NORMAL,
+				DWRITE_FONT_STRETCH_NORMAL,
+				fontSize,
+				L"", //locale
+				&ptr
+			);
+			if (SUCCEEDED(hr))
+			{
+				ptr->SetTextAlignment(textAlign);
+				ptr->SetParagraphAlignment(paragraphAlign);
+				return ptr;
+			}
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+
+	ID2D1StrokeStyle * GetStrokeStyle(FLOAT const *dashes, UINT32 dashesCount)
+	{
+		if (pDWriteFactory)
+		{
+			ID2D1StrokeStyle *ptr = NULL;
+			D2D1_STROKE_STYLE_PROPERTIES props = D2D1::StrokeStyleProperties();
+			HRESULT hr = pD2dFactory->CreateStrokeStyle(props, dashes, dashesCount, &ptr);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+
+	IWICBitmap *GetWICBitmap(UINT width_px, UINT height_px)
+	{
+		if (pWICFactory)
+		{
+			IWICBitmap *ptr = NULL;
+			HRESULT hr = pWICFactory->CreateBitmap(
+				width_px, height_px,
+				GUID_WICPixelFormat32bppPBGRA,
+				WICBitmapCacheOnLoad,
+				&ptr
+			);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+	ID2D1RenderTarget *GetWICBitmapRenderTarget(IWICBitmap *pBmp)
+	{
+		if (pD2dFactory)
+		{
+			ID2D1RenderTarget *ptr = NULL;
+			HRESULT hr = pD2dFactory->CreateWicBitmapRenderTarget(pBmp, rtProps_shared, &ptr);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+	ID2D1HwndRenderTarget * GetHwndRenderTarget(HWND hwnd, D2D1_SIZE_U size)
+	{
+		if (pD2dFactory)
+		{
+			ID2D1HwndRenderTarget *ptr;
+			HRESULT hr = pD2dFactory->CreateHwndRenderTarget(
+				rtProps_shared,//D2D1::RenderTargetProperties(),
+				D2D1::HwndRenderTargetProperties(hwnd, size),
+				&ptr
+			);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+
+	ID2D1PathGeometry * GetPathGeometry(void)
+	{
+		if (pD2dFactory)
+		{
+			ID2D1PathGeometry *ptr;
+			HRESULT hr = pD2dFactory->CreatePathGeometry(&ptr);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+	IWICStream * MakeWicStream(void)
+	{
+		if (pWICFactory)
+		{
+			IWICStream *ptr;
+			HRESULT hr = pWICFactory->CreateStream(&ptr);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+
+	IWICBitmapEncoder * MakeWicEncoder(ImageFileFormat fmt)
+	{
+		if (pWICFactory)
+		{
+			GUID guid = GUID_ContainerFormatPng;
+			switch (fmt)
+			{
+			case fxxxv::Factory::IFF_PNG:
+				guid = GUID_ContainerFormatPng;
+				break;
+			case fxxxv::Factory::IFF_BMP:
+				guid = GUID_ContainerFormatBmp;
+				break;
+			case fxxxv::Factory::IFF_JPEG:
+				guid = GUID_ContainerFormatJpeg;
+				break;
+			case fxxxv::Factory::IFF_GIF:
+				guid = GUID_ContainerFormatGif;
+				break;
+			}
+			IWICBitmapEncoder *ptr = NULL;
+			HRESULT hr = pWICFactory->CreateEncoder(guid, NULL, &ptr);
+			if (SUCCEEDED(hr)) return ptr;
+			else if (ptr) ptr->Release();
+		}
+		return NULL;
+	}
+};
+
+std::unique_ptr<Factory::Impl> Factory::pImpl(new Factory::Impl);
+
+HRESULT Factory::Init(void) { return pImpl->Init(); }
+
+void Factory::Finalize(void) { return pImpl->Finalize(); }
+
+H::R<IDWriteTextFormat> Factory::MakeTextFormat(LPCTSTR fontName, FLOAT fontSize, DWRITE_TEXT_ALIGNMENT textAlign /*= DWRITE_TEXT_ALIGNMENT_CENTER*/, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlign /*= DWRITE_PARAGRAPH_ALIGNMENT_CENTER*/)
+{
+	return pImpl->GetTextFormat(fontName, fontSize, textAlign, paragraphAlign);
+}
+
+H::R<ID2D1StrokeStyle> Factory::MakeStrokeStyle(FLOAT const *dashes, UINT32 dashesCount)
+{
+	return pImpl->GetStrokeStyle(dashes, dashesCount);
+}
+
+H::R<IWICBitmap> Factory::MakeWICBitmap(UINT width_px, UINT height_px)
+{
+	return pImpl->GetWICBitmap(width_px, height_px);
+}
+
+H::R<ID2D1RenderTarget> Factory::MakeWicBitmapRenderTarget(IWICBitmap *pBmp)
+{
+	return pImpl->GetWICBitmapRenderTarget(pBmp);
+}
+
+H::R<ID2D1HwndRenderTarget> Factory::MakeHwndRenderTarget(HWND hwnd, D2D1_SIZE_U size)
+{
+	return pImpl->GetHwndRenderTarget(hwnd, size);
+}
+
+H::R<ID2D1PathGeometry> Factory::MakePathGeometry(void)
+{
+	return pImpl->GetPathGeometry();
+}
+
+H::R<IWICStream> Factory::MakeWicStream(void)
+{
+	return pImpl->MakeWicStream();
+}
+
+H::R<IWICBitmapEncoder> Factory::MakeWicEncoder(ImageFileFormat fmt)
+{
+	return pImpl->MakeWicEncoder(fmt);
+}
