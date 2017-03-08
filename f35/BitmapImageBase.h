@@ -8,7 +8,7 @@ namespace F35_NS
 		public GraphicsBase
 	{
 	private:
-		struct Impl;
+		class Impl;
 		Impl *pImpl;
 
 	public:

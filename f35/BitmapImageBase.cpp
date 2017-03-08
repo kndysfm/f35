@@ -3,15 +3,18 @@
 #include <wincodec.h>
 
 
-struct F35_NS::BitmapImageBase::Impl
+class F35_NS::BitmapImageBase::Impl
 {
 	H::R<IWICBitmap> pWICBitmap_;
 	H::R<ID2D1Bitmap> pShownBitmap_;
 	H::R<ID2D1RenderTarget> pBitmapRenderTarget_;
 	D2D1_SIZE_U bitmap_size_;
-	D2D1_RECT_U shown_rect_;
+	D2D1_RECT_U clipping_rect_;
 
-	BOOL Resize(BitmapImageBase *that, D2D1_SIZE_U size)
+public:
+	D2D1_SIZE_U GetBitmapSize(void) { return bitmap_size_; }
+
+	void SetBitmapSize(BitmapImageBase *that, D2D1_SIZE_U size)
 	{
 		HRESULT hr = S_OK;
 		bitmap_size_ = size;
@@ -42,9 +45,30 @@ struct F35_NS::BitmapImageBase::Impl
 			}
 		}
 		else pBitmapRenderTarget_ = nullptr;
-
-		return pBitmapRenderTarget_? TRUE: FALSE;
 	}
+
+	D2D1_RECT_U GetClippingRect(void) { return clipping_rect_; }
+
+	ID2D1RenderTarget const *GetTarget(void) { return pBitmapRenderTarget_; }
+
+	void SetClippingRect(BitmapImageBase *that, D2D1_RECT_U rect)
+	{
+		clipping_rect_ = rect;
+
+		if (!pBitmapRenderTarget_) return;
+
+		D2D1_BITMAP_PROPERTIES prop;
+		pBitmapRenderTarget_->GetDpi(&prop.dpiX, &prop.dpiY);
+		prop.pixelFormat = pBitmapRenderTarget_->GetPixelFormat();
+		ID2D1Bitmap *ptr = NULL;
+		HRESULT hr = pBitmapRenderTarget_->CreateBitmap(
+			D2D1::SizeU(clipping_rect_.right - clipping_rect_.left, clipping_rect_.bottom - clipping_rect_.top),
+			//D2D1::SizeU(size_f.width, size_f.height),
+			prop, &ptr);
+		if (SUCCEEDED(hr)) pShownBitmap_ = ptr;
+		else if (ptr) ptr->Release();
+	}
+
 
 	BOOL Render(BitmapImageBase *that, ID2D1RenderTarget * target)
 	{
@@ -54,23 +78,10 @@ struct F35_NS::BitmapImageBase::Impl
 		that->RenderImage(pBitmapRenderTarget_);
 		HRESULT hr = pBitmapRenderTarget_->EndDraw();
 
-		if (!SUCCEEDED(hr)) return FALSE;
-
-		// clip bitmap for shown rectangle
-		D2D1_BITMAP_PROPERTIES prop;
-		pBitmapRenderTarget_->GetDpi(&prop.dpiX, &prop.dpiY);
-		prop.pixelFormat = pBitmapRenderTarget_->GetPixelFormat();
-		//D2D1_SIZE_F size_f = target->GetSize();
-		ID2D1Bitmap *ptr = NULL;
-		hr = pBitmapRenderTarget_->CreateBitmap(
-			D2D1::SizeU(shown_rect_.right - shown_rect_.left, shown_rect_.bottom - shown_rect_.top),
-			//D2D1::SizeU(size_f.width, size_f.height),
-			prop, &ptr);
-		pShownBitmap_ = ptr;
-		if (SUCCEEDED(hr))
+		if (SUCCEEDED(hr) && pShownBitmap_)
 		{
 			D2D1_POINT_2U pt = D2D1::Point2U();
-			hr = pShownBitmap_->CopyFromRenderTarget(&pt,  pBitmapRenderTarget_, &shown_rect_);
+			hr = pShownBitmap_->CopyFromRenderTarget(&pt,  pBitmapRenderTarget_, &clipping_rect_);
 			if (SUCCEEDED(hr))
 			{
 				target->DrawBitmap(pShownBitmap_);
@@ -138,22 +149,22 @@ F35_NS::BitmapImageBase::~BitmapImageBase()
 
 void F35_NS::BitmapImageBase::SetImageSize(D2D1_SIZE_U size)
 {
-	pImpl->Resize(this, size);
+	pImpl->SetBitmapSize(this, size);
 }
 
 D2D1_SIZE_U F35_NS::BitmapImageBase::GetImageSize(void)
 {
-	return pImpl->bitmap_size_;
+	return pImpl->GetBitmapSize();
 }
 
 void F35_NS::BitmapImageBase::SetImageClipRect(D2D1_RECT_U rect)
 {
-	pImpl->shown_rect_ = rect;
+	pImpl->SetClippingRect(this, rect);
 }
 
 D2D1_RECT_U F35_NS::BitmapImageBase::GetImageClipRect(void)
 {
-	return pImpl->shown_rect_;
+	return pImpl->GetClippingRect();
 }
 
 BOOL F35_NS::BitmapImageBase::SaveImageFile(LPCTSTR filename, Factory::ImageFileFormat fmt)
@@ -164,8 +175,8 @@ BOOL F35_NS::BitmapImageBase::SaveImageFile(LPCTSTR filename, Factory::ImageFile
 void F35_NS::BitmapImageBase::InternalInit(ID2D1RenderTarget * target)
 {
 	D2D1_SIZE_F size = target->GetSize();
-	pImpl->shown_rect_ = D2D1::RectU(0, 0, size.width, size.height);
-	pImpl->Resize(this, D2D1::SizeU(size.width, size.height));
+	if (pImpl->GetTarget() == NULL) pImpl->SetBitmapSize(this, D2D1::SizeU(size.width, size.height));
+	pImpl->SetClippingRect(this, D2D1::RectU(0, 0, size.width, size.height));
 }
 
 void F35_NS::BitmapImageBase::InternalUpdate(void)
