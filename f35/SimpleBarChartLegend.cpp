@@ -5,7 +5,7 @@ USING_F35_NS;
 
 struct SimpleBarChartLegend::Impl
 {
-	H::R< ID2D1SolidColorBrush > brush;
+	H::R< ID2D1SolidColorBrush > pBrushForeground_;
 	H::R<IDWriteTextFormat> textf;
 
 	FLOAT bar_width_;
@@ -56,16 +56,16 @@ FLOAT SimpleBarChartLegend::GetBarWidth(void)
 
 void F35_NS::SimpleBarChartLegend::BeginDraw( ) const
 {
-	pImpl->brush = H::MakeSolidColorBrush(GetCurrentTarget(), GetFillColor());
+	pImpl->pBrushForeground_ = H::MakeSolidColorBrush(GetCurrentTarget(), GetFillColor());
 	pImpl->textf = Factory::MakeTextFormat(_T("MS Gothic"), 8.0f, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
 }
 
 void F35_NS::SimpleBarChartLegend::Draw( D2D_VECTOR_4F const *value, D2D_VECTOR_4F const *point, D2D_VECTOR_4F const *point_previous /*= NULL*/, D2D_VECTOR_4F const *point_next /*= NULL */ ) const
 {
-	if (!pImpl || !pImpl->brush) return;
+	if (!pImpl || !pImpl->pBrushForeground_) return;
 
 	D2D1_RECT_F bar = pImpl->convert_point(GetCurrentChartRect(), point, pImpl->bar_width_ * GetCurrentRatioPlotToValue()->x);
-	GetCurrentTarget()->FillRectangle(bar, pImpl->brush);
+	GetCurrentTarget()->FillRectangle(bar, pImpl->pBrushForeground_);
 }
 
 
@@ -82,7 +82,7 @@ void F35_NS::SimpleBarChartLegend::Print(D2D_VECTOR_4F const *point, LPCTSTR str
 	rect.left += point->x * (GetCurrentChartRect()->right - GetCurrentChartRect()->left);
 	rect.top += point->y * (GetCurrentChartRect()->bottom - GetCurrentChartRect()->top);
 
-	H::WriteText(GetCurrentTarget(), pImpl->textf, rect, pImpl->brush, str);
+	H::WriteText(GetCurrentTarget(), pImpl->textf, rect, pImpl->pBrushForeground_, str);
 
 	delete[] str;
 
