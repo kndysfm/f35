@@ -11,7 +11,7 @@ struct F35_NS::BitmapImageBase::Impl
 	D2D1_SIZE_U bitmap_size_;
 	D2D1_RECT_U shown_rect_;
 
-	BOOL Resize(D2D1_SIZE_U size)
+	BOOL Resize(BitmapImageBase *that, D2D1_SIZE_U size)
 	{
 		HRESULT hr = S_OK;
 		bitmap_size_ = size;
@@ -30,11 +30,15 @@ struct F35_NS::BitmapImageBase::Impl
 		if (pWICBitmap_)
 		{
 			pBitmapRenderTarget_ = Factory::MakeWicBitmapRenderTarget(pWICBitmap_);
-			if (pBmp)
+			if (pBitmapRenderTarget_)
 			{
-				pBitmapRenderTarget_->BeginDraw();
-				pBitmapRenderTarget_->DrawBitmap(pBmp);
-				pBitmapRenderTarget_->EndDraw();
+				that->InitImage(pBitmapRenderTarget_);
+				if (pBmp)
+				{
+					pBitmapRenderTarget_->BeginDraw();
+					pBitmapRenderTarget_->DrawBitmap(pBmp);
+					pBitmapRenderTarget_->EndDraw();
+				}
 			}
 		}
 		else pBitmapRenderTarget_ = nullptr;
@@ -42,12 +46,12 @@ struct F35_NS::BitmapImageBase::Impl
 		return pBitmapRenderTarget_? TRUE: FALSE;
 	}
 
-	BOOL Render(BitmapImageBase *that, RendererBase * renderer, ID2D1RenderTarget * target)
+	BOOL Render(BitmapImageBase *that, ID2D1RenderTarget * target)
 	{
 		if (!pBitmapRenderTarget_) return FALSE;
 		
 		pBitmapRenderTarget_->BeginDraw();
-		that->InternalRenderImage(pBitmapRenderTarget_);
+		that->RenderImage(pBitmapRenderTarget_);
 		HRESULT hr = pBitmapRenderTarget_->EndDraw();
 
 		if (!SUCCEEDED(hr)) return FALSE;
@@ -134,7 +138,7 @@ F35_NS::BitmapImageBase::~BitmapImageBase()
 
 void F35_NS::BitmapImageBase::SetImageSize(D2D1_SIZE_U size)
 {
-	pImpl->Resize(size);
+	pImpl->Resize(this, size);
 }
 
 D2D1_SIZE_U F35_NS::BitmapImageBase::GetImageSize(void)
@@ -157,21 +161,24 @@ BOOL F35_NS::BitmapImageBase::SaveImageFile(LPCTSTR filename, Factory::ImageFile
 	return pImpl->SaveFile(filename, fmt);
 }
 
-void F35_NS::BitmapImageBase::InternalInit(RendererBase * renderer)
+void F35_NS::BitmapImageBase::InternalInit(ID2D1RenderTarget * target)
 {
-	D2D1_SIZE_F size = renderer->GetSize();
-	pImpl->Resize(D2D1::SizeU(size.width, size.height));
+	D2D1_SIZE_F size = target->GetSize();
 	pImpl->shown_rect_ = D2D1::RectU(0, 0, size.width, size.height);
+	pImpl->Resize(this, D2D1::SizeU(size.width, size.height));
 }
 
-void F35_NS::BitmapImageBase::InternalUpdate(RendererBase * renderer)
+void F35_NS::BitmapImageBase::InternalUpdate(void)
 {
-	this->InternalUpdateImage();
+	this->UpdateImage();
 }
 
-BOOL F35_NS::BitmapImageBase::InternalRender(RendererBase * renderer, ID2D1RenderTarget * target)
+BOOL F35_NS::BitmapImageBase::InternalRender(ID2D1RenderTarget * target)
 {
-	return pImpl->Render(this, renderer, target);
+	return pImpl->Render(this, target);
 }
 
-void F35_NS::BitmapImageBase::InternalDestroy(RendererBase * renderer) { }
+void F35_NS::BitmapImageBase::InternalDestroy(void) 
+{
+	this->DestroyImage();
+}

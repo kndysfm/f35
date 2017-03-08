@@ -31,18 +31,22 @@ namespace F35_NS
 		BOOL SaveImageFile(LPCTSTR filename, Factory::ImageFileFormat fmt = Factory::IFF_PNG);
 
 	private:
-		virtual void InternalInit(RendererBase * renderer) sealed;
+		virtual void InternalInit(ID2D1RenderTarget * target) sealed;
 
-		virtual void InternalUpdate(RendererBase * renderer) sealed;
+		virtual void InternalUpdate(void) sealed;
 
-		virtual BOOL InternalRender(RendererBase * renderer, ID2D1RenderTarget * target) sealed;
+		virtual BOOL InternalRender(ID2D1RenderTarget * target) sealed;
 
-		virtual void InternalDestroy(RendererBase * renderer) sealed;
+		virtual void InternalDestroy(void) sealed;
 
 	protected:
-		virtual void InternalUpdateImage(void) = 0;
+		virtual void InitImage(ID2D1RenderTarget * target) { }
 
-		virtual BOOL InternalRenderImage(ID2D1RenderTarget * target) = 0;
+		virtual void UpdateImage(void) { }
+
+		virtual BOOL RenderImage(ID2D1RenderTarget * target) = 0;
+
+		virtual void DestroyImage(void) { }
 
 	};
 }
