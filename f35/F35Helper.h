@@ -47,8 +47,8 @@ namespace F35_NS
 		{
 		private:
 			Interface *pResource;
-			R(const R &) = delete;
-			R(Interface const *p) = delete;
+			explicit R(const R &) = delete;
+			explicit R(Interface const *p) = delete;
 			R & operator= (const R &) = delete;
 
 			static void safeRelease(Interface **ppInterfaceToRelease)
@@ -61,10 +61,10 @@ namespace F35_NS
 			}
 
 		public:
-			R(Interface *p) : pResource(p) { }
-			R(nullptr_t ptr) : pResource(NULL) { }
 			R() : R(nullptr) { }
 			explicit R(R && rh) : R(rh.pResource) { rh.pResource = NULL; }
+			R(nullptr_t ptr) : pResource(NULL) { }
+			R(Interface *p) : pResource(p) { }
 
 			R & operator= (R && rh)
 			{
@@ -112,7 +112,7 @@ namespace F35_NS
 			DWRITE_TEXT_ALIGNMENT text_align, DWRITE_PARAGRAPH_ALIGNMENT paragraph_align,
 			ID2D1Brush *brush, LPCTSTR str_fmt, ...);
 
-		H::R<ID2D1SolidColorBrush> MakeSolidColorBrush(ID2D1RenderTarget *target, const D2D1::ColorF &color);
+		H::R<ID2D1SolidColorBrush> MakeSolidColorBrush(ID2D1RenderTarget *target, const D2D1_COLOR_F &color);
 
 		H::R<ID2D1Layer> MakeLayer(ID2D1RenderTarget *target);
 

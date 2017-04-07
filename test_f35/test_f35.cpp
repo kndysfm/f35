@@ -132,7 +132,7 @@ static void init_graphics(HWND hWnd)
 {
 	pRenderer = new fxxxv::GraphicsRenderer(hWnd);
 	pRenderer->Init();
-	pRenderer->DisableAutoErase();// EnableAutoErase(D2D1::ColorF(0, 0.1f));
+	pRenderer->EnableAutoErase(D2D1::ColorF(D2D1::ColorF::DarkBlue, 0.1f));
 	for (auto &g : graphs) container.AddGraphics(&g);
 	pRenderer->AddGraphics(&container);
 

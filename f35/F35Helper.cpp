@@ -77,7 +77,7 @@ void F35_NS::H::WriteText(ID2D1RenderTarget *target, IDWriteTextFormat *format, 
 	va_end(arg_ptr);
 }
 
-F35_NS::H::R<ID2D1SolidColorBrush> F35_NS::H::MakeSolidColorBrush(ID2D1RenderTarget * target, const D2D1::ColorF & color)
+F35_NS::H::R<ID2D1SolidColorBrush> F35_NS::H::MakeSolidColorBrush(ID2D1RenderTarget * target, const D2D1_COLOR_F & color)
 {
 	ID2D1SolidColorBrush *ptr = nullptr;
 	HRESULT hr = target->CreateSolidColorBrush(color, &ptr);
