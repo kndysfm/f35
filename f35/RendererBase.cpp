@@ -43,11 +43,17 @@ public:
 		return pRenderTarget;
 	}
 
-	D2D1_POINT_2F GetCurrPosDpi(void)
+	D2D1_POINT_2F GetCurrPosDpi(void) const
 	{
 		return currPos;
 	}
 
+	POINT GetScreenOrigin(void) const
+	{
+		POINT pt = { 0, 0 };
+		::ClientToScreen(hWnd, &pt);
+		return pt;
+	}
 
 	D2D1_SIZE_F GetSize(void) const
 	{
@@ -277,7 +283,7 @@ public:
 		D2D1_RECT_U rect_src = D2D1::RectU(0, 0, (UINT32)size_last.width, (UINT32)size_last.height);
 		H::R<ID2D1Bitmap> bmp_last = GetBitmap();
 		HRESULT hr = ResetRenderer(that);
-		if (SUCCEEDED(hr))
+		if (SUCCEEDED(hr) && !enable_auto_erase)
 		{
 			pRenderTarget->BeginDraw();
 			if (scaling)
@@ -294,6 +300,11 @@ public:
 			}
 			pRenderTarget->EndDraw();
 		}
+	}
+
+	void Validate(void)
+	{
+		::ValidateRect(this->hWnd, NULL);
 	}
 };
 
@@ -375,6 +386,11 @@ void RendererBase::Invalidate( void )
 	pImpl->Invalidate();
 }
 
+void RendererBase::Validate(void)
+{
+	pImpl->Validate();
+}
+
 D2D1_SIZE_F F35_NS::RendererBase::GetSize( void ) const
 {
 	return pImpl->GetSize();
@@ -390,6 +406,17 @@ D2D1_RECT_F F35_NS::RendererBase::GetRectangle( void ) const
 	return rect;
 }
 
+D2D1_RECT_F F35_NS::RendererBase::GetScreenRect(void)
+{
+	D2D1_RECT_F rect;
+	D2D1_SIZE_F size = pImpl->GetSize();
+	POINT origin = pImpl->GetScreenOrigin();
+	rect.left = origin.x;
+	rect.top = origin.y;
+	rect.right = origin.x + size.width;
+	rect.bottom = origin.y + size.height;
+	return rect;
+}
 
 void F35_NS::RendererBase::EnableAutoErase(D2D1_COLOR_F color_to_erase)
 {
@@ -410,3 +437,4 @@ void F35_NS::RendererBase::Resize(BOOL scaling)
 {
 	return pImpl->Resize(this, scaling);
 }
+

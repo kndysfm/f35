@@ -36,6 +36,9 @@ public:
 	D2D1_RECT_F GetRectangle(void) const;
 
 
+	D2D1_RECT_F GetScreenRect(void);
+
+
 protected:
 
 	/*! \fn D2DRendererBase::InternalInit
@@ -117,6 +120,8 @@ public:
 	HRESULT Render(void);
 
 	void Invalidate(void);
+
+	void Validate(void);
 
 	/*! \fn D2DRendererBase::Destroy
 	 *  \brief ƒŠƒ\[ƒX‚Ì”pŠü
